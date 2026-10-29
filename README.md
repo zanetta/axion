@@ -1,4 +1,4 @@
-# antigravity4cursor
+# Axion
 
 Port do [AG Kit](https://github.com/vudovn/ag-kit) (Antigravity Kit) para o **Cursor IDE** — agents, skills, workflows e scripts de validação, com paths e regras adaptados ao ecossistema Cursor.
 
@@ -6,7 +6,7 @@ Port do [AG Kit](https://github.com/vudovn/ag-kit) (Antigravity Kit) para o **Cu
 
 ## O que é
 
-Este repositório inclui o pacote npm **`@zanetta/antigravity4cursor`** (pasta `cli/`) para instalação via `npx`. Também funciona como template git manual.
+Este repositório inclui o pacote npm **`@zanetta/axion`** (pasta `cli/`) para instalação via `npx`. Também funciona como template git manual.
 
 | Componente | Onde fica |
 | --- | --- |
@@ -14,7 +14,7 @@ Este repositório inclui o pacote npm **`@zanetta/antigravity4cursor`** (pasta `
 | 45 skills (+ sub-skills de game-dev) | `.agents/skills/` |
 | 14 slash commands (13 upstream + `/ui-ux-pro-max`) | `.cursor/commands/` |
 | 7 regras por domínio | `.cursor/rules/*.mdc` |
-| CLI npm `@zanetta/antigravity4cursor@1.0.0` | `cli/` · [npm](https://www.npmjs.com/package/@zanetta/antigravity4cursor) |
+| CLI npm `@zanetta/axion@1.0.0` | `cli/` · [npm](https://www.npmjs.com/package/@zanetta/axion) |
 | Regras globais | `AGENTS.md` |
 | Memória persistente | `.agents/memory/` |
 | Scripts de validação + sync | `.cursor/scripts/` |
@@ -40,14 +40,15 @@ Na raiz do projeto onde você desenvolve:
 
 ```bash
 # One-shot (sem instalar globalmente)
-npx @zanetta/antigravity4cursor init
+npx @zanetta/axion init
 ```
 
 O `init` instala **no diretório atual** (`cwd`). Ex.: `cd ~/dev/meu-app && npx … init` copia o kit para `~/dev/meu-app`.
 
 ```bash
 # Instalação global
-npm install -g @zanetta/antigravity4cursor antigravity4cursor init
+npm install -g @zanetta/axion
+axion init
 ```
 
 **O que o `init` copia (instalação full):**
@@ -68,19 +69,19 @@ npm install -g @zanetta/antigravity4cursor antigravity4cursor init
 Para sobrescrever tudo (cuidado em projetos customizados):
 
 ```bash
-npx @zanetta/antigravity4cursor init --force
+npx @zanetta/axion init --force
 ```
 
 Outros comandos:
 
 ```bash
-npx @zanetta/antigravity4cursor status
-npx @zanetta/antigravity4cursor update          # merge novos arquivos do kit
-npx @zanetta/antigravity4cursor update --force  # sobrescrever kit inteiro
-npx @zanetta/antigravity4cursor init --dry-run  # simular sem escrever
+npx @zanetta/axion status
+npx @zanetta/axion update          # merge novos arquivos do kit
+npx @zanetta/axion update --force  # sobrescrever kit inteiro
+npx @zanetta/axion init --dry-run  # simular sem escrever
 ```
 
-> Pacote publicado: [`@zanetta/antigravity4cursor@1.0.0`](https://www.npmjs.com/package/@zanetta/antigravity4cursor). Troubleshooting (`E404`, `min-release-age`, 2FA): [`cli/README.md`](cli/README.md).
+> Pacote npm: `@zanetta/axion` (ainda não publicado). O nome anterior [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor) continua no registry. Troubleshooting (`E404`, `min-release-age`, 2FA): [`cli/README.md`](cli/README.md).
 
 ### Instalação npm — problemas comuns
 
@@ -99,7 +100,7 @@ Detalhes: [`cli/README.md`](cli/README.md).
 Clone ou copie para a raiz do seu projeto de aplicação:
 
 ```bash
-git clone https://github.com/zanetta/antigravity4cursor.git
+git clone https://github.com/zanetta/axion.git
 # ou copie apenas .claude/, .agents/, .cursor/, AGENTS.md
 ```
 
@@ -223,8 +224,8 @@ Cenário: você vai criar uma aplicação do zero (ex.: SaaS, app interno, MVP).
 
 ```bash
 # Na pasta do novo repo (vazio ou recém-criado)
-npx @zanetta/antigravity4cursor init
-git add . && git commit -m "chore: add antigravity4cursor kit"
+npx @zanetta/axion init
+git add . && git commit -m "chore: add axion kit"
 ```
 
 Alternativa manual: copie `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md` deste repositório.
@@ -328,7 +329,7 @@ Cenário: o código já existe; você adiciona o kit ou já o usa e precisa evol
 Na raiz do projeto existente:
 
 ```bash
-npx @zanetta/antigravity4cursor init
+npx @zanetta/axion init
 ```
 
 Modo **merge** (padrão): preserva `.cursor/rules/` e `mcp.json` customizados; adiciona o restante do kit. Use `--force` apenas se quiser sobrescrever tudo.
@@ -425,7 +426,7 @@ flowchart TD
 | `GEMINI.md` | `AGENTS.md` + `.cursor/rules/*.mdc` |
 | `$ARGUMENTS` nos workflows | Texto livre após o comando |
 | Auto-routing nativo | Documentado; aplicado pelo agente quando relevante |
-| `npx @vudovn/ag-kit init` | `npx @zanetta/antigravity4cursor init` |
+| `npx @vudovn/ag-kit init` | `npx @zanetta/axion init` |
 
 Limitações completas: seção **Limitações da migração** em [`AGENTS.md`](AGENTS.md).
 
@@ -467,7 +468,7 @@ Recomendação: rode dry-run após cada release upstream; revise diff antes de `
 ├── README.md                 # Este guia
 ├── package.json              # Monorepo (workspace cli/)
 ├── .npmrc                    # Registry @zanetta → registry.npmjs.org
-├── cli/                      # @zanetta/antigravity4cursor (npm)
+├── cli/                      # @zanetta/axion (npm)
 ├── .github/workflows/        # publish-npm.yml (tag v*)
 ├── .claude/agents/           # 20 personas
 ├── .agents/
@@ -503,4 +504,4 @@ echo ".agents/" >> .git/info/exclude
 ## Créditos e licença
 
 - Baseado em [AG Kit / Antigravity Kit](https://github.com/vudovn/ag-kit) por [vudovn](https://github.com/vudovn) — MIT License
-- Port Cursor: [zanetta/antigravity4cursor](https://github.com/zanetta/antigravity4cursor)
+- Port Cursor: [zanetta/axion](https://github.com/zanetta/axion)

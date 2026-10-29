@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sync antigravity4cursor with upstream ag-kit (https://github.com/vudovn/ag-kit).
+Sync Axion with upstream ag-kit (https://github.com/vudovn/ag-kit).
 
 Usage:
     python3 .cursor/scripts/sync_upstream.py              # Compare only (default)
@@ -179,7 +179,7 @@ def sync_commands_from_upstream(upstream: Path, only: list[str] | None = None) -
 
 
 def print_report(report: dict[str, object]) -> None:
-    print("\n=== antigravity4cursor ↔ ag-kit sync report ===\n")
+    print("\n=== Axion ↔ ag-kit sync report ===\n")
     for key in [
         "skills_missing",
         "skills_extra",

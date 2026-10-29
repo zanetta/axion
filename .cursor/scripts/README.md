@@ -1,4 +1,4 @@
-# Master Scripts — antigravity4cursor
+# Master Scripts — Axion
 
 Scripts em `.cursor/scripts/` orquestram validações, sync com upstream e (via `cli/`) instalação npm.
 
@@ -45,7 +45,7 @@ Adaptações automáticas ao aplicar:
 Instalar o kit em outro projeto:
 
 ```bash
-NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/antigravity4cursor init
+NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init
 ```
 
 Release automático: `.github/workflows/publish-npm.yml` (tag `v*`). Ver [`cli/README.md`](../../cli/README.md).

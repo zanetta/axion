@@ -1,17 +1,17 @@
-# @zanetta/antigravity4cursor CLI
+# @zanetta/axion CLI
 
-Install the antigravity4cursor kit (AG Kit port for Cursor) into any project.
+Install the Axion kit (AG Kit port for Cursor) into any project.
 
-**npm:** [`@zanetta/antigravity4cursor@1.0.0`](https://www.npmjs.com/package/@zanetta/antigravity4cursor)
+**npm:** `@zanetta/axion` (not published yet; previous package remains [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor))
 
 ## Usage
 
 ```bash
-npx @zanetta/antigravity4cursor init
-npx @zanetta/antigravity4cursor init --force
-npx @zanetta/antigravity4cursor init --dry-run
-npx @zanetta/antigravity4cursor update
-npx @zanetta/antigravity4cursor status
+npx @zanetta/axion init
+npx @zanetta/axion init --force
+npx @zanetta/axion init --dry-run
+npx @zanetta/axion update
+npx @zanetta/axion status
 ```
 
 `init` instala no **diretório atual** (`cwd`). Para outro path: `init --path ~/dev/meu-app`.
@@ -37,8 +37,9 @@ npx @zanetta/antigravity4cursor status
 cd cli && npm install && npm test
 
 # Local install from repo root (sem npm registry)
-ANTIGRAVITY4CURSOR_REPO=/path/to/antigravity4cursor \
+AXION_REPO=/path/to/axion \
   node bin/index.js init --path /tmp/my-app --dry-run
+# ANTIGRAVITY4CURSOR_REPO still works when AXION_REPO is unset.
 ```
 
 ## Publish (GitHub Actions)
@@ -69,8 +70,8 @@ Registry do projeto (`.npmrc`): `@zanetta:registry=https://registry.npmjs.org/`
 
 ```bash
 npm install
-npm test --workspace=@zanetta/antigravity4cursor
-npm publish --workspace=@zanetta/antigravity4cursor --access public --otp=CODIGO   # se 2FA ativa
+npm test --workspace=@zanetta/axion
+npm publish --workspace=@zanetta/axion --access public --otp=CODIGO   # se 2FA ativa
 ```
 
 ## Troubleshooting
@@ -81,14 +82,14 @@ npm publish --workspace=@zanetta/antigravity4cursor --access public --otp=CODIGO
 | `E403` (2FA) | Conta sem 2FA ou token sem bypass | 2FA + `--otp` ou token granular com bypass |
 | `E403` (permission) | Scope `@zanetta` incorreto | Publicar com conta dona do scope |
 | `E404` / `ENOVERSIONS` | `min-release-age` ou `before` no `~/.npmrc` | `NPM_CONFIG_MIN_RELEASE_AGE=0 npx …` |
-| Typo | Nome errado | `@zanetta/antigravity4cursor` |
+| Typo | Nome errado | `@zanetta/axion` |
 
 ### E404 / ENOVERSIONS no `npx init`
 
 Pacote publicado — confirme:
 
 ```bash
-npm view @zanetta/antigravity4cursor version
+npm view @zanetta/axion version
 ```
 
 Se retornar versão mas `npx` falha, verifique filtros:
@@ -101,7 +102,7 @@ npm config get before
 Contorno:
 
 ```bash
-NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/antigravity4cursor init
+NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init
 # ou
 npm config delete min-release-age
 ```
@@ -123,7 +124,7 @@ npm config delete min-release-age
 
 ```bash
 cd ~/dev/meu-projeto
-NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/antigravity4cursor init
+NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init
 ```
 
 Merge preserva `.cursor/rules/` e `mcp.json` customizados.
@@ -131,6 +132,6 @@ Merge preserva `.cursor/rules/` e `mcp.json` customizados.
 ### Sem npm registry
 
 ```bash
-ANTIGRAVITY4CURSOR_REPO=/caminho/antigravity4cursor \
-  node /caminho/antigravity4cursor/cli/bin/index.js init --path .
+AXION_REPO=/caminho/axion \
+  node /caminho/axion/cli/bin/index.js init --path .
 ```

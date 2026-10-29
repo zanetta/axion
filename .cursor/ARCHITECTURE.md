@@ -1,6 +1,6 @@
 # Antigravity Kit for Cursor — Architecture
 
-> Port compat-first do [AG Kit](https://github.com/vudovn/ag-kit) para o Cursor IDE — **npm `@zanetta/antigravity4cursor@1.0.0`**
+> Port compat-first do [AG Kit](https://github.com/vudovn/ag-kit) para o Cursor IDE — **npm `@zanetta/axion@1.0.0`**
 
 ---
 
@@ -23,13 +23,13 @@
 ## 🏗️ Directory Structure
 
 ```plaintext
-antigravity4cursor/
+axion/
 ├── AGENTS.md                    # Regras sempre-ativas (substitui GEMINI.md)
 ├── AGENT_FLOW.md                # Fluxo de agentes (adaptado ao Cursor)
 ├── README.md                    # Guia principal + fluxos de desenvolvimento
 ├── package.json                 # Monorepo (workspace cli/)
 ├── .npmrc                       # @zanetta → registry.npmjs.org
-├── cli/                         # Pacote npm @zanetta/antigravity4cursor
+├── cli/                         # Pacote npm @zanetta/axion
 ├── .github/workflows/           # publish-npm.yml (release por tag v*)
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
@@ -54,7 +54,7 @@ antigravity4cursor/
 | `.agents/scripts/` | `.cursor/scripts/` |
 | `.agents/mcp_config.json` | `.cursor/mcp.json` |
 | `$ARGUMENTS` em workflows | Texto livre após o `/comando` |
-| `npx @vudovn/ag-kit init` | `npx @zanetta/antigravity4cursor init` |
+| `npx @vudovn/ag-kit init` | `npx @zanetta/axion init` |
 
 ---
 
@@ -62,8 +62,8 @@ antigravity4cursor/
 
 | Item | Detalhe |
 | --- | --- |
-| Pacote | `@zanetta/antigravity4cursor@1.0.0` |
-| Binário | `antigravity4cursor` |
+| Pacote | `@zanetta/axion@1.0.0` |
+| Binário | `axion` |
 | Comandos CLI | `init`, `update`, `status` |
 | Install default | Full + merge (`mcp.json`, rules) |
 | CI publish | `.github/workflows/publish-npm.yml` on tag `v*` |
@@ -245,7 +245,7 @@ allowed-tools: Read, Grep, Glob
 | `checklist.py` | Validação core (dev, pre-commit) |
 | `verify_all.py` | Suite completa (pre-deploy) |
 | `sync_upstream.py` | Compare/sync com [ag-kit](https://github.com/vudovn/ag-kit) |
-| `@zanetta/antigravity4cursor` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
+| `@zanetta/axion` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
 | `session_manager.py` | Gestão de sessão |
 | `auto_preview.py` | Preview automático |
 
@@ -262,7 +262,7 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 python3 .cursor/scripts/sync_upstream.py --apply
 
 # Instalar kit em outro projeto (CLI npm)
-npx @zanetta/antigravity4cursor init
+npx @zanetta/axion init
 ```
 
 Skill-level scripts ficam em `.agents/skills/<skill>/scripts/`.
@@ -279,7 +279,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Skills | 45 |
 | Workflows | 14 (13 upstream + 1 Cursor) |
 | Scripts em `.cursor/scripts/` | 5 |
-| CLI npm | `@zanetta/antigravity4cursor` |
+| CLI npm | `@zanetta/axion` |
 | Regras por domínio | 7 |
 | Cobertura | ~95% web/mobile + orquestração |
 

@@ -8,7 +8,7 @@
 
 ```bash
 cd ~/dev/seu-projeto
-NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/antigravity4cursor init
+NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init
 cp .env.example .env   # opcional — MCP Context7
 ```
 
@@ -19,7 +19,7 @@ cp .env.example .env   # opcional — MCP Context7
 | `update` | Baixa template atual e faz merge |
 | `status` | Verifica `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md` |
 
-Pacote: [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor) · troubleshooting: [`cli/README.md`](cli/README.md)
+Pacote: [`@zanetta/axion`](https://www.npmjs.com/package/@zanetta/axion) · troubleshooting: [`cli/README.md`](cli/README.md)
 
 ---
 
@@ -172,7 +172,7 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 
 | Recurso original | No Cursor |
 | --- | --- |
-| `npx @vudovn/ag-kit init` | `npx @zanetta/antigravity4cursor init` |
+| `npx @vudovn/ag-kit init` | `npx @zanetta/axion init` |
 | Auto-routing silencioso | Referência em `intelligent-routing`; agente aplica manualmente |
 | `GEMINI.md` tier P0/P1/P2 | `AGENTS.md` + rules por glob |
 | `$ARGUMENTS` | Texto livre após `/comando` |
@@ -189,4 +189,4 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 - Sync upstream: `python3 .cursor/scripts/sync_upstream.py`
 - Upstream: https://github.com/vudovn/ag-kit
 
-**Last Updated:** 2026-06-17 · **npm:** `@zanetta/antigravity4cursor@1.0.0`
+**Last Updated:** 2026-06-17 · **npm:** `@zanetta/axion@1.0.0`

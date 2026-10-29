@@ -1,7 +1,7 @@
-export const PACKAGE_NAME = "@zanetta/antigravity4cursor";
-export const BIN_NAME = "antigravity4cursor";
-export const DEFAULT_REPO = "github:zanetta/antigravity4cursor";
-export const TEMP_FOLDER = ".temp_antigravity4cursor";
+export const PACKAGE_NAME = "@zanetta/axion";
+export const BIN_NAME = "axion";
+export const DEFAULT_REPO = "github:zanetta/axion";
+export const TEMP_FOLDER = ".temp_axion";
 
 /** Paths copied from template root into target project (full install). */
 export const INSTALL_PATHS = [
@@ -15,5 +15,8 @@ export const INSTALL_PATHS = [
 
 export const MERGE_JSON_FILES = new Set([".cursor/mcp.json"]);
 
-/** Env override: absolute path to repo root, or giget source (default github:zanetta/antigravity4cursor). */
-export const REPO_ENV = "ANTIGRAVITY4CURSOR_REPO";
+/** Env override: absolute path to repo root, or giget source (default github:zanetta/axion). */
+export const REPO_ENV = "AXION_REPO";
+
+/** Previous env name, still read when AXION_REPO is unset. */
+export const LEGACY_REPO_ENV = "ANTIGRAVITY4CURSOR_REPO";

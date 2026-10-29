@@ -1,19 +1,19 @@
 {
-    "name": "@zanetta/antigravity4cursor",
+    "name": "@zanetta/axion",
     "version": "1.0.2",
     "private": true,
-    "description": "AG Kit port for Cursor IDE",
+    "description": "Axion — AG Kit port for Cursor IDE",
     "workspaces": [
         "cli"
     ],
     "scripts": {
-        "test": "npm test --workspace=@zanetta/antigravity4cursor",
-        "test:cli": "npm test --workspace=@zanetta/antigravity4cursor",
-        "publish": "npm publish --workspace=@zanetta/antigravity4cursor --access public"
+        "test": "npm test --workspace=@zanetta/axion",
+        "test:cli": "npm test --workspace=@zanetta/axion",
+        "publish": "npm publish --workspace=@zanetta/axion --access public"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/zanetta/antigravity4cursor.git"
+        "url": "git+https://github.com/zanetta/axion.git"
     },
     "license": "MIT"
 }

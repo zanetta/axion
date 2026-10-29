@@ -1,14 +1,14 @@
 {
-    "name": "@zanetta/antigravity4cursor",
+    "name": "@zanetta/axion",
     "version": "1.0.2",
-    "description": "CLI to install antigravity4cursor — AG Kit port for Cursor IDE",
+    "description": "CLI to install Axion — AG Kit port for Cursor IDE",
     "type": "module",
     "main": "bin/index.js",
     "engines": {
         "node": ">=18"
     },
     "bin": {
-        "antigravity4cursor": "bin/index.js"
+        "axion": "bin/index.js"
     },
     "files": [
         "bin",
@@ -19,14 +19,15 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/zanetta/antigravity4cursor.git",
+        "url": "git+https://github.com/zanetta/axion.git",
         "directory": "cli"
     },
-    "homepage": "https://github.com/zanetta/antigravity4cursor#readme",
+    "homepage": "https://github.com/zanetta/axion#readme",
     "bugs": {
-        "url": "https://github.com/zanetta/antigravity4cursor/issues"
+        "url": "https://github.com/zanetta/axion/issues"
     },
     "keywords": [
+        "axion",
         "cursor",
         "antigravity",
         "ag-kit",

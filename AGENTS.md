@@ -51,7 +51,7 @@ Antes de modificar QUALQUER arquivo:
 | **Rules globais**   | `AGENTS.md` (este arquivo) — sempre aplicado |
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |
 | **Memória persistente** | `.agents/memory/MEMORY.md` |
-| **CLI npm (instalar kit)** | `npx @zanetta/antigravity4cursor init` · código em `cli/` |
+| **CLI npm (instalar kit)** | `npx @zanetta/axion init` · código em `cli/` |
 | **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md` |
 | **MCP env vars**    | `.env` (no `.gitignore`); template em `.env.example` |
 
@@ -177,7 +177,7 @@ Esses agents contêm:
 **Skills-chave** (em `.agents/skills/`):
 `clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
 
-**CLI npm:** `@zanetta/antigravity4cursor` — `init`, `update`, `status` ([`cli/README.md`](cli/README.md)).
+**CLI npm:** `@zanetta/axion` — `init`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 
 **Slash commands** (em `.cursor/commands/`):
 `/brainstorm`, `/coordinate`, `/create`, `/debug`, `/deploy`, `/enhance`, `/orchestrate`, `/plan`, `/preview`, `/remember`, `/status`, `/test`, `/ui-ux-pro-max`, `/verify`.
