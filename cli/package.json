@@ -1,6 +1,6 @@
 {
     "name": "@zanetta/axion",
-    "version": "1.1.0",
+    "version": "1.1.0-1",
     "description": "CLI to install Axion, a spec-driven development kit for Cursor IDE",
     "type": "module",
     "main": "bin/index.js",
