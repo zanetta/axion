@@ -43,7 +43,7 @@ Falha (exit 1) quando:
 | `--skip-checklist` | Não executa `checklist.py` |
 | `--checklist` | Caminho alternativo do checklist (padrão: `.cursor/scripts/checklist.py`) |
 
-Testes: `cli/test/verify-gate.test.js` (10 casos; suíte CLI 44).
+Testes: `cli/test/verify-gate.test.js` (10 casos; suíte CLI 50).
 
 ## trace_report.py
 
@@ -74,7 +74,32 @@ Um gap é qualquer um destes:
 
 Linhas de rastreabilidade que ainda são `{placeholders}` são ignoradas. O script não volta a rodar os checks do ACCEPTANCE.
 
-Testes: `cli/test/trace-report.test.js` (9 casos; suíte CLI 44).
+Testes: `cli/test/trace-report.test.js` (9 casos; suíte CLI 50).
+
+## memory_secret_scan.py
+
+Scanner de segredos antes de gravar em `.agents/memory/` (P2 X-02). `/remember` roda este script e só escreve se a saída for limpa. O relatório nomeia o padrão e a linha; nunca inclui o segredo.
+
+Varre um texto (`--text`), um arquivo, stdin (sem argumento) ou um diretório. A `.agents/memory/` deste repositório passa limpa.
+
+```bash
+python3 .cursor/scripts/memory_secret_scan.py --text "<texto>"
+python3 .cursor/scripts/memory_secret_scan.py nota.md
+python3 .cursor/scripts/memory_secret_scan.py .agents/memory
+python3 .cursor/scripts/memory_secret_scan.py --redact nota.md
+```
+
+| Exit | Significado |
+| --- | --- |
+| `0` | Limpo (`memory_secret_scan: clean`), ou `--redact` concluiu |
+| `1` | Recusado — não grave em `.agents/memory/`. O relatório lista `arquivo:linha: nome-do-padrão` e nunca o segredo |
+| `2` | `--redact` apontado para um diretório |
+
+`--redact` imprime uma cópia segura no stdout (segredos trocados por `[REDACTED]`) e a contagem no stderr. Não reescreve arquivos.
+
+Padrões: cabeçalho de chave privada, chave AWS, tokens GitHub/npm/OpenAI/Slack, JWT, Bearer, URL com `user:pass`, atribuições como `token=...`, e linhas `.env` cujo nome termina em `KEY`, `SECRET`, `TOKEN` ou `PASSWORD`. Placeholders (`example`, `changeme`, `your-token`, `<...>`, `{...}`) são ignorados.
+
+Testes: `cli/test/memory-secret-scan.test.js` (6 casos; suíte CLI 50).
 
 ## verify_all.py
 

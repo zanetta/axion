@@ -50,7 +50,7 @@ Antes de modificar QUALQUER arquivo:
 | **Shared assets**   | `.cursor/shared/` (ex.: `ui-ux-pro-max`)   |
 | **Rules globais**   | `AGENTS.md` (este arquivo) — sempre aplicado |
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |
-| **Memória persistente** | `.agents/memory/MEMORY.md` |
+| **Memória persistente** | `.agents/memory/MEMORY.md` — `memory_secret_scan.py` antes de gravar |
 | **Estado do kit (`.axion/`)** | `.axion/kit.manifest.json` — SemVer + profile; gravado no `init`/`update`; lido pelo `status` |
 | **Inventário** | `.axion/inventory.json` — `python3 .cursor/scripts/generate_inventory.py .` |
 | **Templates SDD** | SPEC/PLAN: `.agents/skills/plan-writing/templates/`; ACCEPTANCE: `.agents/skills/verify-changes/templates/` |

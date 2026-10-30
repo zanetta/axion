@@ -5,7 +5,7 @@ Documento de engenharia: evoluir o **Axion** de um pack instalável de agents e 
 | | |
 | --- | --- |
 | **Estado atual** | Pack de agents (`.claude/agents/`), skills (`.agents/skills/`), commands (`.cursor/commands/`), rules (`.cursor/rules/`), memória (`.agents/memory/`), scripts (`.cursor/scripts/`) e CLI npm `@zanetta/axion` (`cli/`) |
-| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) em andamento** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install, **W-03** ✅ (`verify_gate.py`), **O-02** ✅ (`trace_report.py`) |
+| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) em andamento** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install, **W-03** ✅ (`verify_gate.py`), **O-02** ✅ (`trace_report.py`), **X-02** ✅ (`memory_secret_scan.py`) |
 | **Público** | Maintainers do kit e consumidores que instalam via `npx @zanetta/axion` |
 
 ### Objetivo
@@ -99,7 +99,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ✅ X-01 | P1 | Profile / flag para skills ofensivas | `red-team-tactics`, agent `penetration-tester` (e refs em `security-auditor`) só instalam ou só ativam com `--profile security` ou `--enable-offensive`. Default off em `minimal`/`standard`. | Superfície ofensiva sempre disponível no pack full. | Profiles D-02; `.agents/skills/red-team-tactics/`; `.claude/agents/penetration-tester.md`; nota em `.cursor/rules/security.mdc` | M | D-02 | **DONE** — `--enable-offensive` / profile `security`; senão não copiados (filtro em `cli/lib/install.js` + `profiles.js`) + `.axion/OFFENSIVE_DISABLED.md` |
-| X-02 | P2 | Memory secret scanner | Antes de escrever em `.agents/memory/**`, scanear padrões de secrets (tokens, keys, `.env` values); recusar ou redigir. | Memory persiste texto livre (`/remember`, `memory-system`). | `.agents/skills/memory-system/`; script `.cursor/scripts/memory_secret_scan.py`; `.cursor/commands/remember.md` | M | — | — |
+| ✅ X-02 | P2 | Memory secret scanner | Antes de escrever em `.agents/memory/**`, scanear padrões de secrets (tokens, keys, `.env` values); recusar ou redigir. | Memory persiste texto livre (`/remember`, `memory-system`). | `.agents/skills/memory-system/`; script `.cursor/scripts/memory_secret_scan.py`; `.cursor/commands/remember.md` | M | — | **DONE** — `python3 .cursor/scripts/memory_secret_scan.py` varre texto (`--text`), arquivo, stdin ou diretório antes de gravar em `.agents/memory/`. Exit 0: limpo (`memory_secret_scan: clean`). Exit 1: recusa — o relatório lista `arquivo:linha: nome-do-padrão` e nunca o segredo. Exit 2: `--redact` num diretório. `--redact` imprime cópia segura no stdout (segredos viram `[REDACTED]`) e a contagem no stderr; não reescreve arquivos. Padrões: cabeçalho de chave privada, chave AWS, tokens GitHub/npm/OpenAI/Slack, JWT, Bearer, URL `user:pass`, atribuições `token=...`, linhas `.env` cujo nome termina em KEY/SECRET/TOKEN/PASSWORD. Placeholders (`example`, `changeme`, `your-token`, `<...>`, `{...}`) são ignorados. `/remember` roda o scan antes de escrever. A `.agents/memory/` deste repo passa limpa. Testes: `cli/test/memory-secret-scan.test.js` (6 casos; suíte CLI 50). |
 | X-03 | P2 | Allowlist de side_effects | Contratos K-02 declaram side effects; orchestrator/coordinator não grava fora de allowlist do PLAN. | Reduz blast radius de batch-operations / skills de write. | Convenção nos contracts + texto em `coordinator-mode` | S | K-02, S-02 | — |
 
 ### 8. Eval
@@ -133,11 +133,12 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 ### Fase 2 — Maturidade (P2) — 🚧 EM ANDAMENTO
 
-**Primeiro bloco ✅ (2026-10-30):** **Q-04 + Q-02 + E-03** — pre-publish gate, lint de contratos em 100% do pack e smoke pós-install (E-03 antecipado da Fase 3). Release `v1.1.0`. **Q-03** ✅ — paridade doc/inventário (`lint_inventory.py`). **W-03** ✅ — verify hard-gate (`verify_gate.py`, exit code real). **O-02** ✅ — cobertura SPEC→ACCEPTANCE (`trace_report.py`; não reexecuta checks).
+**Primeiro bloco ✅ (2026-10-30):** **Q-04 + Q-02 + E-03** — pre-publish gate, lint de contratos em 100% do pack e smoke pós-install (E-03 antecipado da Fase 3). Release `v1.1.0`. **Q-03** ✅ — paridade doc/inventário (`lint_inventory.py`). **W-03** ✅ — verify hard-gate (`verify_gate.py`, exit code real). **O-02** ✅ — cobertura SPEC→ACCEPTANCE (`trace_report.py`; não reexecuta checks). **X-02** ✅ — secret scan antes de gravar em `.agents/memory/` (`memory_secret_scan.py`; a saída nunca inclui o segredo).
 
 1. **W-03** ✅ — Verify hard-gate.
 2. **Q-02** ✅, **Q-03** ✅, **Q-04** ✅ — Contracts CI, parity docs, pre-publish.
-3. **O-02** ✅ — relatório de rastreabilidade (`trace_report.py`). Próximo: **X-02 → D-03/D-04/O-01 → X-03** — secret scan na memory, update/status e allowlist de side effects.
+3. **O-02** ✅ — relatório de rastreabilidade (`trace_report.py`).
+4. **X-02** ✅ — secret scan na memory (`memory_secret_scan.py`). Próximo: **D-03/D-04/O-01 → X-03** — update/status, log de sessão e allowlist de side effects.
 
 *Saída:* kit “shippable” com CI de conteúdo e observabilidade local.
 
@@ -176,7 +177,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | Memory | `.agents/memory/MEMORY.md` |
 | Commands | `.cursor/commands/` |
 | Rules | `.cursor/rules/*.mdc` |
-| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_gate.py`, `trace_report.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
+| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_gate.py`, `trace_report.py`, `memory_secret_scan.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
 | Schemas de contrato | `.agents/schemas/` (`skill-contract.schema.json`, `command-contract.schema.json`) |
 | Templates SDD | `.agents/skills/plan-writing/templates/` (SPEC, PLAN); `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` |
 | Manifesto instalado | `.axion/kit.manifest.json` (escrito pelo CLI) |
@@ -192,5 +193,5 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 ## Como usar este backlog
 
 1. Abrir issue/PR por **ID** (ex.: `Q-01`).
-2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). 🚧 Fase 2: primeiro bloco fechado (**Q-04, Q-02, E-03**); **Q-03** ✅; **W-03** ✅; **O-02** ✅. Próximo: **X-02 → D-03/D-04/O-01 → X-03**.
+2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). 🚧 Fase 2: primeiro bloco fechado (**Q-04, Q-02, E-03**); **Q-03** ✅; **W-03** ✅; **O-02** ✅; **X-02** ✅. Próximo: **D-03/D-04/O-01 → X-03**.
 3. Toda mudança de path ou contrato deve atualizar este arquivo só se prioridade/escopo mudar — senão atualizar inventário/manifesto gerados.
