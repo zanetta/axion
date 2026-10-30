@@ -5,7 +5,7 @@ Documento de engenharia: evoluir o **Axion** de um pack instalável de agents e 
 | | |
 | --- | --- |
 | **Estado atual** | Pack de agents (`.claude/agents/`), skills (`.agents/skills/`), commands (`.cursor/commands/`), rules (`.cursor/rules/`), memória (`.agents/memory/`), scripts (`.cursor/scripts/`) e CLI npm `@zanetta/axion` (`cli/`) |
-| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init` |
+| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto `.axion/kit.manifest.json`, schemas em `.agents/schemas/`, `lint_paths.py` + CI |
 | **Público** | Maintainers do kit e consumidores que instalam via `npx @zanetta/axion` |
 
 ### Objetivo
@@ -43,12 +43,12 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 ### 1. Kernel / Manifest
 
-| ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| K-01 | P0 | Manifesto do kit instalado | Introduzir arquivo de manifesto com versão SemVer do kit, data de install/update, perfil aplicado e checksum/lista de componentes. Gravado no projeto consumidor pelo CLI. | Hoje `status`/`update` não têm fonte canônica de “qual kit está instalado”; SemVer npm ≠ estado no repo. | `.axion/kit.manifest.json` (ou `.cursor/axion.manifest.json`); escrita em `cli/lib/install.js`; leitura em `cli/bin/index.js` (`status`/`update`) | M | — |
-| K-02 | P0 | Schema de contrato de skill | Definir frontmatter/schema obrigatório além do atual (`name`, `description`): `inputs`, `outputs`, `preconditions`, `postconditions`, `side_effects`, `forbidden_paths`, `verify_hooks`. Skills passam de procedimento para contrato. | Skills em `.agents/skills/*/SKILL.md` são narrativas; não há máquina de verificação. | `.agents/schemas/skill-contract.schema.json`; atualizar skills-piloto: `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode` | M | — |
-| K-03 | P0 | Schema de contrato de command | Espelhar contratos nos workflows `.cursor/commands/*.md`: estados permitidos, artefatos obrigatórios de saída, scripts canônicos (só `.cursor/scripts/`). | Commands misturam instrução e path legado (`.agents/scripts`). | `.agents/schemas/command-contract.schema.json`; alinhar `/plan`, `/verify`, `/status`, `/orchestrate` | M | K-02 |
-| K-04 | P1 | Inventário versionado de componentes | Gerar inventário machine-readable de agents/skills/commands/rules/scripts a partir do repo, consumido por sync e status. | `.cursor/ARCHITECTURE.md` e counts driftam; `sync_upstream.py` precisa de fonte única. | `.axion/inventory.json` gerado por script; hook opcional no CI | M | K-01 |
+| ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ✅ K-01 | P0 | Manifesto do kit instalado | Introduzir arquivo de manifesto com versão SemVer do kit, data de install/update, perfil aplicado e checksum/lista de componentes. Gravado no projeto consumidor pelo CLI. | Hoje `status`/`update` não têm fonte canônica de “qual kit está instalado”; SemVer npm ≠ estado no repo. | `.axion/kit.manifest.json` (ou `.cursor/axion.manifest.json`); escrita em `cli/lib/install.js`; leitura em `cli/bin/index.js` (`status`/`update`) | M | — | **DONE** — `cli/lib/manifest.js` grava `.axion/kit.manifest.json` no `init`/`update` |
+| ✅ K-02 | P0 | Schema de contrato de skill | Definir frontmatter/schema obrigatório além do atual (`name`, `description`): `inputs`, `outputs`, `preconditions`, `postconditions`, `side_effects`, `forbidden_paths`, `verify_hooks`. Skills passam de procedimento para contrato. | Skills em `.agents/skills/*/SKILL.md` são narrativas; não há máquina de verificação. | `.agents/schemas/skill-contract.schema.json`; atualizar skills-piloto: `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode` | M | — | **DONE** — schema + frontmatter piloto nas 4 skills |
+| ✅ K-03 | P0 | Schema de contrato de command | Espelhar contratos nos workflows `.cursor/commands/*.md`: estados permitidos, artefatos obrigatórios de saída, scripts canônicos (só `.cursor/scripts/`). | Commands misturam instrução e path legado (`.agents/scripts`). | `.agents/schemas/command-contract.schema.json`; alinhar `/plan`, `/verify`, `/status`, `/orchestrate` | M | K-02 | **DONE** — schema + frontmatter piloto em `/plan`, `/verify`, `/status`, `/orchestrate` |
+| K-04 | P1 | Inventário versionado de componentes | Gerar inventário machine-readable de agents/skills/commands/rules/scripts a partir do repo, consumido por sync e status. | `.cursor/ARCHITECTURE.md` e counts driftam; `sync_upstream.py` precisa de fonte única. | `.axion/inventory.json` gerado por script; hook opcional no CI | M | K-01 | — |
 
 ### 2. Spec artifacts
 
@@ -70,21 +70,21 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 ### 4. Quality / CI
 
-| ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Q-01 | P0 | Lint de path drift | Scanner CI que falha se docs/commands/skills referenciam `.agents/scripts/` em vez de `.cursor/scripts/` (exceto menção histórica em ARCHITECTURE). Corrigir ocorrências atuais (`enhance.md`, `preview.md`, `status.md`). | Drift já conhecido; `sync_upstream.py` remapeia no sync, mas o pack shippa paths quebrados. | `.cursor/scripts/lint_paths.py`; job em `.github/workflows/`; fix nos commands afetados | S | — |
-| Q-02 | P2 | Validador de contratos | CI valida frontmatter das skills/commands contra schemas K-02/K-03; falha em skills-piloto, depois em 100%. | Contratos sem CI viram doc morta. | Extensão de `lint_paths.py` ou `.cursor/scripts/lint_contracts.py`; testes em `cli/test/` | M | K-02, K-03 |
-| Q-03 | P2 | Doc-inventory parity | Diff ARCHITECTURE counts vs filesystem (agents/skills/commands/rules/scripts); falha se divergir. | Doc drift é fraqueza explícita. | Script + referência a `.cursor/ARCHITECTURE.md` | S | K-04 |
-| Q-04 | P2 | Hook pre-publish | Antes de tag `v*`, rodar lint paths + contracts + `cli` tests (além do workflow publish atual). | Publish npm já existe; falta gate de conteúdo do pack. | `.github/workflows/publish-npm.yml` ou workflow `ci.yml` | S | Q-01, Q-02 |
+| ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ✅ Q-01 | P0 | Lint de path drift | Scanner CI que falha se docs/commands/skills referenciam `.agents/scripts/` em vez de `.cursor/scripts/` (exceto menção histórica em ARCHITECTURE). Corrigir ocorrências atuais (`enhance.md`, `preview.md`, `status.md`). | Drift já conhecido; `sync_upstream.py` remapeia no sync, mas o pack shippa paths quebrados. | `.cursor/scripts/lint_paths.py`; job em `.github/workflows/`; fix nos commands afetados | S | — | **DONE** — `lint_paths.py` + `.github/workflows/ci.yml` |
+| Q-02 | P2 | Validador de contratos | CI valida frontmatter das skills/commands contra schemas K-02/K-03; falha em skills-piloto, depois em 100%. | Contratos sem CI viram doc morta. | Extensão de `lint_paths.py` ou `.cursor/scripts/lint_contracts.py`; testes em `cli/test/` | M | K-02, K-03 | — |
+| Q-03 | P2 | Doc-inventory parity | Diff ARCHITECTURE counts vs filesystem (agents/skills/commands/rules/scripts); falha se divergir. | Doc drift é fraqueza explícita. | Script + referência a `.cursor/ARCHITECTURE.md` | S | K-04 | — |
+| Q-04 | P2 | Hook pre-publish | Antes de tag `v*`, rodar lint paths + contracts + `cli` tests (além do workflow publish atual). | Publish npm já existe; falta gate de conteúdo do pack. | `.github/workflows/publish-npm.yml` ou workflow `ci.yml` | S | Q-01, Q-02 | — |
 
 ### 5. DX / CLI
 
-| ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| D-01 | P0 | SemVer do kit no projeto | `init`/`update` gravam versão do pacote npm + git SHA do template no manifesto; `status` exibe installed vs latest registry. | Usuário não sabe se o projeto está atrás do registry. | `cli/lib/install.js`, `cli/bin/index.js`; campo em K-01 | S | K-01 |
-| D-02 | P1 | Profiles no `init` | Profiles: `minimal` (AGENTS + core skills + rules), `standard` (atual full), `security` (inclui offensive sob opt-in), `fullstack` / `mobile` (subsets). Default: `standard`. | Install full sempre aumenta superfície (red-team sempre disponível). | `cli/lib/profiles.js`; flags `--profile`; docs em `cli/README.md` | L | K-01, X-01 |
-| D-03 | P2 | `update` consciente de manifesto | `update` compara manifesto, lista drift de arquivos locais vs pack, oferece merge/force por path; não sobrescreve SPEC/PLAN do usuário. | Update atual é cópia/merge grosseiro. | `cli/lib/install.js`; testes `cli/test/` | M | K-01, D-01 |
-| D-04 | P2 | Doctor / status enriquecido | `/status` + CLI `status`: versão kit, profile, path lint summary, memory index size, último verify. | Observabilidade do kit instalado é fraca. | `.cursor/commands/status.md`; `cli/bin/index.js`; `.cursor/scripts/session_manager.py` | M | K-01, O-01 |
+| ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ✅ D-01 | P0 | SemVer do kit no projeto | `init`/`update` gravam versão do pacote npm + git SHA do template no manifesto; `status` exibe installed vs latest registry. | Usuário não sabe se o projeto está atrás do registry. | `cli/lib/install.js`, `cli/bin/index.js`; campo em K-01 | S | K-01 | **DONE** — manifesto + `status` com versão vs registry |
+| D-02 | P1 | Profiles no `init` | Profiles: `minimal` (AGENTS + core skills + rules), `standard` (atual full), `security` (inclui offensive sob opt-in), `fullstack` / `mobile` (subsets). Default: `standard`. | Install full sempre aumenta superfície (red-team sempre disponível). | `cli/lib/profiles.js`; flags `--profile`; docs em `cli/README.md` | L | K-01, X-01 | — |
+| D-03 | P2 | `update` consciente de manifesto | `update` compara manifesto, lista drift de arquivos locais vs pack, oferece merge/force por path; não sobrescreve SPEC/PLAN do usuário. | Update atual é cópia/merge grosseiro. | `cli/lib/install.js`; testes `cli/test/` | M | K-01, D-01 | — |
+| D-04 | P2 | Doctor / status enriquecido | `/status` + CLI `status`: versão kit, profile, path lint summary, memory index size, último verify. | Observabilidade do kit instalado é fraca. | `.cursor/commands/status.md`; `cli/bin/index.js`; `.cursor/scripts/session_manager.py` | M | K-01, O-01 | — |
 
 ### 6. Observability
 
@@ -114,11 +114,11 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 ## Roadmap recomendado (fases)
 
-### Fase 0 — Fundação (P0)
+### Fase 0 — Fundação (P0) — ✅ CONCLUÍDA (2026-10-30)
 
-1. **Q-01** — Corrigir path drift e adicionar `lint_paths.py` + CI.
-2. **K-01 + D-01** — Manifesto + SemVer do kit instalado no `status`/`update`.
-3. **K-02 + K-03** — Schemas de contrato (skills/commands) e piloto em 4 skills + 4 commands.
+1. **Q-01** ✅ — `lint_paths.py` + CI (`.github/workflows/ci.yml`); commands `enhance`/`preview`/`status` corrigidos.
+2. **K-01 + D-01** ✅ — `.axion/kit.manifest.json` via `cli/lib/manifest.js`; `init`/`update` gravam; `status` exibe versão/profile vs registry.
+3. **K-02 + K-03** ✅ — schemas em `.agents/schemas/`; piloto: skills `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode` + commands `/plan`, `/verify`, `/status`, `/orchestrate`.
 
 *Saída:* pack com paths corretos, versão observável, contratos versionados.
 
@@ -175,9 +175,12 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | Memory | `.agents/memory/MEMORY.md` |
 | Commands | `.cursor/commands/` |
 | Rules | `.cursor/rules/*.mdc` |
-| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_all.py`, `sync_upstream.py`, `session_manager.py`, `auto_preview.py`) |
+| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `session_manager.py`, `auto_preview.py`) |
+| Schemas de contrato | `.agents/schemas/` (`skill-contract.schema.json`, `command-contract.schema.json`) |
+| Manifesto instalado | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | Arquitetura | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `AGENTS.md` |
 | CLI | `cli/` → `@zanetta/axion` (`init`, `update`, `status`) |
+| CI | `.github/workflows/ci.yml` (path lint + CLI tests) |
 | Publish | `.github/workflows/publish-npm.yml` |
 
 ---
@@ -185,5 +188,5 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 ## Como usar este backlog
 
 1. Abrir issue/PR por **ID** (ex.: `Q-01`).
-2. Não iniciar Fase 1 sem fechar **Q-01, K-01, D-01** e schemas piloto **K-02/K-03**.
+2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). Próximo: Fase 1 (SPEC/PLAN/ACCEPTANCE + profiles).
 3. Toda mudança de path ou contrato deve atualizar este arquivo só se prioridade/escopo mudar — senão atualizar inventário/manifesto gerados.

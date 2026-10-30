@@ -1,5 +1,32 @@
 ---
 description: Coordinate multiple agents for complex tasks. Use for multi-perspective analysis, comprehensive reviews, or tasks requiring different domain expertise.
+name: orchestrate
+contract_version: "1.0.0"
+sdd_states:
+  - orchestrate
+  - plan
+  - implement
+  - verify
+required_skills:
+  - parallel-agents
+  - coordinator-mode
+  - plan-writing
+required_agents:
+  - orchestrator
+  - project-planner
+required_artifacts:
+  - "{task-slug}.md"
+  - orchestration_report
+preconditions:
+  - "Minimum 3 distinct specialist agents"
+  - "Plan file before implementation phase"
+scripts:
+  - ".agents/skills/vulnerability-scanner/scripts/security_scan.py"
+  - ".agents/skills/lint-and-validate/scripts/lint_runner.py"
+side_effects:
+  - invoke-agents
+  - write-files
+  - run-shell
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.

@@ -4,6 +4,29 @@ description: Advanced multi-agent orchestration with parallel workers, synthesis
 when_to_use: "When the user needs multi-agent coordination, parallel task execution, complex multi-domain work, or when /coordinate or /orchestrate is invoked. NOT for single-domain tasks."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent
 effort: high
+contract_version: "1.0.0"
+inputs:
+  - name: multi_domain_request
+    description: Complex task requiring multiple specialist perspectives
+    required: true
+outputs:
+  - name: synthesis_report
+    description: Consolidated findings and next actions from workers
+preconditions:
+  - "Task spans more than one domain OR needs parallel research"
+  - "Coordinator does not implement as a worker"
+postconditions:
+  - "Research → Synthesis before Implementation"
+  - "Completeness verified before user report"
+side_effects:
+  - invoke-agents
+  - write-files
+  - run-shell
+forbidden_paths:
+  - ".env"
+  - "**/*credentials*"
+verify_hooks:
+  - ".cursor/scripts/checklist.py"
 ---
 
 # Coordinator Mode — Multi-Agent Orchestration

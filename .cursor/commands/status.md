@@ -1,5 +1,19 @@
 ---
 description: Display agent and project status. Progress tracking and status board.
+name: status
+contract_version: "1.0.0"
+sdd_states:
+  - status
+required_skills: []
+required_agents: []
+required_artifacts: []
+preconditions: []
+scripts:
+  - ".cursor/scripts/session_manager.py"
+  - ".cursor/scripts/auto_preview.py"
+side_effects:
+  - read-only
+  - run-shell
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
@@ -84,5 +98,5 @@ Show current project and agent status.
 ## Technical
 
 Status uses these scripts:
-- `python .agents/scripts/session_manager.py status`
-- `python .agents/scripts/auto_preview.py status`
+- `python3 .cursor/scripts/session_manager.py status`
+- `python3 .cursor/scripts/auto_preview.py status`

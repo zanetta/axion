@@ -24,6 +24,17 @@ python3 .cursor/scripts/verify_all.py .
 python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 ```
 
+## lint_paths.py
+
+Detecta referências legadas a `.agents/scripts/` (canônico: `.cursor/scripts/`):
+
+```bash
+python3 .cursor/scripts/lint_paths.py .
+python3 .cursor/scripts/lint_paths.py . --fix   # reescreve .cursor/commands/
+```
+
+Rodado no CI (`.github/workflows/ci.yml`).
+
 ## sync_upstream.py
 
 Compare ou sincronize com [zanetta/axion](https://github.com/zanetta/axion):
@@ -42,10 +53,11 @@ Adaptações automáticas ao aplicar:
 
 ## CLI npm (`cli/`)
 
-Instalar o kit em outro projeto:
+Instalar o kit em outro projeto (grava `.axion/kit.manifest.json`):
 
 ```bash
 NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init
+npx @zanetta/axion status
 ```
 
 Release automático: `.github/workflows/publish-npm.yml` (tag `v*`). Ver [`cli/README.md`](../../cli/README.md).

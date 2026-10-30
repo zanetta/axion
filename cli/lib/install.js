@@ -2,6 +2,7 @@ import path from "path";
 import fse from "fs-extra";
 import { INSTALL_PATHS, MERGE_JSON_FILES } from "./constants.js";
 import { mergeMcpJson, shouldSkipExistingFile } from "./merge.js";
+import { writeKitManifest } from "./manifest.js";
 
 function toPosixRelative(root, filePath) {
     return path.relative(root, filePath).split(path.sep).join("/");
@@ -83,6 +84,18 @@ export async function installKit(templateRoot, targetRoot, options = {}) {
 
     for (const item of INSTALL_PATHS) {
         await copyInstallItem(templateRoot, targetRoot, item, force, log);
+    }
+
+    if (options.writeManifest !== false && options.version) {
+        const manifest = await writeKitManifest(targetRoot, {
+            version: options.version,
+            profile: options.profile ?? "standard",
+            packageName: options.packageName,
+            templateSource: options.templateSource ?? null,
+            action: options.action ?? "init",
+        });
+        actions.push({ file: ".axion/kit.manifest.json", action: "installed" });
+        options.onManifest?.(manifest);
     }
 
     return actions;

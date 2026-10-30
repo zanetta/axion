@@ -1,5 +1,21 @@
 ---
 description: Verify code changes work by running them. Proves through execution, not just inspection.
+name: verify
+contract_version: "1.0.0"
+sdd_states:
+  - verify
+required_skills:
+  - verify-changes
+required_agents: []
+required_artifacts:
+  - verification_report
+preconditions:
+  - "Code changes exist to verify"
+scripts:
+  - ".cursor/scripts/checklist.py"
+side_effects:
+  - run-shell
+  - read-only
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.

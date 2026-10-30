@@ -3,6 +3,26 @@ name: plan-writing
 description: Structured task planning with clear breakdowns, dependencies, and verification criteria. Use when implementing features, refactoring, or any multi-step work.
 when_to_use: "When creating structured task plans, breaking down features into tasks, or defining verification criteria. Use with /plan workflow."
 allowed-tools: Read, Glob, Grep
+contract_version: "1.0.0"
+inputs:
+  - name: scoped_request
+    description: Clarified request after Socratic Gate / brainstorm
+    required: true
+outputs:
+  - name: plan_file
+    description: "{task-slug}.md in project root with tasks, deps, verification"
+preconditions:
+  - "Socratic Gate completed or requirements already clear"
+  - "No application code written in this step"
+postconditions:
+  - "Plan file exists at project root with verifiable tasks"
+  - "Critical path and verification phase present"
+side_effects:
+  - write-files
+forbidden_paths:
+  - "node_modules/**"
+  - ".env"
+verify_hooks: []
 ---
 
 # Plan Writing

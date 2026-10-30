@@ -46,13 +46,15 @@ Antes de modificar QUALQUER arquivo:
 | **Skills**          | `.agents/skills/<name>/SKILL.md`           |
 | **Workflows**       | `.cursor/commands/<name>.md` (`/<name>`)   |
 | **MCP**             | `.cursor/mcp.json`                         |
-| **Runtime scripts** | `.cursor/scripts/` (master) e `.agents/skills/<x>/scripts/` (por skill) |
+| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_all.py`, `lint_paths.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
 | **Shared assets**   | `.cursor/shared/` (ex.: `ui-ux-pro-max`)   |
 | **Rules globais**   | `AGENTS.md` (este arquivo) — sempre aplicado |
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |
 | **Memória persistente** | `.agents/memory/MEMORY.md` |
+| **Estado do kit (`.axion/`)** | `.axion/kit.manifest.json` — SemVer + profile; gravado no `init`/`update`; lido pelo `status` |
+| **Contratos (schemas)** | `.agents/schemas/` — `skill-contract.schema.json`, `command-contract.schema.json` |
 | **CLI npm (instalar kit)** | `npx @zanetta/axion init` · código em `cli/` |
-| **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md` |
+| **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md`, `upgrade.md` |
 | **MCP env vars**    | `.env` (no `.gitignore`); template em `.env.example` |
 
 > O Cursor lê `.agents/skills/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md` nativamente.
@@ -122,6 +124,7 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 | **Pre-Deploy**   | `python3 .cursor/scripts/checklist.py . --url <URL>`    | Suite completa + Performance |
 | **Verify All**   | `python3 .cursor/scripts/verify_all.py .`               | Auditoria abrangente         |
 | **Sync**         | `python3 .cursor/scripts/sync_upstream.py --apply`      | Paridade com zanetta/axion   |
+| **Path lint**    | `python3 .cursor/scripts/lint_paths.py .`               | Drift `.agents/scripts/`     |
 
 **Ordem de prioridade**: Segurança → Lint → Schema → Tests → UX → SEO → Lighthouse/E2E.
 

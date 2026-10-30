@@ -14,7 +14,9 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 4 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 6 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Schemas de contrato** | 2 | `.agents/schemas/` |
+| **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **MCP** | — | `.cursor/mcp.json` |
 | **Assets compartilhados** | — | `.cursor/shared/` (ex.: `ui-ux-pro-max`) |
 
@@ -30,16 +32,19 @@ axion/
 ├── package.json                 # Monorepo (workspace cli/)
 ├── .npmrc                       # @zanetta → registry.npmjs.org
 ├── cli/                         # Pacote npm @zanetta/axion
-├── .github/workflows/           # publish-npm.yml (release por tag v*)
+├── .github/workflows/           # ci.yml + publish-npm.yml (tag v*)
+├── .axion/                      # Estado do kit no projeto consumidor
+│   └── kit.manifest.json        # SemVer, profile, checksums (gerado pelo CLI)
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
+│   ├── schemas/                 # Contratos JSON Schema (skill + command)
 │   ├── skills/                  # 45 skills top-level (+ sub-skills game-dev)
 │   └── memory/                  # Memória cross-session (MEMORY.md + tópicos)
 └── .cursor/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 14 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
-    ├── scripts/                 # checklist, verify_all, sync_upstream, …
+    ├── scripts/                 # checklist, verify_all, lint_paths, sync_upstream, …
     ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
@@ -54,8 +59,41 @@ axion/
 | Binário | `axion` |
 | Comandos CLI | `init`, `update`, `status` |
 | Install default | Full + merge (`mcp.json`, rules) |
-| CI publish | `.github/workflows/publish-npm.yml` on tag `v*` |
+| Manifesto | `.axion/kit.manifest.json` (SemVer, profile, components) |
+| Contratos | `.agents/schemas/skill-contract.schema.json`, `command-contract.schema.json` |
+| Observabilidade SemVer | `init`/`update` gravam o manifesto; `status` compara installed vs latest no registry |
+| CI | `.github/workflows/ci.yml` (lint_paths + tests) · publish on tag `v*` |
 | Docs CLI | [`cli/README.md`](../cli/README.md) |
+
+---
+
+## 📜 Contratos, manifesto e path lint (P0)
+
+### `.axion/kit.manifest.json`
+
+Gerado no projeto consumidor por `npx @zanetta/axion init|update` (`cli/lib/manifest.js`). Fonte canônica da versão do kit **instalada no repo** (independente da versão do binário npm em uso na máquina).
+
+Campos principais: `schema_version`, `package`, `version`, `profile`, `installed_at`, `updated_at`, `last_action`, `template_source`, `components`, `install_paths`, `checksums`.
+
+### `.agents/schemas/`
+
+| Schema | Uso |
+| --- | --- |
+| `skill-contract.schema.json` | Frontmatter de `.agents/skills/*/SKILL.md` — `inputs`, `outputs`, `preconditions`, `postconditions`, `side_effects`, `forbidden_paths`, `verify_hooks` |
+| `command-contract.schema.json` | Frontmatter de `.cursor/commands/*.md` — `sdd_states`, `required_artifacts`, `scripts` (só `.cursor/scripts/` ou scripts da skill) |
+
+Piloto P0: skills `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode`; commands `/plan`, `/verify`, `/status`, `/orchestrate`. Validação CI em massa fica para Q-02.
+
+### `lint_paths.py`
+
+Scanner de drift de path: falha se docs/commands/skills referenciam o legado `.agents/scripts/` em vez do canônico `.cursor/scripts/`.
+
+```bash
+python3 .cursor/scripts/lint_paths.py .
+python3 .cursor/scripts/lint_paths.py . --fix   # reescreve só .cursor/commands/
+```
+
+Job CI: `.github/workflows/ci.yml`.
 
 ---
 
@@ -221,6 +259,11 @@ name: skill-name
 description: O que a skill faz
 when_to_use: "Quando ativar. NOT for X."
 allowed-tools: Read, Grep, Glob
+# Contrato (ver .agents/schemas/skill-contract.schema.json)
+contract_version: "1.0.0"
+inputs: []
+outputs: []
+side_effects: [read-only]
 ---
 ```
 
@@ -232,7 +275,8 @@ allowed-tools: Read, Grep, Glob
 | --- | --- |
 | `checklist.py` | Validação core (dev, pre-commit) |
 | `verify_all.py` | Suite completa (pre-deploy) |
-| `sync_upstream.py` | Compare/sync com [zanetta/axion](https://github.com/zanetta/axion) |
+| `sync_upstream.py` | Compare/sync com upstream |
+| `lint_paths.py` | Fail CI se path legado `.agents/scripts/` |
 | `@zanetta/axion` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
 | `session_manager.py` | Gestão de sessão |
 | `auto_preview.py` | Preview automático |
@@ -246,11 +290,15 @@ python3 .cursor/scripts/checklist.py .
 # Verificação completa
 python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 
-# Sync com zanetta/axion
+# Sync com upstream
 python3 .cursor/scripts/sync_upstream.py --apply
 
-# Instalar kit em outro projeto (CLI npm)
+# Lint de path drift (P0)
+python3 .cursor/scripts/lint_paths.py .
+
+# Instalar kit (grava .axion/kit.manifest.json) e inspecionar SemVer
 npx @zanetta/axion init
+npx @zanetta/axion status
 ```
 
 Skill-level scripts ficam em `.agents/skills/<skill>/scripts/`.
@@ -266,7 +314,8 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 5 |
+| Scripts em `.cursor/scripts/` | 6 |
+| Schemas (`.agents/schemas/`) | 2 |
 | CLI npm | `@zanetta/axion` |
 | Regras por domínio | 7 |
 | Cobertura | ~95% web/mobile + orquestração |

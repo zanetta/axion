@@ -15,6 +15,7 @@ import {
     TEMP_FOLDER,
 } from "../lib/constants.js";
 import { installKit, isKitInstalled } from "../lib/install.js";
+import { readKitManifest } from "../lib/manifest.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -195,6 +196,11 @@ const runInstall = async (options) => {
 
         await installKit(tempDir, targetDir, {
             force,
+            version: pkg.version,
+            packageName: PACKAGE_NAME,
+            profile: "standard",
+            templateSource: source,
+            action: installed ? "update" : "init",
             onAction: (_file, action) => {
                 if (summary[action] !== undefined) summary[action] += 1;
             },
@@ -213,6 +219,7 @@ const runInstall = async (options) => {
             console.log(`   Merged:      ${chalk.cyan(summary.merged)}`);
             console.log(`   Skipped:     ${chalk.yellow(summary.skipped)}`);
             console.log(`   Overwritten: ${chalk.red(summary.overwritten)}`);
+            console.log(`   Manifest:    ${chalk.cyan(".axion/kit.manifest.json")} @ ${pkg.version}`);
             console.log(chalk.gray("────────────────────────────────────────"));
             console.log(chalk.white("\nNext steps:"));
             console.log(`   1. ${chalk.cyan("cp .env.example .env")} and set CONTEXT7_API_KEY (optional)`);
@@ -250,27 +257,57 @@ const statusCommand = async (options) => {
 
     const installed = await isKitInstalled(targetDir);
 
-    if (installed) {
-        console.log(chalk.green("\n[OK] Kit installed"));
-        console.log(chalk.gray("────────────────────────────────────────"));
-        for (const p of [".claude/agents", ".agents/skills", ".cursor/commands", "AGENTS.md"]) {
-            const full = path.join(targetDir, p);
-            const ok = await fse.pathExists(full);
-            console.log(`  ${ok ? chalk.green("✓") : chalk.red("✗")} ${p}`);
-        }
-        console.log(chalk.gray("────────────────────────────────────────\n"));
-    } else {
+    if (!installed) {
         console.log(chalk.red("\n[X] Kit not installed (or incomplete)"));
         console.log(
             chalk.yellow(`Run ${chalk.cyan(`npx ${PACKAGE_NAME} init`)} to install.\n`),
         );
+        const latestVersion = await updatePromise;
+        if (latestVersion) showUpdateNotification(latestVersion);
+        return;
     }
+
+    console.log(chalk.green("\n[OK] Kit installed"));
+    console.log(chalk.gray("────────────────────────────────────────"));
+    for (const p of [
+        ".claude/agents",
+        ".agents/skills",
+        ".cursor/commands",
+        "AGENTS.md",
+        ".axion/kit.manifest.json",
+    ]) {
+        const full = path.join(targetDir, p);
+        const ok = await fse.pathExists(full);
+        console.log(`  ${ok ? chalk.green("✓") : chalk.red("✗")} ${p}`);
+    }
+
+    const manifest = await readKitManifest(targetDir);
+    if (manifest) {
+        console.log(chalk.gray("────────────────────────────────────────"));
+        console.log(`Installed kit: ${chalk.cyan(manifest.version)} (profile: ${manifest.profile})`);
+        console.log(`Updated at:    ${chalk.gray(manifest.updated_at)}`);
+        if (manifest.components) {
+            console.log(
+                `Components:    agents=${manifest.components.agents} skills=${manifest.components.skills} commands=${manifest.components.commands} rules=${manifest.components.rules}`,
+            );
+        }
+    } else {
+        console.log(chalk.yellow("  (no .axion/kit.manifest.json — re-run init/update to create)"));
+    }
+    console.log(chalk.gray("────────────────────────────────────────\n"));
 
     const latestVersion = await updatePromise;
     if (latestVersion) {
+        if (manifest && latestVersion !== manifest.version) {
+            console.log(
+                chalk.yellow(
+                    `Update available: installed ${manifest.version} → registry ${latestVersion}\n`,
+                ),
+            );
+        }
         showUpdateNotification(latestVersion);
     } else if (!options.quiet) {
-        console.log(chalk.green("[OK] CLI is on the latest published version.\n"));
+        console.log(chalk.green("[OK] CLI / kit appear up to date with registry.\n"));
     }
 };
 

@@ -16,12 +16,32 @@ npx @zanetta/axion status
 
 `init` instala no **diretório atual** (`cwd`). Para outro path: `init --path ~/dev/meu-app`.
 
+## Manifesto e status (SemVer)
+
+`init` e `update` gravam **`.axion/kit.manifest.json`** no projeto (via `cli/lib/manifest.js`). O arquivo **não** vem do template do pack — é estado local do kit instalado.
+
+| Campo (resumo) | Significado |
+| --- | --- |
+| `version` | SemVer do pacote `@zanetta/axion` usado no install/update |
+| `profile` | Profile aplicado (hoje: `standard`) |
+| `installed_at` / `updated_at` | Timestamps ISO |
+| `components` | Contagem de agents, skills, commands, rules |
+| `checksums` | Hash parcial de `AGENTS.md` (expansível) |
+
+`npx @zanetta/axion status` lê o manifesto e mostra:
+
+- versão **instalada** no projeto (+ profile)
+- comparação com a versão **latest** no registry npm (quando a rede responde)
+
+Se o manifesto não existir (install antigo), rode `init`/`update` de novo para criá-lo.
+
 ## Install scope (full)
 
 - `.claude/agents/`
-- `.agents/` (skills + memory)
+- `.agents/` (skills + memory + `schemas/`)
 - `.cursor/` (commands, rules, scripts, mcp, shared)
 - `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`
+- **`.axion/kit.manifest.json`** — gravado pelo CLI (não vem do template)
 
 ## Merge behavior (default)
 

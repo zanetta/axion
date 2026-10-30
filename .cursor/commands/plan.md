@@ -1,5 +1,22 @@
 ---
 description: Create project plan using project-planner agent. No code writing - only plan file generation.
+name: plan
+contract_version: "1.0.0"
+sdd_states:
+  - plan
+required_skills:
+  - plan-writing
+  - brainstorming
+required_agents:
+  - project-planner
+required_artifacts:
+  - "{task-slug}.md"
+preconditions:
+  - "Socratic Gate completed or requirements clear"
+scripts: []
+side_effects:
+  - write-files
+  - invoke-agents
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.

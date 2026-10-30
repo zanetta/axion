@@ -13,6 +13,9 @@ export const INSTALL_PATHS = [
     ".env.example",
 ];
 
+/** Written by CLI after install (not copied from template). */
+export const MANIFEST_RELATIVE = ".axion/kit.manifest.json";
+
 export const MERGE_JSON_FILES = new Set([".cursor/mcp.json"]);
 
 /** Env override: absolute path to repo root, or giget source (default github:zanetta/axion). */

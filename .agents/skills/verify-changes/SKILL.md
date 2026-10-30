@@ -4,6 +4,25 @@ description: Prove code works by running it, not just checking it exists. Verifi
 when_to_use: "After writing code, completing a feature, or fixing a bug. When the user says 'does this work?', 'test this', 'verify', or when /verify workflow is invoked. NOT for writing new code — for proving existing code works."
 allowed-tools: Read, Bash, Grep, Glob
 effort: medium
+contract_version: "1.0.0"
+inputs:
+  - name: change_scope
+    description: Files/behavior to verify; empty means latest session changes
+    required: false
+outputs:
+  - name: verification_report
+    description: Evidence of pass/fail with command output
+preconditions:
+  - "Code under test already exists"
+postconditions:
+  - "At least one execution-based check was run"
+  - "Report includes evidence, not assumptions"
+side_effects:
+  - run-shell
+  - read-only
+forbidden_paths: []
+verify_hooks:
+  - ".cursor/scripts/checklist.py"
 ---
 
 # Verify Changes — Prove Code Works
