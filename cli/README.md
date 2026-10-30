@@ -2,7 +2,7 @@
 
 Install the Axion kit (AG Kit port for Cursor) into any project.
 
-**npm:** `@zanetta/axion` (not published yet; previous package remains [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor))
+**npm:** [`@zanetta/axion@1.0.2`](https://www.npmjs.com/package/@zanetta/axion). O pacote anterior [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor) continua no registry.
 
 ## Usage
 

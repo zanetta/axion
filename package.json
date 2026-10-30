@@ -2,7 +2,7 @@
     "name": "@zanetta/axion",
     "version": "1.0.2",
     "private": true,
-    "description": "Axion — AG Kit port for Cursor IDE",
+    "description": "Axion — A Spec Driven Development Framework - Robust and Lightweight",
     "workspaces": [
         "cli"
     ],

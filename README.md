@@ -14,7 +14,7 @@ Este repositório inclui o pacote npm **`@zanetta/axion`** (pasta `cli/`) para i
 | 45 skills (+ sub-skills de game-dev) | `.agents/skills/` |
 | 14 slash commands (13 upstream + `/ui-ux-pro-max`) | `.cursor/commands/` |
 | 7 regras por domínio | `.cursor/rules/*.mdc` |
-| CLI npm `@zanetta/axion@1.0.0` | `cli/` · [npm](https://www.npmjs.com/package/@zanetta/axion) |
+| CLI npm `@zanetta/axion@1.0.2` | `cli/` · [npm](https://www.npmjs.com/package/@zanetta/axion) |
 | Regras globais | `AGENTS.md` |
 | Memória persistente | `.agents/memory/` |
 | Scripts de validação + sync | `.cursor/scripts/` |
@@ -81,7 +81,7 @@ npx @zanetta/axion update --force  # sobrescrever kit inteiro
 npx @zanetta/axion init --dry-run  # simular sem escrever
 ```
 
-> Pacote npm: `@zanetta/axion` (ainda não publicado). O nome anterior [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor) continua no registry. Troubleshooting (`E404`, `min-release-age`, 2FA): [`cli/README.md`](cli/README.md).
+> Pacote publicado: [`@zanetta/axion@1.0.2`](https://www.npmjs.com/package/@zanetta/axion). O nome anterior [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor) continua no registry. Troubleshooting (`E404`, `min-release-age`, 2FA): [`cli/README.md`](cli/README.md).
 
 ### Instalação npm — problemas comuns
 
