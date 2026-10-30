@@ -14,11 +14,11 @@ cp .env.example .env   # opcional — MCP Context7
 
 | Modo | Comportamento |
 | --- | --- |
-| `init` (padrão) | Profile **`standard`** + **merge** (`mcp.json`, rules existentes preservados) |
-| `init --profile <name>` | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` |
+| `init` (padrão) | Profile do manifesto (senão **`standard`**) + **merge** (`mcp.json`, rules existentes preservados) |
+| `init --profile <name>` | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (filtra na cópia; nunca apaga arquivos já instalados) |
 | `init --enable-offensive` | Inclui `red-team-tactics` + `penetration-tester` (ou use `--profile security`) |
 | `init --force` | Sobrescreve todos os arquivos do kit |
-| `update` | Baixa template atual e faz merge |
+| `update` | Baixa template atual e faz merge; herda `profile`/`enable_offensive` do manifesto |
 | `status` | Lê `.axion/kit.manifest.json` + verifica `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md` |
 
 Pacote: [`@zanetta/axion`](https://www.npmjs.com/package/@zanetta/axion) · troubleshooting: [`cli/README.md`](cli/README.md)
@@ -48,7 +48,7 @@ Exigir **um** dos seguintes:
 1. Arquivo **SPEC** preenchido a partir do template, **ou**
 2. ≥ **3** perguntas socráticas **respondidas** registradas no SPEC ou no PLAN.
 
-Sem gate → **não** avançar para plan/implement/orquestração. Detalhes: skill `brainstorming`, `AGENTS.md` § Socratic Gate.
+Sem gate → **não** avançar para plan/implement/orquestração (instrução aos agents/commands; não há bloqueio por tooling — ver E-02 em `upgrade.md`). Detalhes: skill `brainstorming`, `AGENTS.md` § Socratic Gate.
 
 Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Trace opcional: `.axion/trace/{slug}.json`.
 
@@ -221,4 +221,4 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 - Sync: `python3 .cursor/scripts/sync_upstream.py`
 - Repositório: https://github.com/zanetta/axion
 
-**Last Updated:** 2026-10-30 · **npm:** `@zanetta/axion@1.0.2` · FSM SDD P1
+**Last Updated:** 2026-10-30 · **npm:** `@zanetta/axion@1.1.0` · FSM SDD P1

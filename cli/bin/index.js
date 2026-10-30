@@ -16,7 +16,12 @@ import {
 } from "../lib/constants.js";
 import { installKit, isKitInstalled } from "../lib/install.js";
 import { readKitManifest } from "../lib/manifest.js";
-import { isValidProfile, PROFILE_NAMES } from "../lib/profiles.js";
+import {
+    isOffensiveEnabled,
+    isValidProfile,
+    PROFILE_NAMES,
+    resolveInstallSettings,
+} from "../lib/profiles.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -140,10 +145,10 @@ const printDryRun = async (targetDir, options) => {
         `  1. Download from: ${chalk.cyan(repoSource)}${options.branch ? "#" + options.branch : ""}`,
     );
     console.log(`  2. Install to: ${chalk.cyan(targetDir)}`);
-    console.log(`  3. Profile: ${chalk.cyan(options.profile || "standard")}`);
+    console.log(`  3. Profile: ${chalk.cyan(options.profile)}`);
     console.log(
         `  4. Offensive skills: ${
-            options.enableOffensive || options.profile === "security"
+            isOffensiveEnabled(options.profile, options.enableOffensive)
                 ? chalk.yellow("ON")
                 : chalk.gray("OFF")
         }`,
@@ -164,14 +169,16 @@ const runInstall = async (options) => {
     const quiet = options.quiet ?? false;
     const dryRun = options.dryRun ?? false;
     const force = options.force ?? false;
-    const profile = options.profile ?? "standard";
-    const enableOffensive = options.enableOffensive ?? false;
+    const targetDir = path.resolve(options.path || process.cwd());
+    const { profile, enableOffensive } = resolveInstallSettings(
+        options,
+        await readKitManifest(targetDir),
+    );
 
     if (!isValidProfile(profile)) {
+        const origin = options.profile === undefined ? " (from .axion/kit.manifest.json; pass --profile to override)" : "";
         console.error(
-            chalk.red(
-                `Invalid --profile "${profile}". Allowed: ${PROFILE_NAMES.join(", ")}`,
-            ),
+            chalk.red(`Invalid profile "${profile}"${origin}. Allowed: ${PROFILE_NAMES.join(", ")}`),
         );
         process.exit(1);
     }
@@ -179,7 +186,6 @@ const runInstall = async (options) => {
     showBanner(quiet);
     const updatePromise = checkUpdate(quiet);
 
-    const targetDir = path.resolve(options.path || process.cwd());
     const tempDir = path.join(targetDir, TEMP_FOLDER);
     const source = options.branch && !path.isAbsolute(repoSource)
         ? `${repoSource}#${options.branch}`
@@ -217,10 +223,9 @@ const runInstall = async (options) => {
 
         if (spinner) spinner.text = `Installing (profile: ${profile})...`;
 
-        const summary = { installed: 0, merged: 0, skipped: 0, overwritten: 0 };
-        let profileMeta = { includeOffensive: false, removed: [] };
+        const summary = { installed: 0, merged: 0, skipped: 0, overwritten: 0, excluded: 0 };
 
-        await installKit(tempDir, targetDir, {
+        const result = await installKit(tempDir, targetDir, {
             force,
             version: pkg.version,
             packageName: PACKAGE_NAME,
@@ -230,9 +235,6 @@ const runInstall = async (options) => {
             action: installed ? "update" : "init",
             onAction: (_file, action) => {
                 if (summary[action] !== undefined) summary[action] += 1;
-            },
-            onProfile: (result) => {
-                profileMeta = result;
             },
         });
 
@@ -249,12 +251,23 @@ const runInstall = async (options) => {
             console.log(`   Merged:      ${chalk.cyan(summary.merged)}`);
             console.log(`   Skipped:     ${chalk.yellow(summary.skipped)}`);
             console.log(`   Overwritten: ${chalk.red(summary.overwritten)}`);
+            console.log(`   Excluded:    ${chalk.gray(summary.excluded)} (outside profile)`);
             console.log(`   Profile:     ${chalk.cyan(profile)}`);
             console.log(
                 `   Offensive:   ${
-                    profileMeta.includeOffensive ? chalk.yellow("enabled") : chalk.gray("disabled")
+                    result.includeOffensive ? chalk.yellow("enabled") : chalk.gray("disabled")
                 }`,
             );
+            if (result.outsideProfile.length > 0) {
+                console.log(
+                    chalk.yellow(
+                        `\n   ${result.outsideProfile.length} existing kit component(s) are outside the "${profile}" profile and were kept (remove manually if unwanted):`,
+                    ),
+                );
+                for (const item of result.outsideProfile) {
+                    console.log(chalk.gray(`     - ${item}`));
+                }
+            }
             console.log(`   Manifest:    ${chalk.cyan(".axion/kit.manifest.json")} @ ${pkg.version}`);
             console.log(chalk.gray("────────────────────────────────────────"));
             console.log(chalk.white("\nNext steps:"));
@@ -366,8 +379,7 @@ program
 
 const profileOption = [
     "--profile <name>",
-    `Install profile: ${PROFILE_NAMES.join("|")} (default: standard)`,
-    "standard",
+    `Install profile: ${PROFILE_NAMES.join("|")} (default: installed profile, else standard)`,
 ];
 
 program
@@ -381,8 +393,7 @@ program
     .option(...profileOption)
     .option(
         "--enable-offensive",
-        "Keep red-team-tactics + penetration-tester (also implied by --profile security)",
-        false,
+        "Install red-team-tactics + penetration-tester (implied by --profile security)",
     )
     .action(runInstall);
 
@@ -397,8 +408,7 @@ program
     .option(...profileOption)
     .option(
         "--enable-offensive",
-        "Keep red-team-tactics + penetration-tester (also implied by --profile security)",
-        false,
+        "Install red-team-tactics + penetration-tester (implied by --profile security)",
     )
     .action(async (options) => {
         if (!options.force && !options.quiet && !options.dryRun) {

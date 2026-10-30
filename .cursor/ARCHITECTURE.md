@@ -36,9 +36,9 @@ axion/
 ├── .npmrc                       # @zanetta → registry.npmjs.org
 ├── cli/                         # Pacote npm @zanetta/axion
 ├── .github/workflows/           # ci.yml + publish-npm.yml (tag v*)
-├── .axion/                      # Estado do kit no projeto consumidor
-│   ├── kit.manifest.json        # SemVer, profile, checksums (gerado pelo CLI)
-│   ├── inventory.json           # Contagens machine-readable (generate_inventory.py)
+├── .axion/                      # Estado do kit (só trace/README.md é copiado ao consumidor)
+│   ├── kit.manifest.json        # SemVer, profile, checksums (gerado pelo CLI no consumidor)
+│   ├── inventory.json           # Contagens machine-readable (generate_inventory.py; não copiado)
 │   └── trace/                   # Traceability opcional {slug}.json
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
@@ -65,9 +65,9 @@ axion/
 | Pacote | `@zanetta/axion@1.0.2` |
 | Binário | `axion` |
 | Comandos CLI | `init`, `update`, `status` |
-| Install default | Profile `standard` + merge (`mcp.json`, rules); ver `--profile` |
+| Install default | Profile do manifesto (senão `standard`) + merge (`mcp.json`, rules); ver `--profile` |
 | Manifesto | `.axion/kit.manifest.json` (SemVer, profile, components) |
-| Profiles | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (`cli/lib/profiles.js`) |
+| Profiles | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (`cli/lib/profiles.js`; filtro na cópia em `cli/lib/install.js`, nunca apaga no alvo) |
 | Offensive | Só com `--profile security` ou `--enable-offensive` |
 | Contratos | `.agents/schemas/skill-contract.schema.json`, `command-contract.schema.json` |
 | Observabilidade SemVer | `init`/`update` gravam o manifesto; `status` compara installed vs latest no registry |
@@ -122,7 +122,7 @@ discover → specify → plan → implement → verify → remember
 | `verify` | `/verify` | ACCEPTANCE + evidência (`checklist.py`, etc.) |
 | `remember` | `/remember` | entradas em `.agents/memory/` |
 
-**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate.
+**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e gate são instruções em commands/agents (advisory), sem enforcement por tooling — eval mecânico planejado em E-02 ([`upgrade.md`](../upgrade.md)).
 
 **Paths P1:**
 

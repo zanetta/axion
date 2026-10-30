@@ -110,7 +110,7 @@ FSM: `discover → specify → plan → implement → verify → remember` (comm
 | **Orquestração total**    | **PAUSE** subagents até o usuário confirmar o plano               |
 | **"Proceed" direto**      | Mesmo com respostas, faça 2 perguntas de Edge Case antes de iniciar |
 
-**Gate enforceável:** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`).
+**Gate (instrução ao agent, sem enforcement por tooling):** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`).
 
 Protocolo:
 

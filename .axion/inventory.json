@@ -1,7 +1,5 @@
 {
-  "schema_version": "1.0.0",
-  "generated_at": "2026-10-30T02:58:31.938976+00:00",
-  "root": "/home/zanetta/dev/antigravity4cursor",
+  "schema_version": "1.1.0",
   "counts": {
     "agents": 20,
     "skills": 45,

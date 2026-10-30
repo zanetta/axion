@@ -13,6 +13,9 @@ export const INSTALL_PATHS = [
     ".env.example",
 ];
 
+/** Files copied from the template's .axion/ (everything else there belongs to the kit repo itself). */
+export const KIT_AXION_FILES = [".axion/trace/README.md"];
+
 /** Written by CLI after install (not copied from template). */
 export const MANIFEST_RELATIVE = ".axion/kit.manifest.json";
 

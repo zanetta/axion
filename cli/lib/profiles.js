@@ -1,24 +1,25 @@
-/**
- * Install profiles (P1 D-02) + offensive opt-in (P1 X-01).
- *
- * After a full template copy, prune paths not included in the profile.
- * Offensive surface (red-team / penetration-tester) is OFF unless
- * profile === "security" OR enableOffensive === true.
- */
+export const PROFILE_NAMES = ["minimal", "standard", "security", "fullstack", "mobile"];
+export const DEFAULT_PROFILE = "standard";
 
-export const PROFILE_NAMES = [
-    "minimal",
-    "standard",
-    "security",
-    "fullstack",
-    "mobile",
-];
+const OFFENSIVE_SKILLS = new Set(["red-team-tactics"]);
+const OFFENSIVE_AGENTS = new Set(["penetration-tester"]);
 
-const OFFENSIVE_SKILLS = ["red-team-tactics"];
-const OFFENSIVE_AGENTS = ["penetration-tester"];
+const MINIMAL_AGENTS = new Set([
+    "orchestrator",
+    "project-planner",
+    "debugger",
+    "test-engineer",
+    "documentation-writer",
+    "explorer-agent",
+    "code-archaeologist",
+    "security-auditor",
+    "backend-specialist",
+    "frontend-specialist",
+    "devops-engineer",
+]);
 
-/** Skills kept in minimal profile (top-level folder names). */
-const MINIMAL_SKILLS = new Set([
+/** Process skills kept in minimal even when no kept agent references them. */
+const MINIMAL_CORE_SKILLS = new Set([
     "clean-code",
     "brainstorming",
     "plan-writing",
@@ -37,106 +38,77 @@ const MINIMAL_SKILLS = new Set([
     "intelligent-routing",
     "documentation-templates",
     "code-review-checklist",
-    "bash-linux",
-    "powershell-windows",
 ]);
 
-const MINIMAL_AGENTS = new Set([
-    "orchestrator",
-    "project-planner",
-    "debugger",
-    "test-engineer",
-    "documentation-writer",
-    "explorer-agent",
-    "code-archaeologist",
-    "security-auditor",
-    "backend-specialist",
-    "frontend-specialist",
-    "devops-engineer",
-]);
+const EXCLUDED_AGENTS = {
+    fullstack: new Set(["game-developer", "mobile-developer"]),
+    mobile: new Set(["game-developer", "seo-specialist", "frontend-specialist"]),
+};
 
-const FULLSTACK_EXCLUDE_SKILLS = new Set([
-    "game-development",
-    "mobile-design",
-    "rust-pro",
-]);
+const EXCLUDED_SKILLS = {
+    fullstack: new Set(["game-development", "mobile-design"]),
+    mobile: new Set([
+        "game-development",
+        "nextjs-react-expert",
+        "tailwind-patterns",
+        "seo-fundamentals",
+        "geo-fundamentals",
+    ]),
+};
 
-const FULLSTACK_EXCLUDE_AGENTS = new Set([
-    "game-developer",
-    "mobile-developer",
-]);
-
-const MOBILE_EXCLUDE_SKILLS = new Set([
-    "game-development",
-    "nextjs-react-expert",
-    "tailwind-patterns",
-    "seo-fundamentals",
-    "geo-fundamentals",
-    "rust-pro",
-]);
-
-const MOBILE_EXCLUDE_AGENTS = new Set([
-    "game-developer",
-    "seo-specialist",
-    "frontend-specialist", // mobile-developer covers UI
-]);
-
-/**
- * @param {string} name
- * @returns {boolean}
- */
 export function isValidProfile(name) {
     return PROFILE_NAMES.includes(name);
 }
 
+export function isOffensiveEnabled(profile, enableOffensive) {
+    return profile === "security" || enableOffensive === true;
+}
+
 /**
- * Resolve exclusions for a profile.
- * @param {string} profile
- * @param {{ enableOffensive?: boolean }} opts
- * @returns {{ excludeSkillDirs: string[], excludeAgentFiles: string[], includeOffensive: boolean }}
+ * CLI flags win; otherwise inherit from the installed manifest.
+ * An explicit --profile without --enable-offensive turns offensive off (unless security).
  */
-export function resolveProfileExclusions(profile, opts = {}) {
-    const enableOffensive = opts.enableOffensive === true || profile === "security";
-    const excludeSkillDirs = new Set();
-    const excludeAgentFiles = new Set();
+export function resolveInstallSettings(options = {}, manifest = null) {
+    const profile = options.profile ?? manifest?.profile ?? DEFAULT_PROFILE;
+    let enableOffensive = manifest?.enable_offensive === true;
+    if (options.profile !== undefined) enableOffensive = false;
+    if (options.enableOffensive === true) enableOffensive = true;
+    return { profile, enableOffensive };
+}
 
-    if (profile === "minimal") {
-        // Will be computed against actual dirs — marker for "allowlist mode"
-        return {
-            mode: "allowlist",
-            allowSkills: MINIMAL_SKILLS,
-            allowAgents: MINIMAL_AGENTS,
-            excludeSkillDirs: [],
-            excludeAgentFiles: enableOffensive ? [] : [...OFFENSIVE_AGENTS.map((a) => `${a}.md`)],
-            includeOffensive: enableOffensive,
-            // still exclude offensive skills unless enabled
-            forceExcludeSkills: enableOffensive ? [] : [...OFFENSIVE_SKILLS],
-        };
-    }
+/** Reads `skills: a, b, c` from agent frontmatter. */
+export function parseAgentSkills(markdown) {
+    const frontmatter = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    const line = frontmatter?.[1].match(/^skills:[ \t]*(.+)$/m);
+    if (!line) return [];
+    return line[1].split(",").map((s) => s.trim()).filter(Boolean);
+}
 
-    if (profile === "fullstack") {
-        for (const s of FULLSTACK_EXCLUDE_SKILLS) excludeSkillDirs.add(s);
-        for (const a of FULLSTACK_EXCLUDE_AGENTS) excludeAgentFiles.add(`${a}.md`);
-    }
+/**
+ * @param {string} profile
+ * @param {{ enableOffensive?: boolean, agentSkills?: Map<string, string[]> }} opts
+ *   agentSkills: template agent name → skills declared in its frontmatter
+ */
+export function resolveProfile(profile, { enableOffensive = false, agentSkills = new Map() } = {}) {
+    const includeOffensive = isOffensiveEnabled(profile, enableOffensive);
 
-    if (profile === "mobile") {
-        for (const s of MOBILE_EXCLUDE_SKILLS) excludeSkillDirs.add(s);
-        for (const a of MOBILE_EXCLUDE_AGENTS) excludeAgentFiles.add(`${a}.md`);
-    }
-
-    // standard + security + others: full pack, then strip offensive unless allowed
-    if (!enableOffensive) {
-        for (const s of OFFENSIVE_SKILLS) excludeSkillDirs.add(s);
-        for (const a of OFFENSIVE_AGENTS) excludeAgentFiles.add(`${a}.md`);
-    }
-
-    return {
-        mode: "denylist",
-        allowSkills: null,
-        allowAgents: null,
-        excludeSkillDirs: [...excludeSkillDirs],
-        excludeAgentFiles: [...excludeAgentFiles],
-        includeOffensive: enableOffensive,
-        forceExcludeSkills: [],
+    const keepAgent = (name) => {
+        if (OFFENSIVE_AGENTS.has(name)) return includeOffensive;
+        if (profile === "minimal") return MINIMAL_AGENTS.has(name);
+        return !EXCLUDED_AGENTS[profile]?.has(name);
     };
+
+    const requiredSkills = new Set();
+    for (const [agent, skills] of agentSkills) {
+        if (keepAgent(agent)) skills.forEach((s) => requiredSkills.add(s));
+    }
+
+    const keepSkill = (name) => {
+        if (OFFENSIVE_SKILLS.has(name)) return includeOffensive;
+        if (requiredSkills.has(name)) return true;
+        if (profile === "minimal") return MINIMAL_CORE_SKILLS.has(name);
+        return !EXCLUDED_SKILLS[profile]?.has(name);
+    };
+
+    return { profile, includeOffensive, keepAgent, keepSkill };
 }

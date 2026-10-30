@@ -3,6 +3,7 @@
   "package": "@zanetta/axion",
   "version": "1.1.0",
   "profile": "standard",
+  "enable_offensive": true,
   "installed_at": "2026-10-30T02:34:24.385Z",
   "updated_at": "2026-10-30T02:34:24.385Z",
   "last_action": "init",

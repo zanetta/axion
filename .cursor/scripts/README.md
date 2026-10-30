@@ -44,7 +44,7 @@ python3 .cursor/scripts/generate_inventory.py .
 python3 .cursor/scripts/generate_inventory.py . -o /tmp/inventory.json
 ```
 
-Saída padrão: **`.axion/inventory.json`** — listas e contagens de `agents`, `skills`, `commands`, `rules`, `scripts` e `schemas`. Útil para parity com `.cursor/ARCHITECTURE.md` e para sync/`status` (fonte única de counts).
+Saída padrão: **`.axion/inventory.json`** — listas e contagens de `agents`, `skills`, `commands`, `rules`, `scripts` e `schemas` (`schema_version` 1.1.0). Saída **determinística**: sem `root` nem `generated_at`, então rodar de novo sem mudanças não gera diff. `-o` aceita caminho fora do projeto. Útil para parity com `.cursor/ARCHITECTURE.md` e para sync/`status` (fonte única de counts).
 
 ## sync_upstream.py
 
@@ -74,7 +74,7 @@ npx @zanetta/axion init --enable-offensive          # opt-in ofensivo em qualque
 npx @zanetta/axion status
 ```
 
-Profiles: `minimal` \| `standard` (default) \| `security` \| `fullstack` \| `mobile`. Release automático: `.github/workflows/publish-npm.yml` (tag `v*`). Ver [`cli/README.md`](../../cli/README.md).
+Profiles: `minimal` \| `standard` (fallback) \| `security` \| `fullstack` \| `mobile` — sem `--profile`, `init`/`update` herdam do manifesto. Release automático: `.github/workflows/publish-npm.yml` (tag `v*`). Ver [`cli/README.md`](../../cli/README.md).
 
 ## Outros
 

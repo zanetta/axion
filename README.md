@@ -2,7 +2,7 @@
 
 Framework de Spec-Driven Development (SDD) para o Cursor IDE. A especificação é a fonte da verdade; o código deriva dela.
 
-Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.0.2`](https://www.npmjs.com/package/@zanetta/axion)
+Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.1.0`](https://www.npmjs.com/package/@zanetta/axion)
 
 ---
 
@@ -22,7 +22,7 @@ O trabalho segue a FSM: **`discover → specify → plan → implement → verif
 
 **Socratic Gate:** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN.
 
-**Profiles no `init`:** `minimal` \| `standard` (default) \| `security` \| `fullstack` \| `mobile`. Superfície ofensiva só com `--profile security` ou `--enable-offensive`.
+**Profiles no `init`:** `minimal` \| `standard` (default no primeiro install; depois herdado do manifesto) \| `security` \| `fullstack` \| `mobile`. Superfície ofensiva só com `--profile security` ou `--enable-offensive`. O filtro é aplicado na cópia — trocar para um profile menor não apaga arquivos já instalados.
 
 Quem sustenta o ciclo: slash commands, 20 agents, 45 skills e `AGENTS.md`. Commands de apoio: `/debug`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
 
@@ -307,7 +307,7 @@ echo ".agents/" >> .git/info/exclude
 ├── .npmrc                    # @zanetta → registry.npmjs.org
 ├── cli/                      # @zanetta/axion
 ├── .github/workflows/        # ci.yml + publish-npm.yml (tag v*)
-├── .axion/                   # kit.manifest.json, inventory.json, trace/
+├── .axion/                   # kit.manifest.json, inventory.json, trace/ (consumidor recebe só trace/README.md)
 ├── .claude/agents/           # 20 agents
 ├── .agents/
 │   ├── schemas/              # Contratos skill/command

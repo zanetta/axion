@@ -14,13 +14,3 @@ export function mergeMcpJson(existing, incoming) {
         },
     };
 }
-
-/**
- * @param {string} relativePath - POSIX-style path from project root
- */
-export function shouldSkipExistingFile(relativePath, force) {
-    if (force) return false;
-    if (relativePath === ".cursor/mcp.json") return false;
-    if (relativePath.startsWith(".cursor/rules/")) return true;
-    return false;
-}
