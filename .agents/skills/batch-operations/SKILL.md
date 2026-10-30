@@ -37,7 +37,17 @@ Scope:    [file glob pattern, e.g., "src/**/*.tsx"]
 Exclude:  [files to skip, e.g., "**/*.test.tsx"]
 ```
 
-### Step 2: Preview Before Executing
+### Step 2: Stay inside the PLAN allowlist
+
+Every target must match `## Write allowlist` in the active PLAN. Check before applying:
+
+```bash
+python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+```
+
+Exit 1 means that path is out of scope. Do not edit it and do not expand the allowlist to fit the batch.
+
+### Step 3: Preview Before Executing
 ```bash
 # Find all affected files FIRST
 grep -rl "oldPattern" src/ --include="*.ts"
@@ -51,7 +61,7 @@ grep -rn "oldPattern" src/ --include="*.ts"
 
 > 🔴 **NEVER batch-modify without previewing first.** Show the user what will change.
 
-### Step 3: Execute the Batch
+### Step 4: Execute the Batch
 
 For text replacements:
 ```bash
@@ -67,7 +77,7 @@ For structural changes (adding imports, wrapping code):
 - Use the Edit tool on each file
 - Process files in a consistent order (alphabetical or by dependency)
 
-### Step 4: Verify the Batch
+### Step 5: Verify the Batch
 ```bash
 # Confirm no missed instances
 grep -rl "oldPattern" src/ --include="*.ts"

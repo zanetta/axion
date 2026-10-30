@@ -50,6 +50,7 @@ You are now in **ORCHESTRATION MODE**. Your task: coordinate specialized agents 
 | Socratic / SPEC | `{slug}.spec.md` **or** ≥3 answered questions in PLAN |
 | PLAN | `{slug}.plan.md` (or `{slug}.md`) with Traceability |
 | User approval | Explicit Y before Phase 2 implementation |
+| Write allowlist | Implementation writes only paths in `## Write allowlist`. Run `side_effect_guard.py` before each write; exit 1 means do not write. |
 
 If missing → only `project-planner` / `explorer-agent` (Phase 1). Do **not** invoke specialists.
 

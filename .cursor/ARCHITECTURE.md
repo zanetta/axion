@@ -14,7 +14,7 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 12 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 13 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
 | **Schemas de contrato** | 2 | `.agents/schemas/` |
 | **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **Inventário** | — | `.axion/inventory.json` (`generate_inventory.py`) |
@@ -52,7 +52,7 @@ axion/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 14 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
-    ├── scripts/                 # checklist, verify_gate, verify_all, lint_paths, lint_contracts, lint_inventory, …
+    ├── scripts/                 # checklist, verify_gate, side_effect_guard, verify_all, lint_paths, lint_contracts, lint_inventory, …
     ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
@@ -350,6 +350,7 @@ side_effects: [read-only]
 | `generate_inventory.py` | Gera `.axion/inventory.json` (agents/skills/commands/…) |
 | `@zanetta/axion` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
 | `session_manager.py` | Gestão de sessão; `doctor` (JSON) e `log` append-only em `.axion/logs/runs.jsonl` |
+| `side_effect_guard.py` | Allowlist de escrita do PLAN (X-03); o agente honra o exit |
 | `auto_preview.py` | Preview automático |
 
 ### Usage
@@ -385,6 +386,9 @@ npx @zanetta/axion status
 
 # Doctor do kit (D-04) — path lint local; não reexecuta o verify
 python3 .cursor/scripts/session_manager.py doctor .
+
+# Allowlist de escrita (P2 X-03) — antes de gravar; o agente honra o exit
+python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
 ```
 
 Skill-level scripts ficam em `.agents/skills/<skill>/scripts/`.
@@ -400,7 +404,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 12 |
+| Scripts em `.cursor/scripts/` | 13 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |
 | CLI npm | `@zanetta/axion` |

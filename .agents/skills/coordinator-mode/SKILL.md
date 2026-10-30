@@ -27,6 +27,7 @@ forbidden_paths:
   - "**/*credentials*"
 verify_hooks:
   - ".cursor/scripts/checklist.py"
+  - ".cursor/scripts/side_effect_guard.py"
 ---
 
 # Coordinator Mode — Multi-Agent Orchestration
@@ -87,6 +88,20 @@ User Request
 - ❌ Implementation that depends on another agent's output
 - ❌ Database migration + code that uses the new schema
 - ❌ API change + frontend that consumes the API
+
+---
+
+## Write allowlist (X-03)
+
+Implementation workers write only paths listed under `## Write allowlist` in the active PLAN. Research workers stay read-only. `batch-operations` uses the same list: a pattern that would touch anything else is out of scope.
+
+Before the first write of a worker, check every target path:
+
+```bash
+python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+```
+
+Pass each `side_effects` value declared by the skill that will write (`write-files` for project files, `write-memory` for `.agents/memory/`). Exit 0 allows the write. Exit 1 refuses it (`outside-allowlist`, `forbidden`, `effect-denied`, or `no-allowlist`) — do not write, and do not widen the allowlist to make the write succeed. Exit 2 is a bad invocation; fix the arguments and run it again. `.env` and any path containing `credentials` are refused even when the plan lists them.
 
 ---
 

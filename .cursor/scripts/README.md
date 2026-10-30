@@ -101,6 +101,32 @@ Padrões: cabeçalho de chave privada, chave AWS, tokens GitHub/npm/OpenAI/Slack
 
 Testes: `cli/test/memory-secret-scan.test.js` (6 casos; suíte CLI 50).
 
+## side_effect_guard.py
+
+Allowlist de escrita do PLAN (P2 X-03). Antes de criar ou modificar um arquivo, `coordinator-mode`, `batch-operations`, o agent `orchestrator`, `/orchestrate` e `/coordinate` mandam rodar o guard e manter a allowlist como está. O agente honra o exit code.
+
+Lê a seção exata `## Write allowlist`: bullet `- path` ou a primeira coluna da tabela. O `PLAN.template.md` já traz a seção. Sem seção, ou com ela vazia, todo write sai `no-allowlist`.
+
+```bash
+python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+```
+
+| Exit | Significado |
+| --- | --- |
+| `0` | Todos os `--write` passaram (`side_effect_guard: allowed <path>`) |
+| `1` | Pelo menos um recusado (`side_effect_guard: refused <path> <motivo>`) |
+| `2` | Uso inválido: plano ausente, sem `--write`, `--effect` fora do contrato, path com espaço, absoluto ou com segmento `..`. Nada é gravado |
+
+Motivos no exit 1, nesta ordem: `no-allowlist`, `forbidden`, `effect-denied`, `outside-allowlist`.
+
+- Cada `--write` precisa casar com um glob da lista (`**` atravessa segmentos; path que termina em `/` vale como `/**`). Fora da lista: `outside-allowlist`.
+- `.env`, `.env.local` e qualquer arquivo `.env.*` que não termine em `.example` são `forbidden` mesmo se estiverem na lista. `.env.example` passa quando listado. Qualquer segmento de path que contenha `credentials` também é `forbidden`. Canonicalizar (`.`, `//`, barra invertida) não contorna isso.
+- `--effect` é opcional e repetível. Valores do contrato: `none`, `read-only`, `write-files`, `write-memory`, `run-shell`, `invoke-agents`, `network`. Se passado, `.agents/memory` e qualquer path abaixo exigem `write-memory`; os demais exigem `write-files`. Um conjunto sem esse efeito — inclusive só `read-only` ou `none` — recusa com `effect-denied`. Sem `--effect`, a checagem é só allowlist + forbidden.
+- `--forbidden` (repetível) soma globs extras, tratados como `forbidden`.
+- A saída traz `allowed` ou `refused`, o path e o motivo. Nunca o conteúdo do arquivo.
+
+Testes: `cli/test/side-effect-guard.test.js` (3 casos; `cd cli && npm test` = 56 pass / 0 fail).
+
 ## verify_all.py
 
 Suite completa pre-deploy (checklist + Lighthouse, Playwright, bundle, mobile, i18n):

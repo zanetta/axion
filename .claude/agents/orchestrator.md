@@ -232,6 +232,10 @@ Read {task-slug}.md
 # 3. Verify agent routing
 #    Mobile project → Only mobile-developer
 #    Web project → frontend-specialist + backend-specialist
+
+# 4. Writes stay inside the PLAN allowlist (X-03)
+#    python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write <path>
+#    Exit 1: do not write that path. Do not widen the allowlist to force the edit.
 ```
 
 > 🔴 **VIOLATION:** Skipping Step 0 = FAILED orchestration.

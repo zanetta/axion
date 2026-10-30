@@ -65,6 +65,14 @@ updated: "{ISO_DATE}"
 | --- | --- | --- |
 | SPEC-{SLUG}-1 | P1-1 | AC-1 |
 
+## Write allowlist
+
+Paths the implement phase may create or modify. A write outside this list is refused, including a batch edit. `.env` and any path containing `credentials` stay refused even if listed.
+
+| Path | Why |
+| --- | --- |
+| `{path}` | {reason} |
+
 ## Out of scope
 
 - {item}

@@ -5,7 +5,7 @@
     "skills": 45,
     "commands": 14,
     "rules": 7,
-    "scripts": 12,
+    "scripts": 13,
     "schemas": 2
   },
   "agents": [
@@ -111,6 +111,7 @@
     "lint_paths.py",
     "memory_secret_scan.py",
     "session_manager.py",
+    "side_effect_guard.py",
     "sync_upstream.py",
     "trace_report.py",
     "verify_all.py",
