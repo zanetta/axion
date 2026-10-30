@@ -147,6 +147,44 @@ python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 
 
 Testes: `cli/test/circuit-breaker.test.js` (3 casos; `cd cli && npm test` = 59 pass / 0 fail).
 
+## eval_routing.py
+
+Golden cases de roteamento (P3 E-01). Checagem estática das tabelas: o script não chama modelo. Os 16 cases ficam em `.axion/eval/routing.cases.json`.
+
+```bash
+python3 .cursor/scripts/eval_routing.py .
+python3 .cursor/scripts/eval_routing.py . --cases .axion/eval/routing.cases.json
+```
+
+O argumento posicional é a raiz do projeto (padrão: `.`). `--cases` troca o JSON.
+
+| Campo | Regra |
+| --- | --- |
+| `id` | token `^[a-z0-9]+(-[a-z0-9]+)*$`, único no arquivo |
+| `source` | `agents` lê `AGENTS.md`; `routing` lê `.agents/skills/intelligent-routing/SKILL.md` |
+| `match` | snippet de uma linha; o único whitespace permitido é espaço |
+| `agents` | lista não vazia de strings |
+| `skills` | lista de strings; omissão vale lista vazia |
+| `not_agents` | lista de strings; omissão vale lista vazia |
+
+O snippet precisa estar em exatamente uma linha de tabela. Depois do trim, a linha começa com `|` e não é separador: cada célula é só traços (`---`, no mínimo três), com `:` opcional nas pontas. Zero linhas ou duas ou mais falha o case.
+
+A linha cita cada agent e cada skill esperados, com ou sem crases. Se o texto de um `not_agents` aparece na linha, o case falha. `.claude/agents/{agent}.md` e `.agents/skills/{skill}/SKILL.md` existem como filho direto da pasta. O nome é um único segmento: `.`, `..`, `/` e `\` não passam.
+
+O case `mobile-not-frontend` (`source` `agents`, match `**MOBILE**`) exige `mobile-developer` e `mobile-design` e recusa `frontend-specialist`. `routing-mobile-ui` e `routing-mobile-stack` recusam `frontend-specialist` na skill `intelligent-routing`.
+
+JSON com `NaN`, `Infinity`, `-Infinity` ou chave duplicada é inválido. `cases` vazio, id duplicado ou case malformado também.
+
+| Exit | Saída |
+| --- | --- |
+| `0` | `eval_routing: pass 16` |
+| `1` | Divergência de tabela ou de arquivo: `eval_routing: FAIL` e um problema por linha |
+| `2` | Arquivo de cases ausente, `AGENTS.md` ou a skill de routing ausente, ou JSON inválido |
+
+O passo **Eval routing golden cases (E-01)** em `.github/workflows/ci.yml` roda antes de `npm test`. De `.axion/`, o install copia só `.axion/trace/README.md`; `routing.cases.json` permanece no repositório do kit.
+
+Testes: `cli/test/eval-routing.test.js` (3 casos; `cd cli && npm test` = 64 pass / 0 fail).
+
 ## verify_all.py
 
 Suite completa pre-deploy (checklist + Lighthouse, Playwright, bundle, mobile, i18n):

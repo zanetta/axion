@@ -38,6 +38,9 @@ jobs:
       - name: Lint doc/inventory parity (Q-03)
         run: python3 .cursor/scripts/lint_inventory.py .
 
+      - name: Eval routing golden cases (E-01)
+        run: python3 .cursor/scripts/eval_routing.py .
+
       - name: Install dependencies
         run: npm ci
 

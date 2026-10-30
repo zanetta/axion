@@ -5,7 +5,7 @@ Documento de engenharia: evoluir o **Axion** de um pack instalável de agents e 
 | | |
 | --- | --- |
 | **Estado atual** | Pack de agents (`.claude/agents/`), skills (`.agents/skills/`), commands (`.cursor/commands/`), rules (`.cursor/rules/`), memória (`.agents/memory/`), scripts (`.cursor/scripts/`) e CLI npm `@zanetta/axion` (`cli/`) |
-| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) concluída** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install, **W-03** ✅ (`verify_gate.py`), **O-02** ✅ (`trace_report.py`), **X-02** ✅ (`memory_secret_scan.py`), **D-03** ✅ (drift + paths protegidos), **D-04** ✅ (`doctor`), **O-01** ✅ (`.axion/logs/runs.jsonl`), **X-03** ✅ (`side_effect_guard.py`); Fase 3 em curso — **W-04** ✅ (`circuit_breaker.py`), **O-03** ✅ (contadores no run log). Próximo: **E-01** |
+| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) concluída** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install, **W-03** ✅ (`verify_gate.py`), **O-02** ✅ (`trace_report.py`), **X-02** ✅ (`memory_secret_scan.py`), **D-03** ✅ (drift + paths protegidos), **D-04** ✅ (`doctor`), **O-01** ✅ (`.axion/logs/runs.jsonl`), **X-03** ✅ (`side_effect_guard.py`); Fase 3 em curso — **W-04** ✅ (`circuit_breaker.py`), **O-03** ✅ (contadores no run log), **E-01** ✅ (`eval_routing.py`). Próximo: **E-02** |
 | **Público** | Maintainers do kit e consumidores que instalam via `npx @zanetta/axion` |
 
 ### Objetivo
@@ -106,7 +106,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 | ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| E-01 | P3 | Golden cases de roteamento | Suite de prompts → agent/skill esperado (ex.: mobile ≠ frontend-specialist), assert contra `intelligent-routing` / tabelas `AGENTS.md`. | Sem eval, regressões de routing são invisíveis. | `.axion/eval/routing.cases.json`; runner `.cursor/scripts/eval_routing.py` (checagem estática de regras + fixtures) | L | K-04 | — |
+| ✅ E-01 | P3 | Golden cases de roteamento | Suite de prompts → agent/skill esperado (ex.: mobile ≠ frontend-specialist), assert contra `intelligent-routing` / tabelas `AGENTS.md`. | Sem eval, regressões de routing são invisíveis. | `.axion/eval/routing.cases.json`; runner `.cursor/scripts/eval_routing.py` (checagem estática de regras + fixtures) | L | K-04 | **DONE** — `python3 .cursor/scripts/eval_routing.py .` confere as tabelas no disco e não chama modelo. Os 16 cases ficam em `.axion/eval/routing.cases.json`. Cada case tem `id` (token `^[a-z0-9]+(-[a-z0-9]+)*$`, único), `source` `agents` (`AGENTS.md`) ou `routing` (`.agents/skills/intelligent-routing/SKILL.md`), `match` (snippet de uma linha; o único whitespace permitido é espaço), `agents` (lista não vazia de strings) e, opcionais, `skills` e `not_agents` (listas de strings; omissão vale lista vazia). O snippet tem de estar em exatamente uma linha de tabela: depois do trim, a linha começa com pipe e não é separador (células só de traços, com dois-pontos opcional nas pontas). 0 ou 2+ linhas falha o case. A linha precisa citar cada agent e cada skill esperados, com ou sem crases. Texto de `not_agents` na linha falha o case. `.claude/agents/{agent}.md` e `.agents/skills/{skill}/SKILL.md` precisam existir como filho direto da pasta (nome de um segmento, sem `.`, `..`, `/` nem `\`). JSON com `NaN`, `Infinity`, `-Infinity` ou chave duplicada é inválido, assim como `cases` vazio, id duplicado ou case malformado. Exit 0 imprime `eval_routing: pass 16`. Exit 1 é divergência (`eval_routing: FAIL` e um problema por linha). Exit 2: arquivo de cases ausente, `AGENTS.md` ou a skill de routing ausente, ou JSON inválido. `--cases` troca o caminho do JSON. O case `mobile-not-frontend` (match `**MOBILE**` em `AGENTS.md`) exige `mobile-developer` e `mobile-design` e recusa `frontend-specialist`; `routing-mobile-ui` e `routing-mobile-stack` recusam o mesmo agent na skill `intelligent-routing`. O passo "Eval routing golden cases (E-01)" em `.github/workflows/ci.yml` roda antes dos testes npm. De `.axion/`, o install copia só `.axion/trace/README.md`; o JSON de eval permanece no repositório do kit. Testes: `cli/test/eval-routing.test.js` (3 casos; `cd cli && npm test` = 64 pass / 0 fail). |
 | E-02 | P3 | Eval de FSM / gates | Casos: plan sem SPEC → fail; verify sem ACCEPTANCE → fail; path `.agents/scripts` → fail lint. | Garante que P0/P1 não regredam. | Extensão do harness E-01; CI job opcional | M | W-01, Q-01, S-03 | — |
 | ✅ E-03 | P3 | Smoke do pack pós-install | Após `init --profile standard` em temp dir: inventário mínimo presente, manifesto válido, lint paths clean. | Protege consumidores npm. | `cli/test/install.test.js` + fixtures em `cli/test/fixtures/` | M | D-01, D-02, Q-01 | **DONE** (antecipado da Fase 3) — `cli/test/smoke.test.js`: instala o pack real em temp dir para todos os profiles; valida manifesto, arquivos-chave, zero refs agent→skill quebradas, offensive só em `security`, `lint_paths.py` e `lint_contracts.py` limpos (25 testes no CLI) |
 
@@ -144,12 +144,12 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 *Saída:* kit “shippable” com CI de conteúdo, observabilidade local e writes limitados à allowlist do PLAN.
 
-### Fase 3 — Avançado (P3) — próximo: **E-01** (golden cases de roteamento)
+### Fase 3 — Avançado (P3) — próximo: **E-02** (eval de FSM / gates)
 
 1. **W-04** ✅ — Circuit breaker (`circuit_breaker.py`). **O-03** ✅ — métricas de orquestração no run log (`session_manager.py log`; sem script novo).
-2. **E-01 → E-02** — Eval de routing e gates (**E-03** ✅ antecipado para a Fase 2).
+2. **E-01** ✅ — Golden cases de roteamento (`eval_routing.py`, 16 cases). **E-02** — eval de FSM / gates. (**E-03** ✅ antecipado para a Fase 2).
 
-*Saída:* regressão automática de routing/gates e orquestração resiliente.
+*Saída:* orquestração resiliente e regressão estática de routing. E-02 (eval de gates) segue aberto.
 
 ---
 
@@ -179,16 +179,17 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | Memory | `.agents/memory/MEMORY.md` |
 | Commands | `.cursor/commands/` |
 | Rules | `.cursor/rules/*.mdc` |
-| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_gate.py`, `trace_report.py`, `memory_secret_scan.py`, `side_effect_guard.py`, `circuit_breaker.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
+| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_gate.py`, `trace_report.py`, `memory_secret_scan.py`, `side_effect_guard.py`, `circuit_breaker.py`, `eval_routing.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
 | Schemas de contrato | `.agents/schemas/` (`skill-contract.schema.json`, `command-contract.schema.json`) |
 | Templates SDD | `.agents/skills/plan-writing/templates/` (SPEC, PLAN); `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` |
 | Manifesto instalado | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | Inventário | `.axion/inventory.json` (via `generate_inventory.py`) |
 | Traceability | `.axion/trace/README.md` + opcional `{slug}.json` |
+| Eval de roteamento | `.axion/eval/routing.cases.json` (16 cases; `python3 .cursor/scripts/eval_routing.py .`). De `.axion/`, o install copia só `.axion/trace/README.md` |
 | Run log | `.axion/logs/runs.jsonl` (`session_manager.py log`; contadores opcionais `workers`, `failures`, `duration_ms`, `breaker_trips`; o `.gitignore` `logs` já ignora o diretório) |
 | Arquitetura | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `AGENTS.md` |
 | CLI | `cli/` → `@zanetta/axion` (`init`, `update` com drift/protected, `status` com doctor; `--profile`, `--enable-offensive`) |
-| CI | `.github/workflows/ci.yml` (path lint + contract lint + inventory parity + CLI tests + smoke pós-install; reusável via `workflow_call`) |
+| CI | `.github/workflows/ci.yml` (path lint + contract lint + inventory parity + passo "Eval routing golden cases (E-01)" antes dos testes npm + smoke pós-install; reusável via `workflow_call`) |
 | Publish | `.github/workflows/publish-npm.yml` (gated por `ci.yml`; tag `vX.Y.Z` deve = `cli/package.json`) |
 
 ---
@@ -196,5 +197,5 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 ## Como usar este backlog
 
 1. Abrir issue/PR por **ID** (ex.: `Q-01`).
-2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). ✅ Fase 2 fechada (**Q-04, Q-02, E-03, Q-03, W-03, O-02, X-02, D-03, D-04, O-01, X-03**). Fase 3: **W-04** ✅, **O-03** ✅. Próximo: **E-01**.
+2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). ✅ Fase 2 fechada (**Q-04, Q-02, E-03, Q-03, W-03, O-02, X-02, D-03, D-04, O-01, X-03**). Fase 3: **W-04** ✅, **O-03** ✅, **E-01** ✅. Próximo: **E-02**.
 3. Toda mudança de path ou contrato deve atualizar este arquivo só se prioridade/escopo mudar — senão atualizar inventário/manifesto gerados.

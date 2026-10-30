@@ -14,7 +14,7 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 14 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 15 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
 | **Schemas de contrato** | 2 | `.agents/schemas/` |
 | **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **Inventário** | — | `.axion/inventory.json` (`generate_inventory.py`) |
@@ -40,6 +40,7 @@ axion/
 │   ├── kit.manifest.json        # SemVer, profile, checksums (gerado pelo CLI no consumidor)
 │   ├── inventory.json           # Contagens machine-readable (generate_inventory.py; paridade: lint_inventory.py; não copiado)
 │   ├── logs/runs.jsonl          # Run log append-only (O-01); contadores opcionais (O-03) só se a flag foi passada. O .gitignore `logs` já ignora o diretório
+│   ├── eval/routing.cases.json  # 16 golden cases de roteamento (E-01); não entra na cópia do install
 │   └── trace/                   # Traceability opcional {slug}.json (protegido no update, exceto README.md)
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
@@ -52,7 +53,7 @@ axion/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 14 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
-    ├── scripts/                 # checklist, verify_gate, side_effect_guard, circuit_breaker, verify_all, lint_paths, lint_contracts, lint_inventory, …
+    ├── scripts/                 # checklist, verify_gate, side_effect_guard, circuit_breaker, eval_routing, verify_all, lint_paths, lint_contracts, lint_inventory, …
     ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
@@ -72,7 +73,7 @@ axion/
 | Offensive | Só com `--profile security` ou `--enable-offensive` |
 | Contratos | `.agents/schemas/skill-contract.schema.json`, `command-contract.schema.json` |
 | Observabilidade SemVer | `init`/`update` gravam o manifesto, listam drift e não sobrescrevem paths protegidos (SPEC/PLAN/ACCEPTANCE, `.agents/memory/`, `.axion/logs/`, `.axion/trace/*` exceto `README.md`) mesmo com `--force`; `status` compara installed vs latest e, se `session_manager.py` existir, imprime o doctor (memory index, path lint, último verify em `.axion/logs/runs.jsonl`) |
-| CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + lint_inventory + CLI tests + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
+| CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + lint_inventory + eval routing golden cases (E-01) antes dos testes npm + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
 | Docs CLI | [`cli/README.md`](../cli/README.md) |
 
 ---
@@ -352,6 +353,7 @@ side_effects: [read-only]
 | `session_manager.py` | Gestão de sessão; `doctor` (JSON) e `log` append-only em `.axion/logs/runs.jsonl` |
 | `side_effect_guard.py` | Allowlist de escrita do PLAN (X-03); o agente honra o exit |
 | `circuit_breaker.py` | Circuit breaker da orquestração (W-04); um domínio por chamada; o agente honra o exit |
+| `eval_routing.py` | Golden cases de roteamento (E-01); checagem estática, sem modelo |
 | `auto_preview.py` | Preview automático |
 
 ### Usage
@@ -393,6 +395,9 @@ python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect wr
 
 # Circuit breaker (P3 W-04) — antes de cada dispatch ou retry; o agente honra o exit
 python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
+
+# Golden cases de roteamento (P3 E-01) — não chama modelo
+python3 .cursor/scripts/eval_routing.py .
 ```
 
 Skill-level scripts ficam em `.agents/skills/<skill>/scripts/`.
@@ -408,7 +413,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 14 |
+| Scripts em `.cursor/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |
 | CLI npm | `@zanetta/axion` |

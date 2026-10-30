@@ -5,7 +5,7 @@
     "skills": 45,
     "commands": 14,
     "rules": 7,
-    "scripts": 14,
+    "scripts": 15,
     "schemas": 2
   },
   "agents": [
@@ -106,6 +106,7 @@
     "auto_preview.py",
     "checklist.py",
     "circuit_breaker.py",
+    "eval_routing.py",
     "generate_inventory.py",
     "lint_contracts.py",
     "lint_inventory.py",
