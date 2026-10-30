@@ -17,6 +17,3 @@ export const MERGE_JSON_FILES = new Set([".cursor/mcp.json"]);
 
 /** Env override: absolute path to repo root, or giget source (default github:zanetta/axion). */
 export const REPO_ENV = "AXION_REPO";
-
-/** Previous env name, still read when AXION_REPO is unset. */
-export const LEGACY_REPO_ENV = "ANTIGRAVITY4CURSOR_REPO";

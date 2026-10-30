@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sync Axion with upstream ag-kit (https://github.com/vudovn/ag-kit).
+Sync this checkout with https://github.com/zanetta/axion.
 
 Usage:
     python3 .cursor/scripts/sync_upstream.py              # Compare only (default)
@@ -20,7 +20,7 @@ import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-UPSTREAM_URL = "https://github.com/vudovn/ag-kit.git"
+UPSTREAM_URL = "https://github.com/zanetta/axion.git"
 
 SKILL_DIRS = [
     "batch-operations",
@@ -179,7 +179,7 @@ def sync_commands_from_upstream(upstream: Path, only: list[str] | None = None) -
 
 
 def print_report(report: dict[str, object]) -> None:
-    print("\n=== Axion ↔ ag-kit sync report ===\n")
+    print("\n=== Axion sync report ===\n")
     for key in [
         "skills_missing",
         "skills_extra",
@@ -197,14 +197,14 @@ def print_report(report: dict[str, object]) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Compare/sync with upstream ag-kit")
+    parser = argparse.ArgumentParser(description="Compare/sync with https://github.com/zanetta/axion")
     parser.add_argument("--apply", action="store_true", help="Apply sync (agents, skills, memory)")
-    parser.add_argument("--clone", action="store_true", help="Clone upstream before compare/apply")
+    parser.add_argument("--clone", action="store_true", help="Clone zanetta/axion before compare/apply")
     parser.add_argument(
         "--upstream-path",
         type=Path,
         default=None,
-        help="Local path to ag-kit clone (default: /tmp/ag-kit-compare or temp clone)",
+        help="Local path to an Axion clone (default: /tmp/axion-compare or a temp clone)",
     )
     args = parser.parse_args()
 
@@ -213,13 +213,13 @@ def main() -> int:
 
     if args.upstream_path:
         upstream = args.upstream_path.resolve()
-    elif args.clone or not Path("/tmp/ag-kit-compare").exists():
-        temp_dir = tempfile.TemporaryDirectory(prefix="ag-kit-")
+    elif args.clone or not Path("/tmp/axion-compare").exists():
+        temp_dir = tempfile.TemporaryDirectory(prefix="axion-")
         upstream = Path(temp_dir.name)
-        print(f"Cloning upstream to {upstream}...")
+        print(f"Cloning {UPSTREAM_URL} to {upstream}...")
         clone_upstream(upstream)
     else:
-        upstream = Path("/tmp/ag-kit-compare")
+        upstream = Path("/tmp/axion-compare")
 
     if not (upstream / ".agents").exists():
         print(f"ERROR: Invalid upstream path: {upstream}", file=sys.stderr)

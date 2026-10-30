@@ -1,6 +1,6 @@
 # upgrade.md — Backlog SDD para Axion
 
-Documento de engenharia: evoluir o **Axion** (port do [AG Kit](https://github.com/vudovn/ag-kit) para Cursor IDE) de um *prompt pack* instalável para um framework de **Spec-Driven Development (SDD)** com contratos, gates e observabilidade.
+Documento de engenharia: evoluir o **Axion** de um pack instalável de agents e skills para um framework de **Spec-Driven Development (SDD)** com contratos, gates e observabilidade.
 
 | | |
 | --- | --- |
@@ -45,10 +45,10 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 | ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| K-01 | P0 | Manifesto do kit instalado | Introduzir arquivo de manifesto com versão SemVer do kit, data de install/update, perfil aplicado e checksum/lista de componentes. Gravado no projeto consumidor pelo CLI. | Hoje `status`/`update` não têm fonte canônica de “qual kit está instalado”; SemVer npm ≠ estado no repo. | `.antigravity/kit.manifest.json` (ou `.cursor/antigravity.manifest.json`); escrita em `cli/lib/install.js`; leitura em `cli/bin/index.js` (`status`/`update`) | M | — |
+| K-01 | P0 | Manifesto do kit instalado | Introduzir arquivo de manifesto com versão SemVer do kit, data de install/update, perfil aplicado e checksum/lista de componentes. Gravado no projeto consumidor pelo CLI. | Hoje `status`/`update` não têm fonte canônica de “qual kit está instalado”; SemVer npm ≠ estado no repo. | `.axion/kit.manifest.json` (ou `.cursor/axion.manifest.json`); escrita em `cli/lib/install.js`; leitura em `cli/bin/index.js` (`status`/`update`) | M | — |
 | K-02 | P0 | Schema de contrato de skill | Definir frontmatter/schema obrigatório além do atual (`name`, `description`): `inputs`, `outputs`, `preconditions`, `postconditions`, `side_effects`, `forbidden_paths`, `verify_hooks`. Skills passam de procedimento para contrato. | Skills em `.agents/skills/*/SKILL.md` são narrativas; não há máquina de verificação. | `.agents/schemas/skill-contract.schema.json`; atualizar skills-piloto: `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode` | M | — |
 | K-03 | P0 | Schema de contrato de command | Espelhar contratos nos workflows `.cursor/commands/*.md`: estados permitidos, artefatos obrigatórios de saída, scripts canônicos (só `.cursor/scripts/`). | Commands misturam instrução e path legado (`.agents/scripts`). | `.agents/schemas/command-contract.schema.json`; alinhar `/plan`, `/verify`, `/status`, `/orchestrate` | M | K-02 |
-| K-04 | P1 | Inventário versionado de componentes | Gerar inventário machine-readable de agents/skills/commands/rules/scripts a partir do repo, consumido por sync e status. | `.cursor/ARCHITECTURE.md` e counts driftam; `sync_upstream.py` precisa de fonte única. | `.antigravity/inventory.json` gerado por script; hook opcional no CI | M | K-01 |
+| K-04 | P1 | Inventário versionado de componentes | Gerar inventário machine-readable de agents/skills/commands/rules/scripts a partir do repo, consumido por sync e status. | `.cursor/ARCHITECTURE.md` e counts driftam; `sync_upstream.py` precisa de fonte única. | `.axion/inventory.json` gerado por script; hook opcional no CI | M | K-01 |
 
 ### 2. Spec artifacts
 
@@ -57,7 +57,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | S-01 | P1 | Template SPEC | Artefato `SPEC.md` (ou `{slug}.spec.md`) com problema, actors, constraints, non-goals, interfaces, riscos. Produzido após Socratic Gate. | Sem spec, `/plan` gera plano solto e agents improvisam. | `.agents/skills/plan-writing/templates/SPEC.template.md`; referência em `.cursor/commands/brainstorm.md` e `.cursor/commands/plan.md` | S | K-02 |
 | S-02 | P1 | Template PLAN estruturado | Substituir `{task-slug}.md` livre por schema: fases, deps, agents, skills, critérios de done, links para SPEC/ACCEPTANCE. Manter naming dinâmico do `project-planner`. | `plan.md` / plans atuais são checklist narrativo; difícil gatear. | `.agents/skills/plan-writing/templates/PLAN.template.md`; atualizar `.claude/agents/project-planner.md`, `.cursor/commands/plan.md` | M | S-01 |
 | S-03 | P1 | Template ACCEPTANCE | Critérios testáveis (Given/When/Then ou checklist verificável) + comandos de verify sugeridos (`checklist.py`, `verify_all.py`). | Verify-changes existe, mas não há contrato de aceite amarrado ao plano. | `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md`; link em `/verify` | S | S-02 |
-| S-04 | P1 | Traceability matrix leve | IDs SPEC ↔ tasks PLAN ↔ checks ACCEPTANCE; referência cruzada obrigatória no orchestrator antes de codar. | Sem rastreio, “done” é subjetivo e doc drift aumenta. | Seção `Traceability` nos templates; opcional `.antigravity/trace/{slug}.json` | M | S-01, S-02, S-03 |
+| S-04 | P1 | Traceability matrix leve | IDs SPEC ↔ tasks PLAN ↔ checks ACCEPTANCE; referência cruzada obrigatória no orchestrator antes de codar. | Sem rastreio, “done” é subjetivo e doc drift aumenta. | Seção `Traceability` nos templates; opcional `.axion/trace/{slug}.json` | M | S-01, S-02, S-03 |
 
 ### 3. Workflows / FSM
 
@@ -90,7 +90,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 | ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| O-01 | P2 | Session / run log estruturado | Append-only log local de runs de command (command, slug, artefatos tocados, exit verify). Sem PII. | Pouca observabilidade entre sessões além de `.agents/memory/`. | `.antigravity/logs/runs.jsonl`; integração leve em `/verify` e `session_manager.py` | M | K-01 |
+| O-01 | P2 | Session / run log estruturado | Append-only log local de runs de command (command, slug, artefatos tocados, exit verify). Sem PII. | Pouca observabilidade entre sessões além de `.agents/memory/`. | `.axion/logs/runs.jsonl`; integração leve em `/verify` e `session_manager.py` | M | K-01 |
 | O-02 | P2 | Traceability report | Comando/script que imprime cobertura SPEC→ACCEPTANCE→checks para um slug. | Fecha o loop SDD para humanos e CI local. | `.cursor/scripts/trace_report.py`; menção em `/verify` | S | S-04 |
 | O-03 | P3 | Métricas de orquestração | Contadores: workers lançados, falhas, tempo estimado, circuit-breaker trips — no run log. | Necessário para calibrar W-04 e custo. | Extensão de O-01 + `coordinator-mode` | M | O-01, W-04 |
 
@@ -106,7 +106,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 | ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| E-01 | P3 | Golden cases de roteamento | Suite de prompts → agent/skill esperado (ex.: mobile ≠ frontend-specialist), assert contra `intelligent-routing` / tabelas `AGENTS.md`. | Sem eval, regressões de routing são invisíveis. | `.antigravity/eval/routing.cases.json`; runner `.cursor/scripts/eval_routing.py` (checagem estática de regras + fixtures) | L | K-04 |
+| E-01 | P3 | Golden cases de roteamento | Suite de prompts → agent/skill esperado (ex.: mobile ≠ frontend-specialist), assert contra `intelligent-routing` / tabelas `AGENTS.md`. | Sem eval, regressões de routing são invisíveis. | `.axion/eval/routing.cases.json`; runner `.cursor/scripts/eval_routing.py` (checagem estática de regras + fixtures) | L | K-04 |
 | E-02 | P3 | Eval de FSM / gates | Casos: plan sem SPEC → fail; verify sem ACCEPTANCE → fail; path `.agents/scripts` → fail lint. | Garante que P0/P1 não regredam. | Extensão do harness E-01; CI job opcional | M | W-01, Q-01, S-03 |
 | E-03 | P3 | Smoke do pack pós-install | Após `init --profile standard` em temp dir: inventário mínimo presente, manifesto válido, lint paths clean. | Protege consumidores npm. | `cli/test/install.test.js` + fixtures em `cli/test/fixtures/` | M | D-01, D-02, Q-01 |
 
@@ -156,8 +156,8 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | Runtime/agent host fora do Cursor | Sai do modelo compat-first; custo alto, pouco alinhado ao port |
 | Tier system P0/P1/P2 de agents no IDE | Cursor não aplica; já documentado como limitação em `AGENTS.md` |
 | Auto-routing hard pelo produto | IDE não força; eval (E-01) é o substituto honesto |
-| Dashboard web / telemetria cloud | Observabilidade deve ser local (`.antigravity/logs`) primeiro |
-| Renomear em massa `.claude/agents` → outro tree | Quebra compat Cursor/AG Kit; sync_upstream assume paths atuais |
+| Dashboard web / telemetria cloud | Observabilidade deve ser local (`.axion/logs`) primeiro |
+| Renomear em massa `.claude/agents` → outro tree | Quebra os paths que o Cursor e o sync já usam |
 | Unificar todos os scripts de skill em um monólito | Manter master em `.cursor/scripts/` + per-skill em `.agents/skills/<name>/scripts/` |
 | Gerar apps completos “SDD magic” além de `app-builder` | Escopo é framework de processo, não novo codegen |
 | Remover `penetration-tester` / `red-team-tactics` do monorepo | Preferir profile opt-in (X-01), não apagar capacidade de quem precisa |

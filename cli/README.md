@@ -1,8 +1,8 @@
 # @zanetta/axion CLI
 
-Install the Axion kit (AG Kit port for Cursor) into any project.
+Install the Axion kit — spec-driven development for Cursor — into any project.
 
-**npm:** [`@zanetta/axion@1.0.2`](https://www.npmjs.com/package/@zanetta/axion). O pacote anterior [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor) continua no registry.
+**npm:** [`@zanetta/axion@1.0.2`](https://www.npmjs.com/package/@zanetta/axion).
 
 ## Usage
 
@@ -39,7 +39,6 @@ cd cli && npm install && npm test
 # Local install from repo root (sem npm registry)
 AXION_REPO=/path/to/axion \
   node bin/index.js init --path /tmp/my-app --dry-run
-# ANTIGRAVITY4CURSOR_REPO still works when AXION_REPO is unset.
 ```
 
 ## Publish (GitHub Actions)

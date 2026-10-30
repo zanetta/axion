@@ -73,7 +73,7 @@ npx @zanetta/axion update --force
 npx @zanetta/axion update --dry-run
 ```
 
-Use `--force` só quando quiser substituir customizações do kit. O nome anterior [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor) continua no registry.
+Use `--force` só quando quiser substituir customizações do kit.
 
 ### npm — erros comuns
 
@@ -325,7 +325,7 @@ echo ".agents/" >> .git/info/exclude
 
 ## Manutenção do kit
 
-Quem mantém este repositório alinha agents, skills, memória e commands com o [AG Kit](https://github.com/vudovn/ag-kit). O script adapta paths ao Cursor, não mexe em `/ui-ux-pro-max`, `AGENTS.md`, `.cursor/rules/` nem neste README.
+O script compara agents, skills, memória e commands com [zanetta/axion](https://github.com/zanetta/axion). Não altera `/ui-ux-pro-max`, `AGENTS.md`, `.cursor/rules/` nem este README.
 
 ```bash
 python3 .cursor/scripts/sync_upstream.py                 # comparar
@@ -340,5 +340,3 @@ Revise o diff do dry-run antes de `--apply`.
 ## Licença
 
 [MIT](LICENSE).
-
-Baseado no [AG Kit](https://github.com/vudovn/ag-kit) (vudovn/ag-kit), MIT.

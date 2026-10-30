@@ -13,7 +13,7 @@ description: Create project plan using project-planner agent. No code writing - 
 ## 🔴 CRITICAL RULES
 
 1. **NO CODE WRITING** - This command creates plan file only
-2. **Use project-planner agent** - NOT AG Kit Agent's native Plan mode
+2. **Use project-planner agent** - not the editor's native Plan mode
 3. **Socratic Gate** - Ask clarifying questions before planning
 4. **Dynamic Naming** - Plan file named based on task
 

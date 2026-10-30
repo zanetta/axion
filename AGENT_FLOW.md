@@ -1,6 +1,6 @@
 # 🔄 Agent Flow Architecture (Cursor)
 
-> Port do [AG Kit](https://github.com/vudovn/ag-kit) para Cursor IDE — fluxo de agentes, skills e validação.
+> Fluxo de agentes, skills e validação do Axion no Cursor IDE.
 
 ---
 
@@ -168,16 +168,16 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 
 ---
 
-## ⚠️ Diferenças Cursor vs AG Kit original
+## Convenções no Cursor
 
-| Recurso original | No Cursor |
+| Recurso | No Axion |
 | --- | --- |
-| `npx @vudovn/ag-kit init` | `npx @zanetta/axion init` |
-| Auto-routing silencioso | Referência em `intelligent-routing`; agente aplica manualmente |
-| `GEMINI.md` tier P0/P1/P2 | `AGENTS.md` + rules por glob |
-| `$ARGUMENTS` | Texto livre após `/comando` |
-| `.agents/agent/` | `.claude/agents/` |
-| `.agents/workflows/` | `.cursor/commands/` |
+| Instalação | `npx @zanetta/axion init` |
+| Roteamento de agents | Referência em `intelligent-routing`; o agente aplica manualmente |
+| Regras | `AGENTS.md` + rules por glob |
+| Argumentos de workflow | Texto livre após `/comando` |
+| Agents | `.claude/agents/` |
+| Slash commands | `.cursor/commands/` |
 
 ---
 
@@ -186,7 +186,7 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 - Arquitetura: `.cursor/ARCHITECTURE.md`
 - Regras globais: `AGENTS.md`
 - CLI npm: `cli/README.md`
-- Sync upstream: `python3 .cursor/scripts/sync_upstream.py`
-- Upstream: https://github.com/vudovn/ag-kit
+- Sync: `python3 .cursor/scripts/sync_upstream.py`
+- Repositório: https://github.com/zanetta/axion
 
 **Last Updated:** 2026-06-17 · **npm:** `@zanetta/axion@1.0.0`

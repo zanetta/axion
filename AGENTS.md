@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> Regras sempre-ativas deste workspace. Adaptado do `GEMINI.md` do [AG Kit](https://github.com/vudovn/ag-kit) para o Cursor IDE.
+> Regras sempre-ativas deste workspace.
 > Para o índice completo de agentes, skills, workflows e scripts, veja `.cursor/ARCHITECTURE.md`.
 
 ---
@@ -121,7 +121,7 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 | **Auditoria**    | `python3 .cursor/scripts/checklist.py .`                | Auditoria por prioridade     |
 | **Pre-Deploy**   | `python3 .cursor/scripts/checklist.py . --url <URL>`    | Suite completa + Performance |
 | **Verify All**   | `python3 .cursor/scripts/verify_all.py .`               | Auditoria abrangente         |
-| **Sync upstream**| `python3 .cursor/scripts/sync_upstream.py --apply`      | Paridade com ag-kit          |
+| **Sync**         | `python3 .cursor/scripts/sync_upstream.py --apply`      | Paridade com zanetta/axion   |
 
 **Ordem de prioridade**: Segurança → Lint → Schema → Tests → UX → SEO → Lighthouse/E2E.
 
@@ -184,9 +184,9 @@ Esses agents contêm:
 
 ---
 
-## ⚠️ Limitações da migração compat-first (vs. Antigravity original)
+## ⚠️ Limitações no Cursor
 
-| Recurso do GEMINI.md original | Status no Cursor |
+| Recurso | Status no Cursor |
 | ----------------------------- | ---------------- |
 | **Tier system** (P0/P1/P2)    | Não aplicado — Cursor usa precedência Enterprise→Team→Project→User |
 | **Auto agent routing** ("🤖 Applying knowledge of @agent…") | Não automático — o Cursor delega subagents apenas quando o modelo decide ou o usuário usa `/agent` |

@@ -198,7 +198,7 @@ Combine all agent outputs into unified report.
 [Original task summary]
 
 ### Mode
-[Current AG Kit Agent mode: plan/edit/ask]
+[Current Cursor mode: Plan, Ask, or Agent]
 
 ### Agents Invoked (MINIMUM 3)
 | # | Agent | Focus Area | Status |

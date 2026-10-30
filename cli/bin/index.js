@@ -10,7 +10,6 @@ import { fileURLToPath } from "url";
 import {
     BIN_NAME,
     DEFAULT_REPO,
-    LEGACY_REPO_ENV,
     PACKAGE_NAME,
     REPO_ENV,
     TEMP_FOLDER,
@@ -21,7 +20,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const pkg = await fse.readJson(path.join(__dirname, "..", "package.json"));
 
-const repoSource = process.env[REPO_ENV] ?? process.env[LEGACY_REPO_ENV] ?? DEFAULT_REPO;
+const repoSource = process.env[REPO_ENV] ?? DEFAULT_REPO;
 
 async function fetchTemplate(source, tempDir, branch) {
     const resolved = branch && !path.isAbsolute(source) && !source.startsWith("file:")
@@ -279,7 +278,7 @@ const program = new Command();
 
 program
     .name(BIN_NAME)
-    .description("Install Axion (AG Kit port for Cursor IDE)")
+    .description("Install Axion, a spec-driven development kit for Cursor IDE")
     .version(pkg.version, "-v, --version", "Display version number");
 
 program

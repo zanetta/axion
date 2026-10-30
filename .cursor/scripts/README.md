@@ -1,6 +1,6 @@
 # Master Scripts — Axion
 
-Scripts em `.cursor/scripts/` orquestram validações, sync com upstream e (via `cli/`) instalação npm.
+Scripts em `.cursor/scripts/` orquestram validações, sync com o repositório Axion e (via `cli/`) instalação npm.
 
 ## checklist.py
 
@@ -26,7 +26,7 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 
 ## sync_upstream.py
 
-Compare ou sincronize com [ag-kit](https://github.com/vudovn/ag-kit):
+Compare ou sincronize com [zanetta/axion](https://github.com/zanetta/axion):
 
 ```bash
 python3 .cursor/scripts/sync_upstream.py              # dry-run
@@ -38,7 +38,7 @@ Adaptações automáticas ao aplicar:
 
 - Agents → `.claude/agents/` com paths `.cursor/scripts/`
 - Workflows → `.cursor/commands/` sem `$ARGUMENTS`
-- Preserva `/ui-ux-pro-max` (não existe no upstream)
+- Preserva `/ui-ux-pro-max`
 
 ## CLI npm (`cli/`)
 

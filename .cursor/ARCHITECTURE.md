@@ -1,6 +1,6 @@
-# Antigravity Kit for Cursor — Architecture
+# Axion — Architecture
 
-> Port compat-first do [AG Kit](https://github.com/vudovn/ag-kit) para o Cursor IDE — **npm `@zanetta/axion@1.0.0`**
+> Framework de Spec-Driven Development para o Cursor IDE — **npm `@zanetta/axion@1.0.2`**
 
 ---
 
@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | **Agents** | 20 | `.claude/agents/<name>.md` |
 | **Skills** | 45 | `.agents/skills/<name>/SKILL.md` |
-| **Workflows** | 14 (13 upstream + 1 Cursor) | `.cursor/commands/<name>.md` |
+| **Workflows** | 14 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
@@ -24,7 +24,7 @@
 
 ```plaintext
 axion/
-├── AGENTS.md                    # Regras sempre-ativas (substitui GEMINI.md)
+├── AGENTS.md                    # Regras sempre-ativas
 ├── AGENT_FLOW.md                # Fluxo de agentes (adaptado ao Cursor)
 ├── README.md                    # Guia principal + fluxos de desenvolvimento
 ├── package.json                 # Monorepo (workspace cli/)
@@ -44,25 +44,13 @@ axion/
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
 
-### Mapeamento vs upstream ag-kit
-
-| Recurso upstream | Neste projeto (Cursor) |
-| --- | --- |
-| `.agents/agent/` | `.claude/agents/` |
-| `.agents/workflows/` | `.cursor/commands/` |
-| `.agents/rules/GEMINI.md` | `AGENTS.md` + `.cursor/rules/*.mdc` |
-| `.agents/scripts/` | `.cursor/scripts/` |
-| `.agents/mcp_config.json` | `.cursor/mcp.json` |
-| `$ARGUMENTS` em workflows | Texto livre após o `/comando` |
-| `npx @vudovn/ag-kit init` | `npx @zanetta/axion init` |
-
 ---
 
 ## 📦 Distribuição npm
 
 | Item | Detalhe |
 | --- | --- |
-| Pacote | `@zanetta/axion@1.0.0` |
+| Pacote | `@zanetta/axion@1.0.2` |
 | Binário | `axion` |
 | Comandos CLI | `init`, `update`, `status` |
 | Install default | Full + merge (`mcp.json`, rules) |
@@ -244,7 +232,7 @@ allowed-tools: Read, Grep, Glob
 | --- | --- |
 | `checklist.py` | Validação core (dev, pre-commit) |
 | `verify_all.py` | Suite completa (pre-deploy) |
-| `sync_upstream.py` | Compare/sync com [ag-kit](https://github.com/vudovn/ag-kit) |
+| `sync_upstream.py` | Compare/sync com [zanetta/axion](https://github.com/zanetta/axion) |
 | `@zanetta/axion` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
 | `session_manager.py` | Gestão de sessão |
 | `auto_preview.py` | Preview automático |
@@ -258,7 +246,7 @@ python3 .cursor/scripts/checklist.py .
 # Verificação completa
 python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 
-# Sync com upstream
+# Sync com zanetta/axion
 python3 .cursor/scripts/sync_upstream.py --apply
 
 # Instalar kit em outro projeto (CLI npm)
@@ -277,7 +265,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | --- | --- |
 | Agents | 20 |
 | Skills | 45 |
-| Workflows | 14 (13 upstream + 1 Cursor) |
+| Workflows | 14 |
 | Scripts em `.cursor/scripts/` | 5 |
 | CLI npm | `@zanetta/axion` |
 | Regras por domínio | 7 |
