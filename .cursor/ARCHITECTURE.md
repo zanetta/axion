@@ -39,7 +39,7 @@ axion/
 ├── .axion/                      # Estado do kit (só trace/README.md é copiado ao consumidor)
 │   ├── kit.manifest.json        # SemVer, profile, checksums (gerado pelo CLI no consumidor)
 │   ├── inventory.json           # Contagens machine-readable (generate_inventory.py; paridade: lint_inventory.py; não copiado)
-│   ├── logs/runs.jsonl          # Run log append-only (O-01); o .gitignore `logs` já ignora o diretório
+│   ├── logs/runs.jsonl          # Run log append-only (O-01); contadores opcionais (O-03) só se a flag foi passada. O .gitignore `logs` já ignora o diretório
 │   └── trace/                   # Traceability opcional {slug}.json (protegido no update, exceto README.md)
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/

@@ -123,6 +123,14 @@ python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 
 
 Domains are independent: an open `backend` does not block `frontend`. The report states the action and the counts. It does not paste worker transcripts or secrets.
 
+When the run finishes, append the counters (integers only, no narrative) to the run log:
+
+```bash
+python3 .cursor/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 0 --artifact {slug}.plan.md
+```
+
+`--workers` is how many workers launched. `--failures` is how many attempts failed. `--duration-ms` is the estimated elapsed time. `--breaker-trips` is how many times a domain opened. Omit a flag rather than invent a value. A negative count exits 2 and writes nothing. Workers, failures, and breaker trips stop at 1000. Duration stops at 86400000 (24h).
+
 ---
 
 ## Worker Prompt Writing Guide

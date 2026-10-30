@@ -60,6 +60,12 @@ RULES:
 
 ## After Coordination
 
+Log the counters when the run finishes. Integers only; omit a flag you did not measure:
+
+```bash
+python3 .cursor/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers <n> --failures <n> --duration-ms <n> --breaker-trips <n> --artifact {slug}.plan.md
+```
+
 ```
 [OK] Coordination complete
 

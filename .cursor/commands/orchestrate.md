@@ -280,6 +280,7 @@ Before completing orchestration, verify:
 1. ✅ **Agent Count:** `invoked_agents >= 3`
 2. ✅ **Scripts Executed:** At least `security_scan.py` ran
 3. ✅ **Report Generated:** Orchestration Report with all agents listed
+4. ✅ **Run log:** append counters only — `python3 .cursor/scripts/session_manager.py log . --command-name orchestrate --slug {slug} --exit 0 --workers <n> --failures <n> --duration-ms <n> --breaker-trips <n> --artifact {slug}.plan.md`
 
 > **If any check fails → DO NOT mark orchestration complete. Invoke more agents or run scripts.**
 

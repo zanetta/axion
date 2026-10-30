@@ -122,7 +122,21 @@ def safe_artifact(value: str) -> str:
     return normalized
 
 
-def append_run(root: Path, command: str, slug, exit_code, artifacts: List[str]) -> dict:
+METRIC_LIMITS = {
+    "workers": 1000,
+    "failures": 1000,
+    "duration_ms": 86_400_000,
+    "breaker_trips": 1000,
+}
+
+
+def bounded_count(value, name: str, limit: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0 or value > limit:
+        raise ValueError(f"{name} must be an integer from 0 to {limit}")
+    return value
+
+
+def append_run(root: Path, command: str, slug, exit_code, artifacts: List[str], metrics=None) -> dict:
     if TOKEN.fullmatch(command) is None:
         raise ValueError("command must be a short token")
     if slug is not None and TOKEN.fullmatch(slug) is None:
@@ -136,6 +150,14 @@ def append_run(root: Path, command: str, slug, exit_code, artifacts: List[str]) 
         record["slug"] = slug
     if exit_code is not None:
         record["exit"] = exit_code
+    for key, name in (
+        ("workers", "workers"),
+        ("failures", "failures"),
+        ("duration_ms", "duration-ms"),
+        ("breaker_trips", "breaker-trips"),
+    ):
+        if metrics and metrics.get(key) is not None:
+            record[key] = bounded_count(metrics[key], name, METRIC_LIMITS[key])
     dest = runs_path(root)
     dest.parent.mkdir(parents=True, exist_ok=True)
     with dest.open("a", encoding="utf-8") as handle:
@@ -186,6 +208,10 @@ def main():
     parser.add_argument("--slug", default=None)
     parser.add_argument("--exit", dest="exit_code", type=int, default=None)
     parser.add_argument("--artifact", action="append", default=[])
+    parser.add_argument("--workers", type=int, default=None)
+    parser.add_argument("--failures", type=int, default=None)
+    parser.add_argument("--duration-ms", dest="duration_ms", type=int, default=None)
+    parser.add_argument("--breaker-trips", dest="breaker_trips", type=int, default=None)
 
     args = parser.parse_args()
     root = get_project_root(args.path)
@@ -201,7 +227,19 @@ def main():
             print("session_manager: --command-name is required", file=sys.stderr)
             sys.exit(2)
         try:
-            append_run(root, args.command_name, args.slug, args.exit_code, args.artifact)
+            append_run(
+                root,
+                args.command_name,
+                args.slug,
+                args.exit_code,
+                args.artifact,
+                {
+                    "workers": args.workers,
+                    "failures": args.failures,
+                    "duration_ms": args.duration_ms,
+                    "breaker_trips": args.breaker_trips,
+                },
+            )
         except ValueError as exc:
             print(f"session_manager: {exc}", file=sys.stderr)
             sys.exit(2)

@@ -286,7 +286,11 @@ python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {s
 
 ### `log`
 
-Append-only em `.axion/logs/runs.jsonl`. Cada linha é um JSON. Não há campo de texto livre nem PII.
+Append-only em `.axion/logs/runs.jsonl`. Cada linha é um JSON. Não há campo de texto livre nem PII. As quatro flags de orquestração são opcionais: a chave só entra se a flag foi passada.
+
+```bash
+python3 .cursor/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 1 --artifact {slug}.plan.md
+```
 
 | Campo | Origem | Regra |
 | --- | --- | --- |
@@ -295,8 +299,14 @@ Append-only em `.axion/logs/runs.jsonl`. Cada linha é um JSON. Não há campo d
 | `artifacts` | `--artifact` (repetível) | path relativo, sem espaço, sem absoluto e sem `..` (também com `\`) |
 | `slug` | `--slug` | opcional; o mesmo padrão de `command` |
 | `exit` | `--exit` | opcional; inteiro — no `/verify`, o exit do `verify_gate.py` |
+| `workers` | `--workers` | opcional; inteiro 0–1000; a chave só entra se a flag foi passada |
+| `failures` | `--failures` | opcional; inteiro 0–1000; a chave só entra se a flag foi passada |
+| `duration_ms` | `--duration-ms` | opcional; inteiro 0–86400000 (24h); a chave só entra se a flag foi passada |
+| `breaker_trips` | `--breaker-trips` | opcional; inteiro 0–1000; a chave só entra se a flag foi passada |
 
-`--command-name` ausente, token inválido ou artifact inválido → exit 2 e nada é gravado. O `--exit 0` do exemplo é o sucesso do gate; grave o exit real. Se o gate falhar, registre esse número e pare o relatório. O `.gitignore` já tem `logs` (sem barra) e ignora qualquer diretório com esse nome, inclusive `.axion/logs/`.
+`--command-name` ausente, token inválido ou artifact inválido → exit 2 e nada é gravado. O `--exit 0` do exemplo de verify é o sucesso do gate; grave o exit real. Se o gate falhar, registre esse número e pare o relatório. Contador negativo, acima do limite, ou ausente de forma inválida (flag sem inteiro válido): exit 2 e a linha não é acrescentada. Sem essas flags, o registro de verify continua igual (sem as chaves). `/coordinate`, `/orchestrate` e `coordinator-mode` gravam os contadores no fim da orquestração. O `.gitignore` já tem `logs` (sem barra) e ignora qualquer diretório com esse nome, inclusive `.axion/logs/`.
+
+Testes: `cli/test/run-metrics.test.js` (2 casos; `cd cli && npm test` = 61 pass / 0 fail).
 
 ### `doctor`
 

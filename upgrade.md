@@ -5,7 +5,7 @@ Documento de engenharia: evoluir o **Axion** de um pack instalável de agents e 
 | | |
 | --- | --- |
 | **Estado atual** | Pack de agents (`.claude/agents/`), skills (`.agents/skills/`), commands (`.cursor/commands/`), rules (`.cursor/rules/`), memória (`.agents/memory/`), scripts (`.cursor/scripts/`) e CLI npm `@zanetta/axion` (`cli/`) |
-| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) concluída** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install, **W-03** ✅ (`verify_gate.py`), **O-02** ✅ (`trace_report.py`), **X-02** ✅ (`memory_secret_scan.py`), **D-03** ✅ (drift + paths protegidos), **D-04** ✅ (`doctor`), **O-01** ✅ (`.axion/logs/runs.jsonl`), **X-03** ✅ (`side_effect_guard.py`); Fase 3 em curso — **W-04** ✅ (`circuit_breaker.py`) |
+| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) concluída** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install, **W-03** ✅ (`verify_gate.py`), **O-02** ✅ (`trace_report.py`), **X-02** ✅ (`memory_secret_scan.py`), **D-03** ✅ (drift + paths protegidos), **D-04** ✅ (`doctor`), **O-01** ✅ (`.axion/logs/runs.jsonl`), **X-03** ✅ (`side_effect_guard.py`); Fase 3 em curso — **W-04** ✅ (`circuit_breaker.py`), **O-03** ✅ (contadores no run log). Próximo: **E-01** |
 | **Público** | Maintainers do kit e consumidores que instalam via `npx @zanetta/axion` |
 
 ### Objetivo
@@ -92,7 +92,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ✅ O-01 | P2 | Session / run log estruturado | Append-only log local de runs de command (command, slug, artefatos tocados, exit verify). Sem PII. | Pouca observabilidade entre sessões além de `.agents/memory/`. | `.axion/logs/runs.jsonl`; integração leve em `/verify` e `session_manager.py` | M | K-01 | **DONE** — `python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md` faz append-only em `.axion/logs/runs.jsonl`. Campos: `ts` (ISO UTC), `command`, `artifacts[]`; `slug` e `exit` opcionais. Sem campo de texto livre/PII. `command` e `slug`: `^[a-z0-9-]{1,40}$`. `artifact`: path relativo, sem espaço, sem absoluto e sem `..` (também com `\`). Inválido → exit 2 e nada é gravado (o agente honra esse exit). O passo 7 de `/verify` grava o log depois do gate, só com paths e exit, sem texto de evidência. O `0` do exemplo é o exit do gate no sucesso; se o gate falhar, registre o exit real e pare o relatório. O `.gitignore` já tem `logs` (sem barra), que ignora qualquer diretório `logs`, inclusive `.axion/logs/`. |
 | ✅ O-02 | P2 | Traceability report | Comando/script que imprime cobertura SPEC→ACCEPTANCE→checks para um slug. | Fecha o loop SDD para humanos e CI local. | `.cursor/scripts/trace_report.py`; menção em `/verify` | S | S-04 | **DONE** — `python3 .cursor/scripts/trace_report.py . {slug}` lê `{slug}.spec.md`, `{slug}.plan.md` (fallback `{slug}.md`), `{slug}.acceptance.md` e, se existir, `.axion/trace/{slug}.json`. Imprime SPEC / PLAN / AC / check (`pass`, `open`, `no-evidence`). Exit 0 com a cadeia coberta; exit 1 em gap (arquivo ausente, id da SPEC sem AC, AC sem link, task fora do PLAN, evidência aberta ou placeholder, JSON que discorda dos links markdown); exit 2 em slug inválido. Não reexecuta os checks. Placeholders `{…}` na rastreabilidade são ignorados. Testes: `cli/test/trace-report.test.js` (9 casos; suíte CLI 44) |
-| O-03 | P3 | Métricas de orquestração | Contadores: workers lançados, falhas, tempo estimado, circuit-breaker trips — no run log. | Necessário para calibrar W-04 e custo. | Extensão de O-01 + `coordinator-mode` | M | O-01, W-04 | — |
+| ✅ O-03 | P3 | Métricas de orquestração | Contadores: workers lançados, falhas, tempo estimado, circuit-breaker trips — no run log. | Necessário para calibrar W-04 e custo. | Extensão de O-01 + `coordinator-mode` | M | O-01, W-04 | **DONE** — `python3 .cursor/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 1 --artifact {slug}.plan.md`. Flags opcionais; a chave só é gravada se a flag foi passada (`workers`, `failures`, `breaker_trips` no JSON; `duration_ms` vem de `--duration-ms`; `breaker_trips` vem de `--breaker-trips`). `workers`, `failures` e `breaker_trips`: inteiros 0–1000. `duration_ms`: inteiro 0–86400000 (24h). Negativo, acima do limite, ou ausente de forma inválida (flag sem inteiro válido): exit 2 e a linha não é acrescentada. Sem essas flags, o registro de verify continua igual (sem as chaves). Sem campo de texto livre. Extensão de `session_manager.py` (O-01); não há script novo — scripts master continuam 14. `/coordinate`, `/orchestrate` e `coordinator-mode` já mandam gravar esses contadores no fim da orquestração. Testes: `cli/test/run-metrics.test.js` (2 casos; `cd cli && npm test` = 61 pass / 0 fail). |
 
 ### 7. Security
 
@@ -144,9 +144,9 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 *Saída:* kit “shippable” com CI de conteúdo, observabilidade local e writes limitados à allowlist do PLAN.
 
-### Fase 3 — Avançado (P3) — próximo: **O-03** (métricas de orquestração)
+### Fase 3 — Avançado (P3) — próximo: **E-01** (golden cases de roteamento)
 
-1. **W-04** ✅ — Circuit breaker (`circuit_breaker.py`). **O-03** — métricas de orquestração.
+1. **W-04** ✅ — Circuit breaker (`circuit_breaker.py`). **O-03** ✅ — métricas de orquestração no run log (`session_manager.py log`; sem script novo).
 2. **E-01 → E-02** — Eval de routing e gates (**E-03** ✅ antecipado para a Fase 2).
 
 *Saída:* regressão automática de routing/gates e orquestração resiliente.
@@ -185,7 +185,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | Manifesto instalado | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | Inventário | `.axion/inventory.json` (via `generate_inventory.py`) |
 | Traceability | `.axion/trace/README.md` + opcional `{slug}.json` |
-| Run log | `.axion/logs/runs.jsonl` (`session_manager.py log`; o `.gitignore` `logs` já ignora o diretório) |
+| Run log | `.axion/logs/runs.jsonl` (`session_manager.py log`; contadores opcionais `workers`, `failures`, `duration_ms`, `breaker_trips`; o `.gitignore` `logs` já ignora o diretório) |
 | Arquitetura | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `AGENTS.md` |
 | CLI | `cli/` → `@zanetta/axion` (`init`, `update` com drift/protected, `status` com doctor; `--profile`, `--enable-offensive`) |
 | CI | `.github/workflows/ci.yml` (path lint + contract lint + inventory parity + CLI tests + smoke pós-install; reusável via `workflow_call`) |
@@ -196,5 +196,5 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 ## Como usar este backlog
 
 1. Abrir issue/PR por **ID** (ex.: `Q-01`).
-2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). ✅ Fase 2 fechada (**Q-04, Q-02, E-03, Q-03, W-03, O-02, X-02, D-03, D-04, O-01, X-03**). Fase 3: **W-04** ✅. Próximo: **O-03**.
+2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). ✅ Fase 2 fechada (**Q-04, Q-02, E-03, Q-03, W-03, O-02, X-02, D-03, D-04, O-01, X-03**). Fase 3: **W-04** ✅, **O-03** ✅. Próximo: **E-01**.
 3. Toda mudança de path ou contrato deve atualizar este arquivo só se prioridade/escopo mudar — senão atualizar inventário/manifesto gerados.
