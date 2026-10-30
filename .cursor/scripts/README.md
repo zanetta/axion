@@ -149,11 +149,13 @@ Testes: `cli/test/circuit-breaker.test.js` (3 casos; `cd cli && npm test` = 59 p
 
 ## eval_routing.py
 
-Golden cases de roteamento (P3 E-01). Checagem estática das tabelas: o script não chama modelo. Os 16 cases ficam em `.axion/eval/routing.cases.json`.
+Golden cases de roteamento (P3 E-01) e eval de gates FSM (P3 E-02). Checagem estática: o script não chama modelo. Não há script novo. Os 16 cases ficam em `.axion/eval/routing.cases.json`. Sem `--gates` e sem `--plan`, o modo E-01 permanece.
 
 ```bash
 python3 .cursor/scripts/eval_routing.py .
 python3 .cursor/scripts/eval_routing.py . --cases .axion/eval/routing.cases.json
+python3 .cursor/scripts/eval_routing.py . --gates
+python3 .cursor/scripts/eval_routing.py . --plan {slug}.plan.md
 ```
 
 O argumento posicional é a raiz do projeto (padrão: `.`). `--cases` troca o JSON.
@@ -175,15 +177,33 @@ O case `mobile-not-frontend` (`source` `agents`, match `**MOBILE**`) exige `mobi
 
 JSON com `NaN`, `Infinity`, `-Infinity` ou chave duplicada é inválido. `cases` vazio, id duplicado ou case malformado também.
 
+Sem `--gates` e sem `--plan` (E-01):
+
 | Exit | Saída |
 | --- | --- |
 | `0` | `eval_routing: pass 16` |
 | `1` | Divergência de tabela ou de arquivo: `eval_routing: FAIL` e um problema por linha |
 | `2` | Arquivo de cases ausente, `AGENTS.md` ou a skill de routing ausente, ou JSON inválido |
 
-O passo **Eval routing golden cases (E-01)** em `.github/workflows/ci.yml` roda antes de `npm test`. De `.axion/`, o install copia só `.axion/trace/README.md`; `routing.cases.json` permanece no repositório do kit.
+`--gates` cria projetos temporários e não lê os plans do repo. São 7 checagens: plano sem SPEC e sem 3 respostas não está pronto; plano com `{slug}.spec.md` não vazio está pronto; plano com 3 respostas reais está pronto; `verify_gate.py` sem ACCEPTANCE sai 1; com ACCEPTANCE completa e `--skip-checklist` sai 0; `lint_paths.py` falha se um command cita `.agents/scripts/`; passa se cita só `.cursor/scripts/`.
 
-Testes: `cli/test/eval-routing.test.js` (3 casos; `cd cli && npm test` = 64 pass / 0 fail).
+| Exit | Saída |
+| --- | --- |
+| `0` | `eval_gates: pass 7` |
+| `1` | `eval_gates: FAIL` e uma linha por cenário |
+| `2` | `verify_gate.py` ou `lint_paths.py` não existem |
+
+`--plan`: o SPEC é `{slug}.spec.md` ao lado do plano, com slug tirado de `{slug}.plan.md`. Sem SPEC, conta linhas da seção `### Socratic evidence` cuja pergunta e resposta estão preenchidas. Cabeçalho, separador `---` e célula com `{` ou `}` não contam. Um título `#`, `##` ou `###` seguinte fecha a seção; `####` continua dentro. `/plan` já manda rodar este comando. O IDE não bloqueia a transição sozinho: o agente honra o exit. W-01/W-02 continuam instrução; E-02 é o eval que regressa esses gates.
+
+| Exit | Saída |
+| --- | --- |
+| `0` | `eval_routing: plan ready` |
+| `1` | Plano não pronto: `eval_routing: plan not ready (need a non-empty SPEC or 3 Socratic answers)` |
+| `2` | Arquivo ausente (stderr `eval_routing: plan not found:`) |
+
+O passo **Eval routing golden cases (E-01)** em `.github/workflows/ci.yml` roda antes de `npm test`. O passo **Eval FSM gates (E-02)** vem depois do E-01. De `.axion/`, o install copia só `.axion/trace/README.md`; `routing.cases.json` permanece no repositório do kit.
+
+Testes: `cli/test/eval-routing.test.js` (3 casos) e `cli/test/eval-gates.test.js` (2 casos; `cd cli && npm test` = 66 pass / 0 fail).
 
 ## verify_all.py
 

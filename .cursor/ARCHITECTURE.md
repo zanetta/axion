@@ -73,7 +73,7 @@ axion/
 | Offensive | Só com `--profile security` ou `--enable-offensive` |
 | Contratos | `.agents/schemas/skill-contract.schema.json`, `command-contract.schema.json` |
 | Observabilidade SemVer | `init`/`update` gravam o manifesto, listam drift e não sobrescrevem paths protegidos (SPEC/PLAN/ACCEPTANCE, `.agents/memory/`, `.axion/logs/`, `.axion/trace/*` exceto `README.md`) mesmo com `--force`; `status` compara installed vs latest e, se `session_manager.py` existir, imprime o doctor (memory index, path lint, último verify em `.axion/logs/runs.jsonl`) |
-| CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + lint_inventory + eval routing golden cases (E-01) antes dos testes npm + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
+| CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + lint_inventory + eval routing golden cases (E-01) + passo "Eval FSM gates (E-02)" depois do E-01, antes dos testes npm + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
 | Docs CLI | [`cli/README.md`](../cli/README.md) |
 
 ---
@@ -146,7 +146,7 @@ discover → specify → plan → implement → verify → remember
 | `verify` | `/verify` | ACCEPTANCE + evidência; `verify_gate.py` exit 0 (W-03) |
 | `remember` | `/remember` | entradas em `.agents/memory/` só com `memory_secret_scan.py` limpo (X-02) |
 
-**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate são instruções em commands/agents (advisory), sem enforcement por tooling — eval mecânico planejado em E-02 ([`upgrade.md`](../upgrade.md)). O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
+**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate continuam instrução em commands/agents (advisory): o IDE não bloqueia a transição sozinho e o agente honra o exit. O eval E-02 (`eval_routing.py --gates` e `--plan`) regressa esses gates ([`upgrade.md`](../upgrade.md)). O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
 
 **Verify hard gate (W-03):** `/verify` roda os AC-*, grava a evidência, marca `[x]` e só conclui se `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` sair 0. O script não reexecuta os comandos. Exit 1 (ACCEPTANCE incompleto, sign-off aberto ou `checklist.py` ≠ 0) impede reportar a tarefa como concluída.
 
@@ -353,7 +353,7 @@ side_effects: [read-only]
 | `session_manager.py` | Gestão de sessão; `doctor` (JSON) e `log` append-only em `.axion/logs/runs.jsonl` |
 | `side_effect_guard.py` | Allowlist de escrita do PLAN (X-03); o agente honra o exit |
 | `circuit_breaker.py` | Circuit breaker da orquestração (W-04); um domínio por chamada; o agente honra o exit |
-| `eval_routing.py` | Golden cases de roteamento (E-01); checagem estática, sem modelo |
+| `eval_routing.py` | Golden cases (E-01) e gates FSM (E-02: `--gates`, `--plan`); estático, sem modelo; sem script novo |
 | `auto_preview.py` | Preview automático |
 
 ### Usage
@@ -398,6 +398,10 @@ python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 
 
 # Golden cases de roteamento (P3 E-01) — não chama modelo
 python3 .cursor/scripts/eval_routing.py .
+
+# Gates FSM (P3 E-02) — projetos temporários no --gates; o modo E-01 permanece
+python3 .cursor/scripts/eval_routing.py . --gates
+python3 .cursor/scripts/eval_routing.py . --plan {slug}.plan.md
 ```
 
 Skill-level scripts ficam em `.agents/skills/<skill>/scripts/`.

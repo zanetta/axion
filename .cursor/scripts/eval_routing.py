@@ -7,10 +7,16 @@ The runner checks that the one matching row lists the expected agents and
 skills, and that the named agent and skill files exist.
 
     python3 .cursor/scripts/eval_routing.py .
+    python3 .cursor/scripts/eval_routing.py . --gates
+    python3 .cursor/scripts/eval_routing.py . --plan feature.plan.md
 
 Exit 0: every case matches.
-Exit 1: one or more cases diverge from the tables or the filesystem.
-Exit 2: the case file or a source document is missing or invalid.
+Exit 1: one or more cases diverge, or a plan has neither a SPEC nor 3 answers.
+Exit 2: the case file, a source document, or a required script is missing or invalid.
+
+`--gates` (E-02) runs the FSM checks in temporary projects: a plan without a
+SPEC and without 3 answered Socratic rows is not ready; verify_gate fails
+with no ACCEPTANCE; lint_paths fails on `.agents/scripts/`.
 """
 
 from __future__ import annotations
@@ -18,11 +24,14 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 TOKEN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SEPARATOR_CELL = re.compile(r":?-{3,}:?")
+SECTION_BOUNDARY = re.compile(r"^#{1,3}\s+\S")
 SOURCES = {
     "agents": "AGENTS.md",
     "routing": ".agents/skills/intelligent-routing/SKILL.md",
@@ -155,12 +164,184 @@ def evaluate(root: Path, cases_path: Path) -> tuple[list[str], int]:
     return problems, (1 if problems else 0)
 
 
+def filled_cell(cell: str) -> bool:
+    text = cell.strip().strip("`")
+    if not text or set(text) <= set("-: "):
+        return False
+    if text in {"#", "Question", "Answer"}:
+        return False
+    if "{" in text or "}" in text:
+        return False
+    return True
+
+
+def socratic_answers(plan_text: str) -> int:
+    count = 0
+    in_section = False
+    for line in plan_text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("### Socratic evidence"):
+            in_section = True
+            continue
+        if in_section and SECTION_BOUNDARY.match(stripped):
+            in_section = False
+            continue
+        if not in_section or not stripped.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if len(cells) >= 3 and filled_cell(cells[1]) and filled_cell(cells[2]):
+            count += 1
+    return count
+
+
+def spec_path_for(plan: Path) -> Path:
+    name = plan.name
+    if name.endswith(".plan.md"):
+        slug = name[: -len(".plan.md")]
+    elif name.endswith(".md"):
+        slug = name[:-3]
+    else:
+        slug = plan.stem
+    return plan.with_name(f"{slug}.spec.md")
+
+
+def plan_is_ready(plan: Path) -> bool:
+    spec = spec_path_for(plan)
+    if spec.is_file() and spec.read_text(encoding="utf-8").strip():
+        return True
+    if not plan.is_file():
+        return False
+    return socratic_answers(plan.read_text(encoding="utf-8")) >= 3
+
+
+def run_tool(script: Path, args: list[str]) -> int:
+    result = subprocess.run([sys.executable, str(script), *args], capture_output=True, text=True)
+    return result.returncode
+
+
+ACCEPTANCE_OK = """# ACCEPTANCE
+
+| ID | Given / When / Then | Method | Command / evidence | Pass |
+| --- | --- | --- | --- | --- |
+| AC-1 | when the gate runs | unit | npm test passed | [x] |
+
+## Sign-off
+
+- [x] All AC-* checked with evidence
+"""
+
+PLAN_EMPTY = """# PLAN
+
+### Socratic evidence (if no separate SPEC)
+
+| # | Question | Answer |
+| --- | --- | --- |
+| 1 | | |
+| 2 | | |
+| 3 | | |
+"""
+
+PLAN_ANSWERED = """# PLAN
+
+### Socratic evidence (if no separate SPEC)
+
+| # | Question | Answer |
+| --- | --- | --- |
+| 1 | Who uses it? | Cashiers |
+| 2 | What fails closed? | Offline carts |
+| 3 | What is out of scope? | Payments |
+"""
+
+
+def evaluate_gates(root: Path) -> tuple[list[str], int]:
+    gate = root / ".cursor" / "scripts" / "verify_gate.py"
+    linter = root / ".cursor" / "scripts" / "lint_paths.py"
+    if not gate.is_file() or not linter.is_file():
+        return ["verify_gate.py and lint_paths.py must both exist"], 2
+
+    problems = []
+    with tempfile.TemporaryDirectory(prefix="axion-gates-") as tmp:
+        base = Path(tmp)
+        bare = base / "bare"
+        bare.mkdir()
+        plan = bare / "cart.plan.md"
+        plan.write_text(PLAN_EMPTY, encoding="utf-8")
+        if plan_is_ready(plan):
+            problems.append("plan-without-spec: expected not ready")
+
+        speced = base / "speced"
+        speced.mkdir()
+        (speced / "cart.plan.md").write_text(PLAN_EMPTY, encoding="utf-8")
+        (speced / "cart.spec.md").write_text("# SPEC\n\nCashiers need an offline cart.\n", encoding="utf-8")
+        if not plan_is_ready(speced / "cart.plan.md"):
+            problems.append("plan-with-spec: expected ready")
+
+        answered = base / "answered"
+        answered.mkdir()
+        (answered / "cart.plan.md").write_text(PLAN_ANSWERED, encoding="utf-8")
+        if not plan_is_ready(answered / "cart.plan.md"):
+            problems.append("plan-with-answers: expected ready")
+
+        missing = base / "no-acceptance"
+        missing.mkdir()
+        if run_tool(gate, [str(missing), "--skip-checklist"]) != 1:
+            problems.append("verify-without-acceptance: expected exit 1")
+
+        done = base / "acceptance"
+        done.mkdir()
+        (done / "cart.acceptance.md").write_text(ACCEPTANCE_OK, encoding="utf-8")
+        if run_tool(gate, [str(done), "--acceptance", "cart.acceptance.md", "--skip-checklist"]) != 0:
+            problems.append("verify-with-acceptance: expected exit 0")
+
+        legacy = base / "legacy"
+        (legacy / ".cursor" / "commands").mkdir(parents=True)
+        (legacy / ".cursor" / "commands" / "plan.md").write_text(
+            "Run python3 .agents/scripts/foo.py\n", encoding="utf-8"
+        )
+        if run_tool(linter, [str(legacy)]) != 1:
+            problems.append("legacy-agents-scripts: expected exit 1")
+
+        clean = base / "clean"
+        (clean / ".cursor" / "commands").mkdir(parents=True)
+        (clean / ".cursor" / "commands" / "plan.md").write_text(
+            "Run python3 .cursor/scripts/foo.py\n", encoding="utf-8"
+        )
+        if run_tool(linter, [str(clean)]) != 0:
+            problems.append("canonical-scripts: expected exit 0")
+
+    return problems, (1 if problems else 0)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check routing golden cases against the docs")
     parser.add_argument("project", nargs="?", default=".")
     parser.add_argument("--cases", default=None, help="Override .axion/eval/routing.cases.json")
+    parser.add_argument("--gates", action="store_true", help="Run FSM gate fixtures (E-02)")
+    parser.add_argument("--plan", default=None, help="Check one plan for a SPEC or 3 Socratic answers")
     args = parser.parse_args()
     root = Path(args.project).resolve()
+
+    if args.gates:
+        problems, code = evaluate_gates(root)
+        if code == 0:
+            print("eval_gates: pass 7")
+            return 0
+        print("eval_gates: FAIL")
+        for problem in problems:
+            print(f"  {problem}")
+        return code
+
+    if args.plan:
+        plan = Path(args.plan)
+        if not plan.is_file():
+            print(f"eval_routing: plan not found: {plan}", file=sys.stderr)
+            return 2
+        if plan_is_ready(plan):
+            print("eval_routing: plan ready")
+            return 0
+        print("eval_routing: plan not ready (need a non-empty SPEC or 3 Socratic answers)")
+        return 1
+
     cases_path = Path(args.cases) if args.cases else root / ".axion" / "eval" / "routing.cases.json"
     problems, code = evaluate(root, cases_path)
     if code == 0:

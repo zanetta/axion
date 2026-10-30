@@ -41,6 +41,9 @@ jobs:
       - name: Eval routing golden cases (E-01)
         run: python3 .cursor/scripts/eval_routing.py .
 
+      - name: Eval FSM gates (E-02)
+        run: python3 .cursor/scripts/eval_routing.py . --gates
+
       - name: Install dependencies
         run: npm ci
 

@@ -47,6 +47,12 @@ side_effects:
 
 If gate fails → run `/brainstorm` or ask 3 questions; **do not** invent a plan.
 
+After the PLAN exists, confirm the gate. Exit 1 means it is not ready (empty SPEC and fewer than 3 real answers; a `{placeholder}` does not count):
+
+```bash
+python3 .cursor/scripts/eval_routing.py . --plan {slug}.plan.md
+```
+
 ---
 
 ## Task
