@@ -127,6 +127,26 @@ Motivos no exit 1, nesta ordem: `no-allowlist`, `forbidden`, `effect-denied`, `o
 
 Testes: `cli/test/side-effect-guard.test.js` (3 casos; `cd cli && npm test` = 56 pass / 0 fail).
 
+## circuit_breaker.py
+
+Circuit breaker da orquestração (P3 W-04). Stateless: uma chamada, um domínio. Antes de cada dispatch ou retry, `coordinator-mode`, `parallel-agents`, `/coordinate` e `/orchestrate` mandam rodar o script. O agente honra o exit; o IDE não bloqueia sozinho.
+
+```bash
+python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
+```
+
+`--domain` é token `^[a-z0-9-]{1,40}$`. Defaults: `--max-retries 2`, `--trip-after 3`. Stdout é um único JSON (`domain`, `action`, `reason`, `fallback`, `domain_failures`, `worker_failures`). Sem texto livre de workers. Domínios são independentes: um `backend` aberto não bloqueia `frontend`.
+
+| Exit | `action` | Quando |
+| --- | --- | --- |
+| `0` | `dispatch` | `worker-failures` 0 e o domínio fechado (`reason` `closed`, `fallback` null). Lance o worker |
+| `0` | `retry` | `0 < worker-failures <= max-retries` (`reason` `within-limit`, `fallback` null). Lance de novo |
+| `1` | `open` | `domain-failures >= trip-after` (`reason` `domain-failures`, `fallback` `partial-synthesis`). Prioridade sobre o retry: pare o domínio e escreva síntese parcial |
+| `1` | `stop-worker` | `worker-failures > max-retries` (`reason` `retry-limit`, `fallback` `abandon-worker`). Só esse worker cai; o domínio segue até abrir |
+| `2` | — | Contagem negativa, não inteira ou maior que 1000, `trip-after` menor que 1, ou domain inválido. Stdout vazio |
+
+Testes: `cli/test/circuit-breaker.test.js` (3 casos; `cd cli && npm test` = 59 pass / 0 fail).
+
 ## verify_all.py
 
 Suite completa pre-deploy (checklist + Lighthouse, Playwright, bundle, mobile, i18n):

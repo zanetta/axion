@@ -158,6 +158,18 @@ After all agents complete, synthesize:
 
 ---
 
+## Circuit breaker (W-04)
+
+Before dispatching or retrying a worker, run:
+
+```bash
+python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
+```
+
+Exit 0 launches it. Exit 1 with `action` `open` stops that domain and the report becomes a partial synthesis. Exit 1 with `stop-worker` drops only that worker. Another domain is a separate call. Do not retry a worker more than twice.
+
+---
+
 ## Best Practices
 
 1. **Available agents** - 17 specialized agents can be orchestrated

@@ -17,6 +17,7 @@ description: Advanced multi-agent coordination with parallel dispatch and synthe
 3. **Never delegate understanding** — Write specific prompts, not vague instructions
 4. **Parallel reads, sequential writes** — Read-only tasks can run in parallel
 5. **Write allowlist** — implementation writes only paths in the PLAN `## Write allowlist`. Run `python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write <path>` first. Exit 1: do not write.
+6. **Circuit breaker** — before each dispatch or retry, run `python3 .cursor/scripts/circuit_breaker.py --domain <token> --domain-failures <n> --worker-failures <n>`. Exit 1 with `open`: stop that domain and report a partial synthesis. Exit 1 with `stop-worker`: drop that worker only.
 
 ---
 

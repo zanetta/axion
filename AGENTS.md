@@ -46,7 +46,7 @@ Antes de modificar QUALQUER arquivo:
 | **Skills**          | `.agents/skills/<name>/SKILL.md`           |
 | **Workflows**       | `.cursor/commands/<name>.md` (`/<name>`)   |
 | **MCP**             | `.cursor/mcp.json`                         |
-| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_gate.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
+| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_gate.py`, `circuit_breaker.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
 | **Shared assets**   | `.cursor/shared/` (ex.: `ui-ux-pro-max`)   |
 | **Rules globais**   | `AGENTS.md` (este arquivo) — sempre aplicado |
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |

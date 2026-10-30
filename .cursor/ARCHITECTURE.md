@@ -14,7 +14,7 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 13 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 14 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
 | **Schemas de contrato** | 2 | `.agents/schemas/` |
 | **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **Inventário** | — | `.axion/inventory.json` (`generate_inventory.py`) |
@@ -52,7 +52,7 @@ axion/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 14 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
-    ├── scripts/                 # checklist, verify_gate, side_effect_guard, verify_all, lint_paths, lint_contracts, lint_inventory, …
+    ├── scripts/                 # checklist, verify_gate, side_effect_guard, circuit_breaker, verify_all, lint_paths, lint_contracts, lint_inventory, …
     ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
@@ -351,6 +351,7 @@ side_effects: [read-only]
 | `@zanetta/axion` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
 | `session_manager.py` | Gestão de sessão; `doctor` (JSON) e `log` append-only em `.axion/logs/runs.jsonl` |
 | `side_effect_guard.py` | Allowlist de escrita do PLAN (X-03); o agente honra o exit |
+| `circuit_breaker.py` | Circuit breaker da orquestração (W-04); um domínio por chamada; o agente honra o exit |
 | `auto_preview.py` | Preview automático |
 
 ### Usage
@@ -389,6 +390,9 @@ python3 .cursor/scripts/session_manager.py doctor .
 
 # Allowlist de escrita (P2 X-03) — antes de gravar; o agente honra o exit
 python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+
+# Circuit breaker (P3 W-04) — antes de cada dispatch ou retry; o agente honra o exit
+python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
 ```
 
 Skill-level scripts ficam em `.agents/skills/<skill>/scripts/`.
@@ -404,7 +408,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 13 |
+| Scripts em `.cursor/scripts/` | 14 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |
 | CLI npm | `@zanetta/axion` |

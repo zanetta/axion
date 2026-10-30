@@ -51,6 +51,7 @@ You are now in **ORCHESTRATION MODE**. Your task: coordinate specialized agents 
 | PLAN | `{slug}.plan.md` (or `{slug}.md`) with Traceability |
 | User approval | Explicit Y before Phase 2 implementation |
 | Write allowlist | Implementation writes only paths in `## Write allowlist`. Run `side_effect_guard.py` before each write; exit 1 means do not write. |
+| Circuit breaker | Before each dispatch or retry, run `circuit_breaker.py`. Exit 1 with `open` stops that domain (partial synthesis). `stop-worker` drops only that worker. |
 
 If missing → only `project-planner` / `explorer-agent` (Phase 1). Do **not** invoke specialists.
 
