@@ -1,5 +1,33 @@
 ---
 description: Coordinate multiple agents for complex tasks. Use for multi-perspective analysis, comprehensive reviews, or tasks requiring different domain expertise.
+name: orchestrate
+contract_version: "1.0.0"
+sdd_states:
+  - orchestrate
+  - plan
+  - implement
+  - verify
+required_skills:
+  - parallel-agents
+  - coordinator-mode
+  - plan-writing
+required_agents:
+  - orchestrator
+  - project-planner
+required_artifacts:
+  - "{slug}.plan.md"
+  - orchestration_report
+preconditions:
+  - "Minimum 3 distinct specialist agents"
+  - "SPEC or ≥3 Socratic answers before planning"
+  - "Plan file before implementation phase"
+scripts:
+  - ".agents/skills/vulnerability-scanner/scripts/security_scan.py"
+  - ".agents/skills/lint-and-validate/scripts/lint_runner.py"
+side_effects:
+  - invoke-agents
+  - write-files
+  - run-shell
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
@@ -8,8 +36,22 @@ description: Coordinate multiple agents for complex tasks. Use for multi-perspec
 
 You are now in **ORCHESTRATION MODE**. Your task: coordinate specialized agents to solve this complex problem.
 
+**FSM:** may span `plan` → `implement` → `verify`. **No worker dispatch** without Socratic/SPEC gate + PLAN.
+
 ## Task to Orchestrate
 (texto livre após o comando)
+
+---
+
+## 🔴 Gate before workers
+
+| Check | Required |
+|-------|----------|
+| Socratic / SPEC | `{slug}.spec.md` **or** ≥3 answered questions in PLAN |
+| PLAN | `{slug}.plan.md` (or `{slug}.md`) with Traceability |
+| User approval | Explicit Y before Phase 2 implementation |
+
+If missing → only `project-planner` / `explorer-agent` (Phase 1). Do **not** invoke specialists.
 
 ---
 
@@ -130,10 +172,11 @@ Identify ALL domains this task touches:
 
 ### Step 2: Phase Detection
 
-| If Plan Exists | Action |
-|----------------|--------|
-| NO `{task-slug}.md` | → Go to PHASE 1 (planning only) |
-| YES `{task-slug}.md` + user approved | → Go to PHASE 2 (implementation) |
+| Condition | Action |
+|-----------|--------|
+| No SPEC and no ≥3 Socratic answers | → Socratic Gate / `/brainstorm` first |
+| NO `{slug}.plan.md` / `{slug}.md` | → PHASE 1 (planning only) |
+| YES plan + user approved | → PHASE 2 (implementation) |
 
 ### Step 3: Execute Based on Phase
 
@@ -198,7 +241,7 @@ Combine all agent outputs into unified report.
 [Original task summary]
 
 ### Mode
-[Current AG Kit Agent mode: plan/edit/ask]
+[Current Cursor mode: Plan, Ask, or Agent]
 
 ### Agents Invoked (MINIMUM 3)
 | # | Agent | Focus Area | Status |

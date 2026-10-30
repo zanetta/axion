@@ -10,18 +10,24 @@ import { fileURLToPath } from "url";
 import {
     BIN_NAME,
     DEFAULT_REPO,
-    LEGACY_REPO_ENV,
     PACKAGE_NAME,
     REPO_ENV,
     TEMP_FOLDER,
 } from "../lib/constants.js";
 import { installKit, isKitInstalled } from "../lib/install.js";
+import { readKitManifest } from "../lib/manifest.js";
+import {
+    isOffensiveEnabled,
+    isValidProfile,
+    PROFILE_NAMES,
+    resolveInstallSettings,
+} from "../lib/profiles.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const pkg = await fse.readJson(path.join(__dirname, "..", "package.json"));
 
-const repoSource = process.env[REPO_ENV] ?? process.env[LEGACY_REPO_ENV] ?? DEFAULT_REPO;
+const repoSource = process.env[REPO_ENV] ?? DEFAULT_REPO;
 
 async function fetchTemplate(source, tempDir, branch) {
     const resolved = branch && !path.isAbsolute(source) && !source.startsWith("file:")
@@ -138,14 +144,22 @@ const printDryRun = async (targetDir, options) => {
     console.log(
         `  1. Download from: ${chalk.cyan(repoSource)}${options.branch ? "#" + options.branch : ""}`,
     );
-    console.log(`  2. Install (full) to: ${chalk.cyan(targetDir)}`);
-    console.log("  3. Copy: .claude/, .agents/, .cursor/, AGENTS.md, AGENT_FLOW.md, .env.example");
+    console.log(`  2. Install to: ${chalk.cyan(targetDir)}`);
+    console.log(`  3. Profile: ${chalk.cyan(options.profile)}`);
     console.log(
-        `  4. Merge mode: ${options.force ? chalk.red("OFF (--force overwrite)") : chalk.green("ON (mcp.json merge, rules skip if exist)")}`,
+        `  4. Offensive skills: ${
+            isOffensiveEnabled(options.profile, options.enableOffensive)
+                ? chalk.yellow("ON")
+                : chalk.gray("OFF")
+        }`,
+    );
+    console.log("  5. Copy: .claude/, .agents/, .cursor/, AGENTS.md, AGENT_FLOW.md, .env.example");
+    console.log(
+        `  6. Merge mode: ${options.force ? chalk.red("OFF (--force overwrite)") : chalk.green("ON (mcp.json merge, rules skip if exist)")}`,
     );
 
     if (await isKitInstalled(targetDir)) {
-        console.log(`  5. ${chalk.yellow("Kit partially or fully present — merge/skip unless --force")}`);
+        console.log(`  7. ${chalk.yellow("Kit partially or fully present — merge/skip unless --force")}`);
     }
 
     console.log(chalk.gray("────────────────────────────────────────\n"));
@@ -155,18 +169,35 @@ const runInstall = async (options) => {
     const quiet = options.quiet ?? false;
     const dryRun = options.dryRun ?? false;
     const force = options.force ?? false;
+    const targetDir = path.resolve(options.path || process.cwd());
+    const { profile, enableOffensive } = resolveInstallSettings(
+        options,
+        await readKitManifest(targetDir),
+    );
+
+    if (!isValidProfile(profile)) {
+        const origin = options.profile === undefined ? " (from .axion/kit.manifest.json; pass --profile to override)" : "";
+        console.error(
+            chalk.red(`Invalid profile "${profile}"${origin}. Allowed: ${PROFILE_NAMES.join(", ")}`),
+        );
+        process.exit(1);
+    }
 
     showBanner(quiet);
     const updatePromise = checkUpdate(quiet);
 
-    const targetDir = path.resolve(options.path || process.cwd());
     const tempDir = path.join(targetDir, TEMP_FOLDER);
     const source = options.branch && !path.isAbsolute(repoSource)
         ? `${repoSource}#${options.branch}`
         : repoSource;
 
     if (dryRun) {
-        await printDryRun(targetDir, { ...options, branch: options.branch });
+        await printDryRun(targetDir, {
+            ...options,
+            branch: options.branch,
+            profile,
+            enableOffensive,
+        });
         return;
     }
 
@@ -190,12 +221,18 @@ const runInstall = async (options) => {
     try {
         await fetchTemplate(repoSource, tempDir, options.branch);
 
-        if (spinner) spinner.text = "Installing (full, merge)...";
+        if (spinner) spinner.text = `Installing (profile: ${profile})...`;
 
-        const summary = { installed: 0, merged: 0, skipped: 0, overwritten: 0 };
+        const summary = { installed: 0, merged: 0, skipped: 0, overwritten: 0, excluded: 0 };
 
-        await installKit(tempDir, targetDir, {
+        const result = await installKit(tempDir, targetDir, {
             force,
+            version: pkg.version,
+            packageName: PACKAGE_NAME,
+            profile,
+            enableOffensive,
+            templateSource: source,
+            action: installed ? "update" : "init",
             onAction: (_file, action) => {
                 if (summary[action] !== undefined) summary[action] += 1;
             },
@@ -214,10 +251,33 @@ const runInstall = async (options) => {
             console.log(`   Merged:      ${chalk.cyan(summary.merged)}`);
             console.log(`   Skipped:     ${chalk.yellow(summary.skipped)}`);
             console.log(`   Overwritten: ${chalk.red(summary.overwritten)}`);
+            console.log(`   Excluded:    ${chalk.gray(summary.excluded)} (outside profile)`);
+            console.log(`   Profile:     ${chalk.cyan(profile)}`);
+            console.log(
+                `   Offensive:   ${
+                    result.includeOffensive ? chalk.yellow("enabled") : chalk.gray("disabled")
+                }`,
+            );
+            if (result.outsideProfile.length > 0) {
+                console.log(
+                    chalk.yellow(
+                        `\n   ${result.outsideProfile.length} existing kit component(s) are outside the "${profile}" profile and were kept (remove manually if unwanted):`,
+                    ),
+                );
+                for (const item of result.outsideProfile) {
+                    console.log(chalk.gray(`     - ${item}`));
+                }
+            }
+            console.log(`   Manifest:    ${chalk.cyan(".axion/kit.manifest.json")} @ ${pkg.version}`);
             console.log(chalk.gray("────────────────────────────────────────"));
             console.log(chalk.white("\nNext steps:"));
             console.log(`   1. ${chalk.cyan("cp .env.example .env")} and set CONTEXT7_API_KEY (optional)`);
             console.log(`   2. Open in Cursor and use ${chalk.cyan("/plan")}, ${chalk.cyan("/debug")}, etc.`);
+            console.log(
+                chalk.gray(
+                    `   3. Inventory: ${chalk.cyan("python3 .cursor/scripts/generate_inventory.py .")}`,
+                ),
+            );
             console.log(chalk.green("\nHappy coding!\n"));
         }
 
@@ -251,27 +311,62 @@ const statusCommand = async (options) => {
 
     const installed = await isKitInstalled(targetDir);
 
-    if (installed) {
-        console.log(chalk.green("\n[OK] Kit installed"));
-        console.log(chalk.gray("────────────────────────────────────────"));
-        for (const p of [".claude/agents", ".agents/skills", ".cursor/commands", "AGENTS.md"]) {
-            const full = path.join(targetDir, p);
-            const ok = await fse.pathExists(full);
-            console.log(`  ${ok ? chalk.green("✓") : chalk.red("✗")} ${p}`);
-        }
-        console.log(chalk.gray("────────────────────────────────────────\n"));
-    } else {
+    if (!installed) {
         console.log(chalk.red("\n[X] Kit not installed (or incomplete)"));
         console.log(
             chalk.yellow(`Run ${chalk.cyan(`npx ${PACKAGE_NAME} init`)} to install.\n`),
         );
+        const latestVersion = await updatePromise;
+        if (latestVersion) showUpdateNotification(latestVersion);
+        return;
     }
+
+    console.log(chalk.green("\n[OK] Kit installed"));
+    console.log(chalk.gray("────────────────────────────────────────"));
+    for (const p of [
+        ".claude/agents",
+        ".agents/skills",
+        ".cursor/commands",
+        "AGENTS.md",
+        ".axion/kit.manifest.json",
+    ]) {
+        const full = path.join(targetDir, p);
+        const ok = await fse.pathExists(full);
+        console.log(`  ${ok ? chalk.green("✓") : chalk.red("✗")} ${p}`);
+    }
+
+    const manifest = await readKitManifest(targetDir);
+    if (manifest) {
+        console.log(chalk.gray("────────────────────────────────────────"));
+        console.log(`Installed kit: ${chalk.cyan(manifest.version)} (profile: ${manifest.profile})`);
+        console.log(
+            `Offensive:     ${
+                manifest.enable_offensive ? chalk.yellow("enabled") : chalk.gray("disabled")
+            }`,
+        );
+        console.log(`Updated at:    ${chalk.gray(manifest.updated_at)}`);
+        if (manifest.components) {
+            console.log(
+                `Components:    agents=${manifest.components.agents} skills=${manifest.components.skills} commands=${manifest.components.commands} rules=${manifest.components.rules}`,
+            );
+        }
+    } else {
+        console.log(chalk.yellow("  (no .axion/kit.manifest.json — re-run init/update to create)"));
+    }
+    console.log(chalk.gray("────────────────────────────────────────\n"));
 
     const latestVersion = await updatePromise;
     if (latestVersion) {
+        if (manifest && latestVersion !== manifest.version) {
+            console.log(
+                chalk.yellow(
+                    `Update available: installed ${manifest.version} → registry ${latestVersion}\n`,
+                ),
+            );
+        }
         showUpdateNotification(latestVersion);
     } else if (!options.quiet) {
-        console.log(chalk.green("[OK] CLI is on the latest published version.\n"));
+        console.log(chalk.green("[OK] CLI / kit appear up to date with registry.\n"));
     }
 };
 
@@ -279,8 +374,13 @@ const program = new Command();
 
 program
     .name(BIN_NAME)
-    .description("Install Axion (AG Kit port for Cursor IDE)")
+    .description("Install Axion, a spec-driven development kit for Cursor IDE")
     .version(pkg.version, "-v, --version", "Display version number");
+
+const profileOption = [
+    "--profile <name>",
+    `Install profile: ${PROFILE_NAMES.join("|")} (default: installed profile, else standard)`,
+];
 
 program
     .command("init")
@@ -290,6 +390,11 @@ program
     .option("-b, --branch <name>", "Git branch of the template repository")
     .option("-q, --quiet", "Minimal output (CI/CD)", false)
     .option("--dry-run", "Preview actions without writing files", false)
+    .option(...profileOption)
+    .option(
+        "--enable-offensive",
+        "Install red-team-tactics + penetration-tester (implied by --profile security)",
+    )
     .action(runInstall);
 
 program
@@ -300,6 +405,11 @@ program
     .option("-b, --branch <name>", "Git branch of the template repository")
     .option("-q, --quiet", "Minimal output", false)
     .option("--dry-run", "Preview only", false)
+    .option(...profileOption)
+    .option(
+        "--enable-offensive",
+        "Install red-team-tactics + penetration-tester (implied by --profile security)",
+    )
     .action(async (options) => {
         if (!options.force && !options.quiet && !options.dryRun) {
             const ok = await confirm(

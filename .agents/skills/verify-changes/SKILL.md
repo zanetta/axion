@@ -4,6 +4,29 @@ description: Prove code works by running it, not just checking it exists. Verifi
 when_to_use: "After writing code, completing a feature, or fixing a bug. When the user says 'does this work?', 'test this', 'verify', or when /verify workflow is invoked. NOT for writing new code — for proving existing code works."
 allowed-tools: Read, Bash, Grep, Glob
 effort: medium
+contract_version: "1.0.0"
+inputs:
+  - name: change_scope
+    description: Files/behavior to verify; empty means latest session changes
+    required: false
+  - name: acceptance_file
+    description: "{slug}.acceptance.md when present — drive AC-* checks"
+    required: false
+outputs:
+  - name: verification_report
+    description: Evidence of pass/fail with command output (per AC-* when linked)
+preconditions:
+  - "Code under test already exists"
+postconditions:
+  - "At least one execution-based check was run"
+  - "Report includes evidence, not assumptions"
+  - "If ACCEPTANCE exists, each AC-* has pass/fail + evidence"
+side_effects:
+  - run-shell
+  - read-only
+forbidden_paths: []
+verify_hooks:
+  - ".cursor/scripts/checklist.py"
 ---
 
 # Verify Changes — Prove Code Works
@@ -20,7 +43,18 @@ effort: medium
 
 ---
 
+## ACCEPTANCE template
+
+`.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` — prefer checking AC-* from `{slug}.acceptance.md` before ad-hoc probes.
+
 ## Verification Protocol
+
+### Step 0: Load ACCEPTANCE (if present)
+```
+- Find {slug}.acceptance.md for the active work
+- Map each AC-* to a command / runtime check
+- Do not mark done while required AC-* lack evidence
+```
 
 ### Step 1: Identify What Changed
 ```

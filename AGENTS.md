@@ -1,6 +1,6 @@
 # AGENTS.md
 
-> Regras sempre-ativas deste workspace. Adaptado do `GEMINI.md` do [AG Kit](https://github.com/vudovn/ag-kit) para o Cursor IDE.
+> Regras sempre-ativas deste workspace.
 > Para o índice completo de agentes, skills, workflows e scripts, veja `.cursor/ARCHITECTURE.md`.
 
 ---
@@ -46,13 +46,18 @@ Antes de modificar QUALQUER arquivo:
 | **Skills**          | `.agents/skills/<name>/SKILL.md`           |
 | **Workflows**       | `.cursor/commands/<name>.md` (`/<name>`)   |
 | **MCP**             | `.cursor/mcp.json`                         |
-| **Runtime scripts** | `.cursor/scripts/` (master) e `.agents/skills/<x>/scripts/` (por skill) |
+| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
 | **Shared assets**   | `.cursor/shared/` (ex.: `ui-ux-pro-max`)   |
 | **Rules globais**   | `AGENTS.md` (este arquivo) — sempre aplicado |
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |
 | **Memória persistente** | `.agents/memory/MEMORY.md` |
-| **CLI npm (instalar kit)** | `npx @zanetta/axion init` · código em `cli/` |
-| **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md` |
+| **Estado do kit (`.axion/`)** | `.axion/kit.manifest.json` — SemVer + profile; gravado no `init`/`update`; lido pelo `status` |
+| **Inventário** | `.axion/inventory.json` — `python3 .cursor/scripts/generate_inventory.py .` |
+| **Templates SDD** | SPEC/PLAN: `.agents/skills/plan-writing/templates/`; ACCEPTANCE: `.agents/skills/verify-changes/templates/` |
+| **Traceability** | `.axion/trace/` — opcional `{slug}.json` (ver README lá) |
+| **Contratos (schemas)** | `.agents/schemas/` — `skill-contract.schema.json`, `command-contract.schema.json` |
+| **CLI npm (instalar kit)** | `npx @zanetta/axion init [--profile …] [--enable-offensive]` · código em `cli/` |
+| **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md`, `upgrade.md` |
 | **MCP env vars**    | `.env` (no `.gitignore`); template em `.env.example` |
 
 > O Cursor lê `.agents/skills/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md` nativamente.
@@ -95,6 +100,8 @@ Antes de codificar, responda:
 
 ## 🛑 Socratic Gate (para tarefas complexas)
 
+FSM: `discover → specify → plan → implement → verify → remember` (commands: `/brainstorm` → `/plan` → `/create`\|`/enhance` → `/verify` → `/remember`).
+
 | Tipo de pedido            | Ação obrigatória                                                  |
 | ------------------------- | ----------------------------------------------------------------- |
 | **Nova feature / Build**  | Faça mín. 3 perguntas estratégicas antes de codar                 |
@@ -102,6 +109,8 @@ Antes de codificar, responda:
 | **Vago / Simples**        | Esclareça Propósito, Usuários e Escopo                            |
 | **Orquestração total**    | **PAUSE** subagents até o usuário confirmar o plano               |
 | **"Proceed" direto**      | Mesmo com respostas, faça 2 perguntas de Edge Case antes de iniciar |
+
+**Gate (instrução ao agent, sem enforcement por tooling):** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`).
 
 Protocolo:
 
@@ -121,7 +130,9 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 | **Auditoria**    | `python3 .cursor/scripts/checklist.py .`                | Auditoria por prioridade     |
 | **Pre-Deploy**   | `python3 .cursor/scripts/checklist.py . --url <URL>`    | Suite completa + Performance |
 | **Verify All**   | `python3 .cursor/scripts/verify_all.py .`               | Auditoria abrangente         |
-| **Sync upstream**| `python3 .cursor/scripts/sync_upstream.py --apply`      | Paridade com ag-kit          |
+| **Sync**         | `python3 .cursor/scripts/sync_upstream.py --apply`      | Paridade com zanetta/axion   |
+| **Path lint**    | `python3 .cursor/scripts/lint_paths.py .`               | Drift `.agents/scripts/`     |
+| **Contract lint** | `python3 .cursor/scripts/lint_contracts.py .`          | Frontmatter vs schemas (requer `pyyaml` + `jsonschema`) |
 
 **Ordem de prioridade**: Segurança → Lint → Schema → Tests → UX → SEO → Lighthouse/E2E.
 
@@ -177,16 +188,16 @@ Esses agents contêm:
 **Skills-chave** (em `.agents/skills/`):
 `clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
 
-**CLI npm:** `@zanetta/axion` — `init`, `update`, `status` ([`cli/README.md`](cli/README.md)).
+**CLI npm:** `@zanetta/axion` — `init [--profile minimal|standard|security|fullstack|mobile] [--enable-offensive]`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 
 **Slash commands** (em `.cursor/commands/`):
 `/brainstorm`, `/coordinate`, `/create`, `/debug`, `/deploy`, `/enhance`, `/orchestrate`, `/plan`, `/preview`, `/remember`, `/status`, `/test`, `/ui-ux-pro-max`, `/verify`.
 
 ---
 
-## ⚠️ Limitações da migração compat-first (vs. Antigravity original)
+## ⚠️ Limitações no Cursor
 
-| Recurso do GEMINI.md original | Status no Cursor |
+| Recurso | Status no Cursor |
 | ----------------------------- | ---------------- |
 | **Tier system** (P0/P1/P2)    | Não aplicado — Cursor usa precedência Enterprise→Team→Project→User |
 | **Auto agent routing** ("🤖 Applying knowledge of @agent…") | Não automático — o Cursor delega subagents apenas quando o modelo decide ou o usuário usa `/agent` |

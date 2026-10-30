@@ -307,12 +307,13 @@ Combine findings into structured report:
 
 | Checkpoint | Verification | Failure Action |
 |------------|--------------|----------------|
-| **Task plan exists** | `Read {task-slug}.md` | Use project-planner first |
+| **Socratic / SPEC** | `{slug}.spec.md` OR ≥3 answered questions in PLAN | `/brainstorm` or ask first |
+| **Task plan exists** | `Read {slug}.plan.md` (or `{slug}.md`) + Traceability | Use project-planner first |
+| **ACCEPTANCE linked** | `{slug}.acceptance.md` for verify phase | Create from template |
 | **Project type valid** | WEB/MOBILE/BACKEND identified | Ask user or analyze request |
 | **Agent routing correct** | Mobile → mobile-developer only | Reassign agents |
-| **Socratic Gate passed** | 3 questions asked & answered | Ask questions first |
 
-> 🔴 **Remember:** NO specialist agents without a verified task plan.
+> 🔴 **Remember:** NO specialist agents without SPEC/Socratic evidence + verified PLAN.
 
 ---
 

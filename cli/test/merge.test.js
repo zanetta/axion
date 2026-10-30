@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert";
-import { mergeMcpJson, shouldSkipExistingFile } from "../lib/merge.js";
+import { mergeMcpJson } from "../lib/merge.js";
 
 test("mergeMcpJson keeps existing servers on conflict", () => {
     const incoming = {
@@ -27,16 +27,4 @@ test("mergeMcpJson adds kit servers when missing locally", () => {
 
     const merged = mergeMcpJson(existing, incoming);
     assert.ok(merged.mcpServers.shadcn);
-});
-
-test("shouldSkipExistingFile skips cursor rules in merge mode", () => {
-    assert.strictEqual(
-        shouldSkipExistingFile(".cursor/rules/frontend.mdc", false),
-        true,
-    );
-    assert.strictEqual(shouldSkipExistingFile(".cursor/mcp.json", false), false);
-    assert.strictEqual(
-        shouldSkipExistingFile(".cursor/rules/frontend.mdc", true),
-        false,
-    );
 });

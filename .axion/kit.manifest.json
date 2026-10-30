@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "package": "@zanetta/axion",
+  "version": "1.1.0",
+  "profile": "standard",
+  "enable_offensive": true,
+  "installed_at": "2026-10-30T02:34:24.385Z",
+  "updated_at": "2026-10-30T02:34:24.385Z",
+  "last_action": "init",
+  "template_source": "local",
+  "components": {
+    "agents": 20,
+    "skills": 45,
+    "commands": 14,
+    "rules": 7
+  },
+  "install_paths": [
+    ".claude",
+    ".agents",
+    ".cursor",
+    "AGENTS.md",
+    "AGENT_FLOW.md",
+    ".env.example"
+  ],
+  "checksums": {
+    "AGENTS.md": "290a8772fe8b26a7"
+  }
+}

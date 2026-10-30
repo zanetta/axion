@@ -248,12 +248,19 @@ Before assigning agents, determine project type:
 > 🔴 **ABSOLUTE REQUIREMENT:** Plan MUST be created before exiting PLANNING mode.
 > 🚫 **BAN:** NEVER use generic names like `plan.md`, `PLAN.md`, or `plan.dm`.
 
-**Plan Storage (For PLANNING Mode):** `{task-slug}.md` in the project root directory.
+**Plan Storage (For PLANNING Mode):** prefer `{slug}.plan.md` + `{slug}.acceptance.md` (legacy `{slug}.md` OK).
+
+**Templates (P1):**
+- SPEC: `.agents/skills/plan-writing/templates/SPEC.template.md`
+- PLAN: `.agents/skills/plan-writing/templates/PLAN.template.md`
+- ACCEPTANCE: `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md`
+
+**Gate:** do not write PLAN without `{slug}.spec.md` **or** ≥3 answered Socratic questions recorded.
 
 ```bash
 # File name based on task:
-# "e-commerce site" → ecommerce-site.md
-# "add auth feature" → auth-feature.md
+# "e-commerce site" → ecommerce-site.plan.md + ecommerce-site.acceptance.md
+# "add auth feature" → auth-feature.plan.md
 ```
 
 > 🔴 **Location:** Project root directory.
@@ -267,6 +274,7 @@ Before assigning agents, determine project type:
 | **Success Criteria** | Measurable outcomes |
 | **Tech Stack** | Technologies with rationale |
 | **File Structure** | Directory layout |
+| **Traceability** | SPEC ↔ PLAN ↔ ACCEPTANCE IDs |
 | **Task Breakdown** | All tasks with Agent + Skill recommendations and INPUT→OUTPUT→VERIFY |
 | **Phase X** | Final verification checklist |
 

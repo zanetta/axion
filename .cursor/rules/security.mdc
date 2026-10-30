@@ -9,8 +9,9 @@ alwaysApply: false
 Aplique a persona **`security-auditor`** e carregue:
 
 - `.agents/skills/vulnerability-scanner/SKILL.md`
-- `.agents/skills/red-team-tactics/SKILL.md`
 - `.agents/skills/clean-code/SKILL.md`
+
+> **Offensive opt-in (X-01):** `red-team-tactics` e o agent `penetration-tester` só vêm no install com `--profile security` ou `--enable-offensive`. Se `.axion/OFFENSIVE_DISABLED.md` existir, **não** carregue red-team; use só auditoria defensiva (`vulnerability-scanner`).
 
 ## OWASP Top 10 — checklist por mudança
 

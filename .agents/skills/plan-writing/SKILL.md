@@ -3,6 +3,28 @@ name: plan-writing
 description: Structured task planning with clear breakdowns, dependencies, and verification criteria. Use when implementing features, refactoring, or any multi-step work.
 when_to_use: "When creating structured task plans, breaking down features into tasks, or defining verification criteria. Use with /plan workflow."
 allowed-tools: Read, Glob, Grep
+contract_version: "1.0.0"
+inputs:
+  - name: scoped_request
+    description: Clarified request after Socratic Gate / brainstorm
+    required: true
+outputs:
+  - name: plan_file
+    description: "{slug}.plan.md with phases, deps, Traceability"
+  - name: acceptance_file
+    description: "{slug}.acceptance.md linked to PLAN"
+preconditions:
+  - "SPEC exists OR ≥3 Socratic answers recorded"
+  - "No application code written in this step"
+postconditions:
+  - "PLAN + ACCEPTANCE exist with Traceability IDs"
+  - "Critical path and verification phase present"
+side_effects:
+  - write-files
+forbidden_paths:
+  - "node_modules/**"
+  - ".env"
+verify_hooks: []
 ---
 
 # Plan Writing
@@ -10,7 +32,14 @@ allowed-tools: Read, Glob, Grep
 > Source: obra/superpowers
 
 ## Overview
-This skill provides a framework for breaking down work into clear, actionable tasks with verification criteria.
+Break work into clear tasks with verification. **SDD artifacts** use templates under `templates/` (SPEC/PLAN) and `../verify-changes/templates/ACCEPTANCE.template.md`.
+
+| Artifact | Template |
+| --- | --- |
+| SPEC | `templates/SPEC.template.md` |
+| PLAN | `templates/PLAN.template.md` |
+| ACCEPTANCE | `../verify-changes/templates/ACCEPTANCE.template.md` |
+| Trace (optional) | `.axion/trace/{slug}.json` |
 
 ## Task Breakdown Principles
 
@@ -31,13 +60,13 @@ This skill provides a framework for breaking down work into clear, actionable ta
 - **Phase X: Verification is always LAST**
 
 ### 4. Dynamic Naming in Project Root
-- Plan files are saved as `{task-slug}.md` in the PROJECT ROOT
-- Name derived from task (e.g., "add auth" → `auth-feature.md`)
+- Prefer `{slug}.plan.md` + `{slug}.acceptance.md` (legacy `{slug}.md` OK)
+- Name derived from task (e.g., "add auth" → `auth-feature.plan.md`)
 - **NEVER** inside `.agents/`, `docs/`, or temp folders
 
-## Planning Principles (NOT Templates!)
+## Planning Principles
 
-> 🔴 **NO fixed templates. Each plan is UNIQUE to the task.**
+> Use the **structure** of PLAN/ACCEPTANCE templates; fill content unique to the task (do not copy-paste generic fluff).
 
 ### Principle 1: Keep It SHORT
 

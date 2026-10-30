@@ -1,3 +1,7 @@
+---
+description: Searchable UI/UX design guide (styles, palettes, font pairings, UX guidelines, charts) for web and mobile stacks.
+---
+
 # ui-ux-pro-max
 
 Comprehensive design guide for web and mobile applications. Contains 50+ styles, 97 color palettes, 57 font pairings, 99 UX guidelines, and 25 chart types across 9 technology stacks. Searchable database with priority-based recommendations.

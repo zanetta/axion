@@ -1,5 +1,21 @@
 ---
 description: Structured brainstorming for projects and features. Explores multiple options before implementation.
+name: brainstorm
+contract_version: "1.0.0"
+sdd_states:
+  - discover
+  - specify
+required_skills:
+  - brainstorming
+required_agents: []
+required_artifacts:
+  - "{slug}.spec.md"
+preconditions:
+  - "Do not write application code"
+scripts: []
+side_effects:
+  - write-files
+  - write-memory
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
@@ -8,11 +24,13 @@ description: Structured brainstorming for projects and features. Explores multip
 
 (texto livre após o comando)
 
+**FSM:** **`discover` → `specify`** → then `/plan`
+
 ---
 
 ## Purpose
 
-This command activates BRAINSTORM mode for structured idea exploration. Use when you need to explore options before committing to an implementation.
+Explore options and lock a **SPEC** before planning. Uses Socratic Gate (≥3 questions). Template: `.agents/skills/plan-writing/templates/SPEC.template.md`.
 
 ---
 
@@ -20,19 +38,19 @@ This command activates BRAINSTORM mode for structured idea exploration. Use when
 
 When `/brainstorm` is triggered:
 
-1. **Understand the goal**
-   - What problem are we solving?
-   - Who is the user?
-   - What constraints exist?
+1. **Socratic Gate**
+   - Ask ≥3 clarifying questions (Purpose / Users / Scope) unless already answered in `.agents/memory/`
+   - WAIT for answers before recommending
 
 2. **Generate options**
-   - Provide at least 3 different approaches
-   - Each with pros and cons
-   - Consider unconventional solutions
+   - At least 3 approaches with pros/cons
 
 3. **Compare and recommend**
-   - Summarize tradeoffs
-   - Give a recommendation with reasoning
+   - Summarize tradeoffs + recommendation
+
+4. **Write SPEC** (after user picks a direction)
+   - Create `{slug}.spec.md` from SPEC.template.md
+   - Record answered questions in the SPEC Gate / Risks section
 
 ---
 
@@ -109,7 +127,8 @@ What direction would you like to explore?
 
 ## Key Principles
 
-- **No code** - this is about ideas, not implementation
+- **No code** - ideas + SPEC only
 - **Visual when helpful** - use diagrams for architecture
 - **Honest tradeoffs** - don't hide complexity
 - **Defer to user** - present options, let them decide
+- **Hand-off** - after SPEC: tell user to run `/plan {slug}`

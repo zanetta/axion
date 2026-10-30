@@ -80,7 +80,7 @@ Python, TypeScript, JavaScript, Go, Rust, Java, C#, Ruby, Kotlin, Swift, PHP, C/
 ### Prerequisites
 - Python 3.9+ (`python3 --version`)
 - pip or pipx installed
-- An MCP-compatible AI client (AG Kit, Claude Code, Cursor, Windsurf, Zed)
+- An MCP-compatible AI client (Claude Code, Cursor, Windsurf, Zed)
 - Git-tracked codebase (for incremental updates)
 
 ### Step 1: Install the Package
@@ -271,11 +271,11 @@ Generates markdown wiki of codebase structure — every module, its public API, 
 
 ---
 
-## Integration with AG Kit
+## Integration with Axion
 
 ### Complementary Skills
 
-| AG Kit Skill | How It Complements |
+| Axion skill | How it complements |
 |-------------------|--------------------|
 | `context-compression` | Graph reduces input context; compression reduces output verbosity |
 | `coordinator-mode` | Graph-aware workers can be dispatched with precise file lists |

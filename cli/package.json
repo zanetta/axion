@@ -1,7 +1,7 @@
 {
     "name": "@zanetta/axion",
-    "version": "1.0.2",
-    "description": "CLI to install Axion — AG Kit port for Cursor IDE",
+    "version": "1.1.0",
+    "description": "CLI to install Axion, a spec-driven development kit for Cursor IDE",
     "type": "module",
     "main": "bin/index.js",
     "engines": {
@@ -29,8 +29,7 @@
     "keywords": [
         "axion",
         "cursor",
-        "antigravity",
-        "ag-kit",
+        "sdd",
         "ai",
         "agent",
         "skills",

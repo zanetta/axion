@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/zanetta/axion/schemas/skill-contract.schema.json",
+  "title": "Axion Skill Contract",
+  "description": "Frontmatter contract for .agents/skills/*/SKILL.md (P0 K-02)",
+  "type": "object",
+  "required": ["name", "description"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Skill id matching folder name"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20
+    },
+    "when_to_use": {
+      "type": "string",
+      "description": "Activation guidance; prefer explicit NOT-for cases"
+    },
+    "allowed-tools": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ]
+    },
+    "effort": {
+      "type": "string",
+      "enum": ["low", "medium", "high"]
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "required": { "type": "boolean", "default": false }
+        }
+      },
+      "description": "Expected inputs from user or upstream workflow"
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "description": "Artifacts or results this skill produces"
+    },
+    "preconditions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Must be true before skill runs"
+    },
+    "postconditions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Must hold after skill completes"
+    },
+    "side_effects": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "none",
+          "read-only",
+          "write-files",
+          "write-memory",
+          "run-shell",
+          "invoke-agents",
+          "network"
+        ]
+      },
+      "description": "Declared side effects for orchestrator allowlists"
+    },
+    "forbidden_paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Glob paths this skill must never modify"
+    },
+    "verify_hooks": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Canonical scripts under .cursor/scripts/ or skill scripts/"
+    },
+    "contract_version": {
+      "type": "string",
+      "description": "SemVer of this skill contract shape",
+      "default": "1.0.0"
+    }
+  },
+  "additionalProperties": true
+}

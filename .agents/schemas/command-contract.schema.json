@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/zanetta/axion/schemas/command-contract.schema.json",
+  "title": "Axion Command Contract",
+  "description": "Frontmatter contract for .cursor/commands/*.md (P0 K-03)",
+  "type": "object",
+  "required": ["description"],
+  "properties": {
+    "description": {
+      "type": "string",
+      "minLength": 10
+    },
+    "name": {
+      "type": "string",
+      "description": "Command id without leading slash (e.g. plan)"
+    },
+    "contract_version": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "sdd_states": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "discover",
+          "specify",
+          "plan",
+          "implement",
+          "verify",
+          "remember",
+          "orchestrate",
+          "status"
+        ]
+      },
+      "description": "FSM states this command participates in"
+    },
+    "required_skills": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Skills that must be loaded"
+    },
+    "required_agents": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Agents this command should invoke"
+    },
+    "required_artifacts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Output artifacts (e.g. {slug}.md, ACCEPTANCE)"
+    },
+    "preconditions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "scripts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(\\.cursor/scripts/|\\.agents/skills/.+/scripts/)"
+      },
+      "description": "Canonical scripts only — never .agents/scripts/"
+    },
+    "side_effects": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "none",
+          "read-only",
+          "write-files",
+          "write-memory",
+          "run-shell",
+          "invoke-agents",
+          "network"
+        ]
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -28,7 +28,7 @@ test("installKit merges mcp.json and skips existing rules", async () => {
             "# my custom rule",
         );
 
-        const actions = await installKit(fixtureRoot, target, { force: false });
+        const { actions } = await installKit(fixtureRoot, target, { force: false });
         const merged = actions.find((a) => a.file === ".cursor/mcp.json");
         assert.strictEqual(merged?.action, "merged");
 
