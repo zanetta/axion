@@ -14,7 +14,7 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 9 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 10 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
 | **Schemas de contrato** | 2 | `.agents/schemas/` |
 | **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **Inventário** | — | `.axion/inventory.json` (`generate_inventory.py`) |
@@ -51,7 +51,7 @@ axion/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 14 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
-    ├── scripts/                 # checklist, verify_all, lint_paths, lint_contracts, lint_inventory, …
+    ├── scripts/                 # checklist, verify_gate, verify_all, lint_paths, lint_contracts, lint_inventory, …
     ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
@@ -141,10 +141,12 @@ discover → specify → plan → implement → verify → remember
 | `discover` / `specify` | `/brainstorm` | SPEC (a partir de `SPEC.template.md`) |
 | `plan` | `/plan` | PLAN (+ links SPEC/ACCEPTANCE) |
 | `implement` | `/create`, `/enhance` | código alinhado ao PLAN |
-| `verify` | `/verify` | ACCEPTANCE + evidência (`checklist.py`, etc.) |
+| `verify` | `/verify` | ACCEPTANCE + evidência; `verify_gate.py` exit 0 (W-03) |
 | `remember` | `/remember` | entradas em `.agents/memory/` |
 
-**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e gate são instruções em commands/agents (advisory), sem enforcement por tooling — eval mecânico planejado em E-02 ([`upgrade.md`](../upgrade.md)).
+**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate são instruções em commands/agents (advisory), sem enforcement por tooling — eval mecânico planejado em E-02 ([`upgrade.md`](../upgrade.md)). O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
+
+**Verify hard gate (W-03):** `/verify` roda os AC-*, grava a evidência, marca `[x]` e só conclui se `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` sair 0. O script não reexecuta os comandos. Exit 1 (ACCEPTANCE incompleto, sign-off aberto ou `checklist.py` ≠ 0) impede reportar a tarefa como concluída.
 
 **Paths P1:**
 
@@ -337,6 +339,7 @@ side_effects: [read-only]
 | Script | Propósito |
 | --- | --- |
 | `checklist.py` | Validação core (dev, pre-commit) |
+| `verify_gate.py` | Gate hard do `/verify`: ACCEPTANCE + exit de `checklist.py`; não reexecuta os AC-* |
 | `verify_all.py` | Suite completa (pre-deploy) |
 | `sync_upstream.py` | Compare/sync com upstream |
 | `lint_paths.py` | Fail CI se path legado `.agents/scripts/` |
@@ -352,6 +355,9 @@ side_effects: [read-only]
 ```bash
 # Validação rápida
 python3 .cursor/scripts/checklist.py .
+
+# Gate hard do /verify (P2 W-03) — depois de gravar evidência e [x]
+python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
 
 # Verificação completa
 python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
@@ -389,7 +395,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 9 |
+| Scripts em `.cursor/scripts/` | 10 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |
 | CLI npm | `@zanetta/axion` |

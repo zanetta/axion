@@ -5,7 +5,7 @@
     "skills": 45,
     "commands": 14,
     "rules": 7,
-    "scripts": 9,
+    "scripts": 10,
     "schemas": 2
   },
   "agents": [
@@ -111,7 +111,8 @@
     "lint_paths.py",
     "session_manager.py",
     "sync_upstream.py",
-    "verify_all.py"
+    "verify_all.py",
+    "verify_gate.py"
   ],
   "schemas": [
     "command-contract.schema.json",

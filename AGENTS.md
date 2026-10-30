@@ -46,7 +46,7 @@ Antes de modificar QUALQUER arquivo:
 | **Skills**          | `.agents/skills/<name>/SKILL.md`           |
 | **Workflows**       | `.cursor/commands/<name>.md` (`/<name>`)   |
 | **MCP**             | `.cursor/mcp.json`                         |
-| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
+| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_gate.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
 | **Shared assets**   | `.cursor/shared/` (ex.: `ui-ux-pro-max`)   |
 | **Rules globais**   | `AGENTS.md` (este arquivo) — sempre aplicado |
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |
@@ -140,6 +140,7 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 **Regras**:
 
 - Tarefa NÃO está concluída até `checklist.py` retornar sucesso.
+- **Hard gate (W-03):** `/verify` só fecha com `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` em exit 0 (AC-* em `[x]` com evidência, sign-off fechado, `checklist.py` ok). Exit 1 = tarefa não verificada.
 - Se falhar, corrija os blockers **Críticos** primeiro (Segurança/Lint).
 
 **Scripts disponíveis** (caminho: `.agents/skills/<skill>/scripts/`):

@@ -5,7 +5,7 @@ Documento de engenharia: evoluir o **Axion** de um pack instalável de agents e 
 | | |
 | --- | --- |
 | **Estado atual** | Pack de agents (`.claude/agents/`), skills (`.agents/skills/`), commands (`.cursor/commands/`), rules (`.cursor/rules/`), memória (`.agents/memory/`), scripts (`.cursor/scripts/`) e CLI npm `@zanetta/axion` (`cli/`) |
-| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) em andamento** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install |
+| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) em andamento** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install, **W-03** ✅ (`verify_gate.py`) |
 | **Público** | Maintainers do kit e consumidores que instalam via `npx @zanetta/axion` |
 
 ### Objetivo
@@ -65,7 +65,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ✅ W-01 | P1 | FSM SDD mínima | Estados: `discover → specify → plan → implement → verify → remember`. Commands mapeados (`/brainstorm`, `/plan`, `/create`\|`/enhance`, `/verify`, `/remember`). Commands instruem o agent a não avançar sem artefato predecessor. | Socratic Gate e fases existem em prosa (`AGENTS.md`, agents) mas não são enforceable. | Documentar FSM em `.cursor/ARCHITECTURE.md` + `AGENT_FLOW.md`; checklist de transição nos commands | M | S-01..S-03 | **DONE (advisory)** — FSM documentada + commands mapeados; transições são instruções em commands/agents, sem enforcement mecânico (enforcement real: E-02) |
 | ✅ W-02 | P1 | Enforce Socratic Gate | Antes de `/plan`, `/create`, `/orchestrate`: exigir evidência de ≥3 perguntas respondidas (arquivo de discovery ou seção no SPEC). Orchestrator não despacha workers sem gate. | Gate documentado em `brainstorming`, `orchestrator`, `project-planner` é frequentemente pulado. | Atualizar `.cursor/commands/{brainstorm,plan,create,orchestrate}.md`; `.agents/skills/brainstorming/SKILL.md`; `.claude/agents/orchestrator.md` | M | W-01, S-01 | **DONE (advisory)** — gate: SPEC **ou** ≥3 perguntas no SPEC/PLAN; instrução em commands/agents, sem enforcement mecânico (enforcement real: E-02) |
-| W-03 | P2 | Verify como gate hard | `/verify` e skill `verify-changes` passam a falhar a tarefa se ACCEPTANCE incompleto ou `checklist.py` retornar crítico. | Final Checklist em `AGENTS.md` é política; falta amarração ao workflow. | `.cursor/commands/verify.md`; `.agents/skills/verify-changes/SKILL.md`; integrar exit codes de `.cursor/scripts/checklist.py` | M | S-03, W-01 | — |
+| ✅ W-03 | P2 | Verify como gate hard | `/verify` e skill `verify-changes` passam a falhar a tarefa se ACCEPTANCE incompleto ou `checklist.py` retornar crítico. | Final Checklist em `AGENTS.md` é política; falta amarração ao workflow. | `.cursor/scripts/verify_gate.py`; `.cursor/commands/verify.md`; `.agents/skills/verify-changes/SKILL.md` | M | S-03, W-01 | **DONE** — `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` sai **1** (tarefa não verificada) quando: não há `*.acceptance.md` nem `--acceptance` (salvo `--allow-missing-acceptance`); um AC-* de critério tem Pass diferente de `[x]`/`[X]`/`✅` (linhas de rastreabilidade, que não terminam em checkbox, são ignoradas; arquivo sem nenhuma linha AC-* de critério também falha); linha marcada com evidência vazia ou com `{`/`}` (placeholder, ex. `{curl}`); `## Sign-off` ainda tem `- [ ]`; `checklist.py` sai ≠ 0 (`--skip-checklist` pula). O gate **não** reexecuta os comandos dos AC-*: `/verify` roda, grava a evidência, marca `[x]` e só então chama o script. Exit 1 impede reportar a tarefa como concluída. Checagem executável (exit code real); ignorá-la é violação do agent. O FSM de W-01/W-02 continua só instrução. Testes: `cli/test/verify-gate.test.js` (6 casos; suíte 31). |
 | W-04 | P3 | Circuit breaker na orquestração | Em `coordinator-mode` / `/coordinate` / `/orchestrate`: limite de retries, cancelamento se N workers falham no mesmo domínio, fallback para síntese parcial + relatório. | Orquestração paralela pode loopar custo/tokens sem critério de parada. | `.agents/skills/coordinator-mode/SKILL.md`; `.agents/skills/parallel-agents/SKILL.md`; `.cursor/commands/coordinate.md` | M | W-01, O-01 | — |
 
 ### 4. Quality / CI
@@ -133,12 +133,11 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 ### Fase 2 — Maturidade (P2) — 🚧 EM ANDAMENTO
 
-**Primeiro bloco ✅ (2026-10-30):** **Q-04 + Q-02 + E-03** — pre-publish gate, lint de contratos em 100% do pack e smoke pós-install (E-03 antecipado da Fase 3). Release `v1.1.0`. **Q-03** ✅ — paridade doc/inventário (`lint_inventory.py`).
+**Primeiro bloco ✅ (2026-10-30):** **Q-04 + Q-02 + E-03** — pre-publish gate, lint de contratos em 100% do pack e smoke pós-install (E-03 antecipado da Fase 3). Release `v1.1.0`. **Q-03** ✅ — paridade doc/inventário (`lint_inventory.py`). **W-03** ✅ — verify hard-gate (`verify_gate.py`, exit code real).
 
-1. **W-03** — Verify hard-gate.
+1. **W-03** ✅ — Verify hard-gate.
 2. **Q-02** ✅, **Q-03** ✅, **Q-04** ✅ — Contracts CI, parity docs, pre-publish.
-3. **O-01, O-02, D-03, D-04** — Logs, trace report, update/status ricos.
-4. **X-02, X-03** — Secret scan na memory + allowlist de side effects.
+3. Próximo: **O-02 → X-02 → D-03/D-04/O-01 → X-03** — secret scan na memory, logs/trace/status, allowlist de side effects.
 
 *Saída:* kit “shippable” com CI de conteúdo e observabilidade local.
 
@@ -177,7 +176,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | Memory | `.agents/memory/MEMORY.md` |
 | Commands | `.cursor/commands/` |
 | Rules | `.cursor/rules/*.mdc` |
-| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
+| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_gate.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
 | Schemas de contrato | `.agents/schemas/` (`skill-contract.schema.json`, `command-contract.schema.json`) |
 | Templates SDD | `.agents/skills/plan-writing/templates/` (SPEC, PLAN); `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` |
 | Manifesto instalado | `.axion/kit.manifest.json` (escrito pelo CLI) |
@@ -193,5 +192,5 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 ## Como usar este backlog
 
 1. Abrir issue/PR por **ID** (ex.: `Q-01`).
-2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). 🚧 Fase 2: primeiro bloco fechado (**Q-04, Q-02, E-03**); **Q-03** ✅. Próximo: **W-03 → O-02 → X-02 → D-03/D-04/O-01 → X-03**.
+2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). 🚧 Fase 2: primeiro bloco fechado (**Q-04, Q-02, E-03**); **Q-03** ✅; **W-03** ✅. Próximo: **O-02 → X-02 → D-03/D-04/O-01 → X-03**.
 3. Toda mudança de path ou contrato deve atualizar este arquivo só se prioridade/escopo mudar — senão atualizar inventário/manifesto gerados.

@@ -15,6 +15,36 @@ Ordem: Security → Lint → Schema → Tests → UX → SEO (+ Lighthouse se `-
 
 Usa `sys.executable` (compatível com ambientes só `python3`).
 
+## verify_gate.py
+
+Gate hard do `/verify` (P2 W-03). Checagem executável: exit code real. Ignorar um exit 1 é violação do agent. O FSM de W-01/W-02 continua só instrução.
+
+O script **não** reexecuta os comandos dos AC-*. `/verify` roda cada check, grava o resultado na coluna de evidência, marca Pass `[x]` e só então chama o gate. Exit 1 = tarefa não verificada — não reporte como concluída.
+
+```bash
+python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
+python3 .cursor/scripts/verify_gate.py . --allow-missing-acceptance
+python3 .cursor/scripts/verify_gate.py . --skip-checklist
+```
+
+Falha (exit 1) quando:
+
+- não há `*.acceptance.md` na raiz nem `--acceptance` (salvo `--allow-missing-acceptance`)
+- o arquivo indicado não existe, ou não há nenhuma linha AC-* de critério
+- uma linha de critério AC-* tem Pass diferente de `[x]`, `[X]` ou `✅` (linhas de rastreabilidade, que não terminam em checkbox, são ignoradas)
+- uma linha marcada tem evidência vazia ou com `{` / `}` (placeholder, ex.: `{curl}`)
+- a seção `## Sign-off` ainda contém `- [ ]`
+- `checklist.py` sai diferente de 0 — ele já sai 1 em check obrigatório/crítico e em qualquer falha. `--skip-checklist` pula essa checagem
+
+| Flag | Efeito |
+| --- | --- |
+| `--acceptance` | Arquivo ACCEPTANCE (repetível). Sem ele, procura `*.acceptance.md` na raiz do projeto |
+| `--allow-missing-acceptance` | Passa a checagem de ACCEPTANCE quando não há arquivo; o checklist ainda roda |
+| `--skip-checklist` | Não executa `checklist.py` |
+| `--checklist` | Caminho alternativo do checklist (padrão: `.cursor/scripts/checklist.py`) |
+
+Testes: `cli/test/verify-gate.test.js` (6 casos; suíte 31).
+
 ## verify_all.py
 
 Suite completa pre-deploy (checklist + Lighthouse, Playwright, bundle, mobile, i18n):

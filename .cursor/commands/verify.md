@@ -13,6 +13,7 @@ required_artifacts:
 preconditions:
   - "Code changes exist to verify"
 scripts:
+  - ".cursor/scripts/verify_gate.py"
   - ".cursor/scripts/checklist.py"
 side_effects:
   - run-shell
@@ -33,9 +34,10 @@ side_effects:
 
 1. **Load verify-changes skill** — Read `.agents/skills/verify-changes/SKILL.md` first
 2. **Execute, don't inspect** — Run the code, don't just read it
-3. **ACCEPTANCE first** — if `{slug}.acceptance.md` exists, check every AC-* with evidence
-4. **Report evidence** — Show actual output, not assumptions
-5. **Cover edge cases** — Test error paths, not just happy path
+3. **ACCEPTANCE first** — record every AC-* with the command that ran and its result, then mark Pass `[x]`
+4. **Hard gate** — `verify_gate.py` must exit 0. A non-zero exit fails the task; do not report it as done
+5. **Report evidence** — Show actual output, not assumptions
+6. **Cover edge cases** — Test error paths, not just happy path
 
 Template: `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md`
 
@@ -52,19 +54,21 @@ CONTEXT:
 - Prefer ACCEPTANCE file for the active slug when present
 
 WORKFLOW:
-1. LOAD {slug}.acceptance.md if present — map AC-* checks
+1. LOAD {slug}.acceptance.md — one AC-* row per check
 2. IDENTIFY what changed (files, functions, behavior)
-3. DETERMINE verification method (build, test, run, curl)
-4. EXECUTE verification commands (include checklist.py when relevant)
-5. REPORT evidence of success or failure per AC-*
-6. FLAG anything that couldn't be verified automatically
+3. RUN each AC command and write the result in the evidence column; set Pass to [x]
+4. RUN the hard gate and stop if it fails:
+
+python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
+
+5. REPORT evidence per AC-* only after the gate exits 0
 
 RULES:
 1. Follow verify-changes/SKILL.md protocol
 2. "It should work" is NOT verification — run it
-3. Test error paths, not just success paths
-4. Report with actual command output as evidence
-5. Do not mark orchestration "done" if required AC-* lack evidence
+3. Exit 1 from verify_gate.py means the task failed (open AC-*, missing evidence, or checklist.py non-zero)
+4. Do not check an AC box before the command has run; the gate rejects placeholders like {curl}
+5. Ad-hoc verify with no ACCEPTANCE file: pass --allow-missing-acceptance; the checklist still runs
 ```
 
 ---

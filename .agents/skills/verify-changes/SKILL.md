@@ -20,12 +20,13 @@ preconditions:
 postconditions:
   - "At least one execution-based check was run"
   - "Report includes evidence, not assumptions"
-  - "If ACCEPTANCE exists, each AC-* has pass/fail + evidence"
+  - "verify_gate.py exited 0 (ACCEPTANCE complete and checklist.py exit 0)"
 side_effects:
   - run-shell
   - read-only
 forbidden_paths: []
 verify_hooks:
+  - ".cursor/scripts/verify_gate.py"
   - ".cursor/scripts/checklist.py"
 ---
 
@@ -49,12 +50,21 @@ verify_hooks:
 
 ## Verification Protocol
 
-### Step 0: Load ACCEPTANCE (if present)
+### Step 0: Load ACCEPTANCE
 ```
 - Find {slug}.acceptance.md for the active work
 - Map each AC-* to a command / runtime check
-- Do not mark done while required AC-* lack evidence
 ```
+
+### Step 5: Hard gate (blocking)
+
+After the AC commands have run and the file records evidence plus `[x]`:
+
+```bash
+python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
+```
+
+Exit 0 is required. Exit 1 fails the task: an AC-* is still `[ ]`, evidence is empty or a `{placeholder}`, the sign-off is open, or `checklist.py` exited non-zero. Do not write a passing report over a failed gate. The gate does not re-run the AC commands; it checks the record and the checklist exit code.
 
 ### Step 1: Identify What Changed
 ```
