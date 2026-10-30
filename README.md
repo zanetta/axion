@@ -1,246 +1,154 @@
 # Axion
 
-Port do [AG Kit](https://github.com/vudovn/ag-kit) (Antigravity Kit) para o **Cursor IDE** — agents, skills, workflows e scripts de validação, com paths e regras adaptados ao ecossistema Cursor.
+Framework de Spec-Driven Development (SDD) para o Cursor IDE. A especificação é a fonte da verdade; o código deriva dela.
+
+Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.0.2`](https://www.npmjs.com/package/@zanetta/axion)
 
 ---
 
-## O que é
+## Spec-Driven Development
 
-Este repositório inclui o pacote npm **`@zanetta/axion`** (pasta `cli/`) para instalação via `npx`. Também funciona como template git manual.
+O trabalho segue um ciclo. Cada fase fecha um acordo antes da próxima escrever código:
 
-| Componente | Onde fica |
-| --- | --- |
-| 20 agents especialistas | `.claude/agents/` |
-| 45 skills (+ sub-skills de game-dev) | `.agents/skills/` |
-| 14 slash commands (13 upstream + `/ui-ux-pro-max`) | `.cursor/commands/` |
-| 7 regras por domínio | `.cursor/rules/*.mdc` |
-| CLI npm `@zanetta/axion@1.0.2` | `cli/` · [npm](https://www.npmjs.com/package/@zanetta/axion) |
-| Regras globais | `AGENTS.md` |
-| Memória persistente | `.agents/memory/` |
-| Scripts de validação + sync | `.cursor/scripts/` |
-| MCP (Context7, Playwright, shadcn) | `.cursor/mcp.json` |
+**descobrir → especificar → planejar → implementar → verificar → lembrar**
 
-Documentação detalhada:
+| Fase | O que fica decidido | Command |
+| --- | --- | --- |
+| Descobrir | opções, riscos, escopo | `/brainstorm` |
+| Especificar | problema, restrições e o que fica de fora | saída do `/brainstorm`, carregada no `/plan` |
+| Planejar | passos, pastas, checklist | `/plan` |
+| Implementar | código que segue o plano | `/create` (projeto novo) ou `/enhance` (código existente) |
+| Verificar | evidência de que o resultado cumpre o plano | `/test`, `/verify`, `checklist.py` |
+| Lembrar | decisões que a próxima sessão deve repetir | `/remember` |
 
-| Documento | Conteúdo |
-| --- | --- |
-| [`.cursor/ARCHITECTURE.md`](.cursor/ARCHITECTURE.md) | Arquitetura, skills, agents, npm |
-| [`AGENT_FLOW.md`](AGENT_FLOW.md) | Fluxo de agentes e validação |
-| [`AGENTS.md`](AGENTS.md) | Regras sempre-ativas (Cursor) |
-| [`cli/README.md`](cli/README.md) | CLI npm, publish, troubleshooting |
-| [`.cursor/scripts/README.md`](.cursor/scripts/README.md) | Scripts de validação e sync |
+A especificação, hoje, é esse acordo: problema, restrições e non-goals registrados na conversa e no plano. A direção do framework é gravar spec, plano e critérios de aceite como artefatos que a fase seguinte possa ler. Esses arquivos ainda não fazem parte do pacote.
+
+Quem sustenta o ciclo são os slash commands, 20 agents, 45 skills e as regras em `AGENTS.md`. `/brainstorm` questiona stack, escopo e trade-offs antes de `/plan` ou `/create`. A fase seguinte começa quando você chama o command correspondente.
+
+Commands de apoio, fora das seis fases: `/debug`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
 
 ---
 
 ## Quick Start
 
-### 1. Instalar no seu projeto (recomendado)
+### Instalar no projeto
 
-Na raiz do projeto onde você desenvolve:
+Na raiz do repositório da aplicação:
 
 ```bash
-# One-shot (sem instalar globalmente)
 npx @zanetta/axion init
 ```
 
-O `init` instala **no diretório atual** (`cwd`). Ex.: `cd ~/dev/meu-app && npx … init` copia o kit para `~/dev/meu-app`.
+O `init` instala no diretório atual. Exemplo: `cd ~/dev/meu-app && npx @zanetta/axion init`.
 
 ```bash
-# Instalação global
 npm install -g @zanetta/axion
 axion init
 ```
 
-**O que o `init` copia (instalação full):**
+**O que o `init` copia:**
 
 | Item | Destino |
 | --- | --- |
-| Agents | `.claude/agents/` |
-| Skills + memory | `.agents/` |
-| Commands, rules, scripts, MCP | `.cursor/` |
-| Regras globais | `AGENTS.md`, `AGENT_FLOW.md` |
+| 20 agents | `.claude/agents/` |
+| 45 skills (+ sub-skills de game-dev) e memória | `.agents/` |
+| 14 slash commands (13 + `/ui-ux-pro-max`), 7 regras por domínio, scripts, MCP | `.cursor/` |
+| Regras globais e fluxo | `AGENTS.md`, `AGENT_FLOW.md` |
 | Template de env | `.env.example` |
 
-**Modo merge (padrão):** arquivos novos são adicionados; arquivos que já existem são preservados. Exceções:
+**Merge é o padrão.** Arquivos novos entram; arquivos que já existem ficam como estão.
 
-- **`.cursor/mcp.json`** — merge: servidores do kit são adicionados; os seus prevalecem em conflito de nome
-- **`.cursor/rules/*.mdc`** — regras existentes não são sobrescritas
-
-Para sobrescrever tudo (cuidado em projetos customizados):
-
-```bash
-npx @zanetta/axion init --force
-```
-
-Outros comandos:
-
-```bash
-npx @zanetta/axion status
-npx @zanetta/axion update          # merge novos arquivos do kit
-npx @zanetta/axion update --force  # sobrescrever kit inteiro
-npx @zanetta/axion init --dry-run  # simular sem escrever
-```
-
-> Pacote publicado: [`@zanetta/axion@1.0.2`](https://www.npmjs.com/package/@zanetta/axion). O nome anterior [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor) continua no registry. Troubleshooting (`E404`, `min-release-age`, 2FA): [`cli/README.md`](cli/README.md).
-
-### Instalação npm — problemas comuns
-
-| Erro | Solução rápida |
+| Caminho | Comportamento |
 | --- | --- |
-| `E404` / `ENOVERSIONS` | `NPM_CONFIG_MIN_RELEASE_AGE=0 npx …` ou `npm config delete min-release-age` |
-| `ENEEDAUTH` | Registry deve ser `registry.npmjs.org` (ver `.npmrc` do projeto) |
-| `E403` (2FA) | Habilitar 2FA + `--otp=…` ou token granular com bypass 2FA |
+| `.cursor/mcp.json` | Merge de servidores. Em conflito de nome, a config do projeto prevalece |
+| `.cursor/rules/*.mdc` | Arquivo existente não é sobrescrito |
+| Demais arquivos do kit | Ignorados se já existirem |
 
-Detalhes: [`cli/README.md`](cli/README.md).
+```bash
+npx @zanetta/axion init --force     # sobrescreve os arquivos do kit
+npx @zanetta/axion init --dry-run   # simula sem escrever
+npx @zanetta/axion status
+npx @zanetta/axion update           # merge de arquivos novos
+npx @zanetta/axion update --force
+npx @zanetta/axion update --dry-run
+```
 
-> **Release npm:** tag `v*` dispara [`.github/workflows/publish-npm.yml`](.github/workflows/publish-npm.yml). Secret `NPM_TOKEN` no GitHub.
+Use `--force` só quando quiser substituir customizações do kit. O nome anterior [`@zanetta/antigravity4cursor`](https://www.npmjs.com/package/@zanetta/antigravity4cursor) continua no registry.
 
-### 2. Alternativa manual (sem npm)
+### npm — erros comuns
 
-Clone ou copie para a raiz do seu projeto de aplicação:
+| Erro | Ajuste |
+| --- | --- |
+| `E404` / `ENOVERSIONS` / `min-release-age` | `NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init` ou `npm config delete min-release-age` |
+| `ENEEDAUTH` | Registry `registry.npmjs.org` (veja o `.npmrc` do projeto) |
+| `E403` (2FA) | 2FA com `--otp=…`, ou token granular com bypass de 2FA |
+
+Detalhes, publish e desenvolvimento local: [`cli/README.md`](cli/README.md). Tag `v*` dispara [`.github/workflows/publish-npm.yml`](.github/workflows/publish-npm.yml) (`NPM_TOKEN` no GitHub).
+
+### Cópia manual
 
 ```bash
 git clone https://github.com/zanetta/axion.git
-# ou copie apenas .claude/, .agents/, .cursor/, AGENTS.md
+# ou copie .claude/, .agents/, .cursor/, AGENTS.md e AGENT_FLOW.md
 ```
 
-### 3. Configurar MCP (opcional)
+### MCP (opcional)
 
 ```bash
 cp .env.example .env
-# Edite CONTEXT7_API_KEY em .env
+# Edite CONTEXT7_API_KEY
 ```
 
-### 4. Slash commands no Cursor
+Servidores em [`.cursor/mcp.json`](.cursor/mcp.json) (Context7, Playwright, shadcn).
 
-Digite `/` no chat do **Agent** (modo Agent) para ver autocomplete, ou use os exemplos da seção [Como utilizar os comandos](#como-utilizar-os-comandos).
-
-### 5. Validar o projeto
+### Validar
 
 ```bash
 python3 .cursor/scripts/checklist.py .
 python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 ```
 
+No chat do Agent, digite `/` para o autocomplete dos commands em `.cursor/commands/`.
+
 ---
 
-## Como utilizar os comandos
+## O ciclo com os commands
 
-Os slash commands ficam em `.cursor/commands/` e são invocados no **chat do Agent** do Cursor. A sintaxe é sempre:
+Sintaxe, no chat do **Agent**:
 
 ```text
 /<comando> [descrição em texto livre]
 ```
 
-O texto após o comando é o contexto da tarefa — não use placeholders; descreva o que precisa em linguagem natural.
+O texto depois do comando é o pedido. Um command por mensagem. Commands que editam arquivos precisam de permissão de escrita no workspace.
 
-### Onde digitar
-
-1. Abra o projeto no Cursor com esta pasta na raiz (ou com `.cursor/commands/` presente).
-2. Use o painel **Agent** (não o Ask simples, para tarefas que alteram código).
-3. Digite `/` — o Cursor deve sugerir os comandos disponíveis.
-4. Complete com `/plan`, `/debug`, etc. e adicione o pedido na mesma mensagem.
-
-### Referência de comandos
-
-| Comando | Quando usar | Exemplo |
+| Command | Quando | Exemplo |
 | --- | --- | --- |
-| `/brainstorm` | Explorar opções e arquitetura **antes** de codar | `/brainstorm qual stack usar para um SaaS multi-tenant?` |
-| `/plan` | Quebrar uma tarefa em plano e checklist | `/plan implementar autenticação JWT com refresh token` |
-| `/create` | Criar feature nova ou app do zero | `/create landing page Next.js com formulário de waitlist` |
-| `/enhance` | Melhorar código ou feature **existente** com segurança | `/enhance adicionar paginação na listagem de usuários` |
-| `/debug` | Investigar bug com método sistemático | `/debug login retorna 401 após deploy` |
+| `/brainstorm` | Opções e arquitetura antes de codar | `/brainstorm qual stack usar para um SaaS multi-tenant?` |
+| `/plan` | Plano e checklist a partir do que foi especificado | `/plan implementar autenticação JWT com refresh token` |
+| `/create` | Feature ou app novo, seguindo o plano | `/create landing page Next.js com formulário de waitlist` |
+| `/enhance` | Mudança em código que já existe | `/enhance adicionar paginação na listagem de usuários` |
+| `/debug` | Bug com método sistemático | `/debug login retorna 401 após deploy` |
 | `/test` | Gerar ou executar testes | `/test cobrir fluxo de checkout com Playwright` |
-| `/verify` | **Executar** e provar que funciona (não só ler código) | `/verify build passa após o refactor do módulo auth` |
-| `/deploy` | Pré-flight checks e deploy | `/deploy preparar release para Vercel` |
-| `/preview` | Subir ou checar servidor de preview local | `/preview iniciar dev server na porta 3000` |
-| `/status` | Relatório do progresso da tarefa atual | `/status` |
-| `/orchestrate` | Multi-agente clássico (mín. 3 specialists) | `/orchestrate painel admin com CRUD e testes E2E` |
-| `/coordinate` | Orquestração avançada (paralelo + síntese) | `/coordinate revisar segurança e performance da API em paralelo` |
-| `/remember` | Salvar preferência ou convenção entre sessões | `/remember prefiro bun em vez de npm neste projeto` |
-| `/ui-ux-pro-max` | Design system com estilos/paletas (Cursor-only) | `/ui-ux-pro-max dashboard fintech dark mode minimalista` |
+| `/verify` | Executar e provar que funciona | `/verify build passa após o refactor do módulo auth` |
+| `/deploy` | Pré-flight e deploy | `/deploy preparar release para Vercel` |
+| `/preview` | Servidor local | `/preview iniciar dev server na porta 3000` |
+| `/status` | Progresso da tarefa atual | `/status` |
+| `/orchestrate` | Vários specialists (mínimo 3) | `/orchestrate painel admin com CRUD e testes E2E` |
+| `/coordinate` | Pesquisa em paralelo e síntese | `/coordinate revisar segurança e performance da API em paralelo` |
+| `/remember` | Convenção entre sessões | `/remember prefiro bun em vez de npm neste projeto` |
+| `/ui-ux-pro-max` | Direção visual | `/ui-ux-pro-max dashboard fintech dark mode minimalista` |
 
-### Fluxo recomendado por tipo de tarefa
+Definição de cada workflow: [`.cursor/commands/`](.cursor/commands/).
 
-**Feature nova (média/grande complexidade)**
-
-```text
-/brainstorm [ideia e restrições]
-/plan [escopo fechado após brainstorm]
-/create ou /enhance [implementação]
-/test [cobertura]
-/verify [provar que roda]
-/deploy [quando estiver pronto]
-```
-
-**Bug ou comportamento estranho**
-
-```text
-/debug [sintoma, erro, passos para reproduzir]
-/verify [confirmar que o fix funciona]
-```
-
-**Tarefa full-stack ou multi-domínio**
-
-```text
-/coordinate [visão geral]   ← paralelo, fases Research → Synthesis → Implementation
-/orchestrate [visão geral]  ← alternativa com mínimo 3 agents
-```
-
-**Convenções do projeto (persistir)**
-
-```text
-/remember sempre usar Tailwind v4, nunca v3
-/remember API base URL em staging é https://api.staging.example.com
-```
-
-Memória salva em `.agents/memory/` e reutilizada em sessões futuras via skill `memory-system`.
-
-### Dicas
-
-- **Seja específico** — quanto mais contexto após o comando, melhor o resultado (`/debug` com stack trace, URL, passos).
-- **Um comando por mensagem** — evite misturar `/plan` e `/create` na mesma linha; encadeie em mensagens separadas.
-- **Modo Agent** — comandos que editam arquivos precisam de permissão para alterar o workspace.
-- **Memória** — use `/remember` para decisões que o agente deve repetir (stack, estilo, URLs); não para segredos (use `.env`).
-- **Validação manual** — após `/verify` ou `/deploy`, você pode rodar também:
-
-  ```bash
-  python3 .cursor/scripts/checklist.py .
-  ```
-
-Definições completas de cada workflow: arquivos em [`.cursor/commands/`](.cursor/commands/).
-
----
-
-## Fluxo de desenvolvimento
-
-Guia prático de como encadear comandos e validações do kit — do zero até deploy. Use como roteiro; adapte ao tamanho do projeto.
-
-### Novo projeto (greenfield)
-
-Cenário: você vai criar uma aplicação do zero (ex.: SaaS, app interno, MVP).
-
-#### Fase 0 — Instalar o kit no repositório
+### Projeto novo
 
 ```bash
-# Na pasta do novo repo (vazio ou recém-criado)
 npx @zanetta/axion init
 git add . && git commit -m "chore: add axion kit"
 ```
 
-Alternativa manual: copie `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md` deste repositório.
-
-Configure MCP se for usar Context7/Playwright via [`.cursor/mcp.json`](.cursor/mcp.json).
-
-#### Fase 1 — Descoberta e decisões
-
-| Passo | Comando | Objetivo |
-| --- | --- | --- |
-| 1 | `/brainstorm` | Comparar stacks, riscos, escopo do MVP |
-| 2 | `/remember` | Fixar decisões (ex.: Next.js 15, Postgres, Tailwind v4) |
-| 3 | `/plan` | Plano com milestones, pastas e checklist |
-
-Exemplo de sequência no Agent:
+Descobrir, fixar o acordo e planejar:
 
 ```text
 /brainstorm MVP de gestão de tarefas: web, auth, equipes, mobile depois. Restrição: deploy na Vercel.
@@ -250,16 +158,7 @@ Exemplo de sequência no Agent:
 /plan MVP com auth email/senha, CRUD de projetos e tarefas, dashboard. Incluir testes e schema DB.
 ```
 
-Para escopo grande ou full-stack desde o início, considere `/coordinate` ou `/orchestrate` **depois** do `/plan`, para revisar arquitetura com múltiplos specialists.
-
-#### Fase 2 — Scaffold e implementação
-
-| Passo | Comando | Objetivo |
-| --- | --- | --- |
-| 1 | `/create` | Gerar estrutura inicial (app, API, DB conforme o plano) |
-| 2 | `/ui-ux-pro-max` | Definir direção visual (opcional, antes ou junto do UI) |
-| 3 | `/preview` | Subir dev server e validar localmente |
-| 4 | `/enhance` | Iterar features do plano, uma por vez |
+Implementar em blocos. Um bloco do plano, `/verify`, o próximo. Escopo full-stack pode ir para `/coordinate` ou `/orchestrate` depois do `/plan`.
 
 ```text
 /create seguir o plano em [nome-do-plano].md — monorepo não, app Next.js na raiz.
@@ -269,11 +168,7 @@ Para escopo grande ou full-stack desde o início, considere `/coordinate` ou `/o
 /preview iniciar dev server e confirmar que a home carrega.
 ```
 
-Implemente **incrementalmente**: conclua um bloco do plano → `/verify` → próximo bloco. Evite pedir “faça tudo” num único `/create`.
-
-#### Fase 3 — Qualidade contínua
-
-Durante o desenvolvimento, após cada entrega relevante:
+Verificar e, quando o plano estiver cumprido, preparar o release:
 
 ```text
 /test unitários para services de tarefas e integração para API /api/projects
@@ -281,88 +176,55 @@ Durante o desenvolvimento, após cada entrega relevante:
 /verify rodar build, migrations e smoke test do fluxo login → criar tarefa
 
 /status
-```
 
-No terminal:
-
-```bash
-python3 .cursor/scripts/checklist.py .
-```
-
-#### Fase 4 — Pré-deploy e release
-
-```text
 /coordinate revisão final: segurança (auth), performance (LCP), testes E2E dos fluxos críticos
 
 /deploy preparar release produção Vercel — variáveis de ambiente e migrations
 ```
 
-Validação completa:
-
 ```bash
+python3 .cursor/scripts/checklist.py .
 python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 ```
 
-#### Visão do fluxo (novo projeto)
-
 ```mermaid
 flowchart LR
-  A[Instalar kit] --> B["brainstorm"]
-  B --> C["remember"]
-  C --> D["plan"]
-  D --> E["create"]
-  E --> F["enhance + preview"]
-  F --> G["test + verify"]
-  G --> H{Pronto?}
-  H -->|Não| F
-  H -->|Sim| I["deploy"]
+  A["Descobrir\n/brainstorm"] --> B["Especificar\nrestrições no plano"]
+  B --> C["Planejar\n/plan"]
+  C --> D["Implementar\n/create"]
+  D --> E["Verificar\n/test /verify"]
+  E --> F{Cumpre o plano?}
+  F -->|Não| D
+  F -->|Sim| G["Lembrar\n/remember"]
+  G --> H["/deploy"]
 ```
 
----
-
-### Projeto já iniciado (brownfield)
-
-Cenário: o código já existe; você adiciona o kit ou já o usa e precisa evoluir o produto sem recomeçar do zero.
-
-#### Passo 1 — Adicionar o kit sem quebrar o repo
-
-Na raiz do projeto existente:
+### Projeto que já tem código
 
 ```bash
 npx @zanetta/axion init
 ```
 
-Modo **merge** (padrão): preserva `.cursor/rules/` e `mcp.json` customizados; adiciona o restante do kit. Use `--force` apenas se quiser sobrescrever tudo.
-
-Alternativa manual: copie as pastas do kit sem substituir `package.json`, `src/` nem configs do app.
-
-Revise conflitos:
-
-- Se já existir `.cursor/` com configs suas, **mescle** manualmente (`commands/`, `rules/`, `mcp.json`).
-- Documente convenções existentes com `/remember` em vez de sobrescrever código.
+O merge preserva rules e `mcp.json` do projeto. Não substitua `package.json` nem `src/` na cópia manual. Registre o que o repositório já faz:
 
 ```text
 /remember Este projeto usa npm (não bun). ESLint flat config em eslint.config.mjs. API em src/server/.
 ```
 
-Opcional: peça ao Agent um mapa rápido antes de mudanças grandes:
+Antes de uma mudança grande, peça um mapa do repo (agent `explorer-agent`, skill `architecture`):
 
 ```text
 Explorar a estrutura do repo e resumir: stack, pastas principais, como rodar testes e build.
 ```
 
-(O agent `explorer-agent` e a skill `architecture` ajudam nessa leitura.)
-
-#### Passo 2 — Entender antes de mudar
-
-| Situação | Comando sugerido |
+| Situação | Sequência |
 | --- | --- |
-| Nova feature no código existente | `/plan` → `/enhance` |
-| Refatoração ou dívida técnica | `/brainstorm` opções → `/plan` → `/enhance` |
-| Bug em produção ou staging | `/debug` → `/verify` |
-| Feature full-stack tocando várias camadas | `/coordinate` ou `/orchestrate` |
+| Feature no código existente | `/plan` → `/enhance` |
+| Refatoração | `/brainstorm` → `/plan` → `/enhance` |
+| Bug | `/debug` → `/verify` |
+| Várias camadas | `/coordinate` ou `/orchestrate` |
 
-Exemplo — nova feature:
+Feature:
 
 ```text
 /plan adicionar exportação CSV na listagem de pedidos — respeitar padrões em src/features/orders/
@@ -374,7 +236,7 @@ Exemplo — nova feature:
 /verify build + testes + curl na rota com token de teste
 ```
 
-Exemplo — bug:
+Bug:
 
 ```text
 /debug checkout falha no Safari iOS — cart fica vazio após refresh. Logs e passos anexados.
@@ -382,98 +244,66 @@ Exemplo — bug:
 /verify reproduzir fix no fluxo guest checkout e logged-in
 ```
 
-#### Passo 3 — Ritmo de trabalho no dia a dia
+No dia a dia: leia `.agents/memory/MEMORY.md` no início da sessão; tarefa pequena vai de `/enhance`; tarefa média passa por `/plan` e `/verify`; antes do PR, `/test` e `python3 .cursor/scripts/checklist.py .`.
 
-1. **Início de sessão** — leia `.agents/memory/MEMORY.md` ou peça: “Quais convenções deste projeto estão na memória?”
-2. **Tarefa pequena** — `/enhance` ou pedido direto no Agent (com rules por domínio já ativas).
-3. **Tarefa média** — `/plan` curto → implementação → `/verify`.
-4. **Antes de PR** — `/test` + `python3 .cursor/scripts/checklist.py .`
-5. **Antes de merge/release** — `/verify` + `/deploy` (ou pipeline CI equivalente)
-
-#### Passo 4 — Evitar armadilhas em projeto existente
-
-| Evitar | Preferir |
+| Prefira | Evite |
 | --- | --- |
-| `/create` para reescrever app inteiro | `/enhance` + plano incremental |
-| Ignorar padrões já no código | `/remember` + seguir estilo existente |
-| Deploy sem `/verify` | Provar build/testes na sessão |
-| Segredos no `/remember` | `.env` + `.env.example` |
-
-#### Visão do fluxo (projeto existente)
+| `/enhance` com plano incremental | `/create` para reescrever a aplicação |
+| Convenções já presentes no código, gravadas com `/remember` | Inventar um estilo paralelo |
+| `/verify` antes de `/deploy` | Release sem build e testes na sessão |
+| Segredos em `.env` | Segredos no `/remember` |
 
 ```mermaid
 flowchart TD
-  A[Kit na raiz do repo] --> B["remember convenções"]
+  A[Axion na raiz do repo] --> B["/remember convenções"]
   B --> C{Tipo de trabalho?}
-  C -->|Feature| D["plan → enhance"]
-  C -->|Bug| E["debug → verify"]
-  C -->|Grande multi-domínio| F["coordinate"]
-  D --> G["test + verify"]
+  C -->|Feature| D["/plan → /enhance"]
+  C -->|Bug| E["/debug → /verify"]
+  C -->|Várias camadas| F["/coordinate"]
+  D --> G["/test + /verify"]
   E --> G
   F --> G
-  G --> H[checklist.py]
-  H --> I["deploy quando aplicável"]
+  G --> H["checklist.py"]
+  H --> I["/deploy quando couber"]
 ```
 
----
-
-## Diferenças vs AG Kit upstream
-
-| Upstream (Gemini/Antigravity) | Este port (Cursor) |
-| --- | --- |
-| `.agents/agent/` | `.claude/agents/` |
-| `.agents/workflows/` | `.cursor/commands/` |
-| `GEMINI.md` | `AGENTS.md` + `.cursor/rules/*.mdc` |
-| `$ARGUMENTS` nos workflows | Texto livre após o comando |
-| Auto-routing nativo | Documentado; aplicado pelo agente quando relevante |
-| `npx @vudovn/ag-kit init` | `npx @zanetta/axion init` |
-
-Limitações completas: seção **Limitações da migração** em [`AGENTS.md`](AGENTS.md).
+Memória fica em `.agents/memory/` e volta nas sessões seguintes pela skill `memory-system`.
 
 ---
 
-## Sync com upstream (ag-kit)
+## Configuração
 
-Mantenha paridade com [vudovn/ag-kit](https://github.com/vudovn/ag-kit):
+| Item | Onde | Nota |
+| --- | --- | --- |
+| `CONTEXT7_API_KEY` | `.env`, a partir de `.env.example` | MCP Context7. `.env` não vai para o git |
+| Regras sempre ativas | `AGENTS.md` | Ciclo, roteamento, checklist |
+| Regras por domínio | `.cursor/rules/*.mdc` | Sete arquivos. O `init` não sobrescreve os que já existem |
+| MCP | `.cursor/mcp.json` | Merge; o projeto ganha em conflito de nome |
+| Memória | `.agents/memory/MEMORY.md` | Preferências e convenções. Sem segredos |
+
+Deixe `.agents/` indexado pelo Cursor se quiser autocomplete dos slash commands. Para tirá-lo do remoto sem perder a indexação local:
 
 ```bash
-# Comparar (dry-run)
-python3 .cursor/scripts/sync_upstream.py
-
-# Aplicar sync: agents, skills, memory, commands (adaptados ao Cursor)
-python3 .cursor/scripts/sync_upstream.py --apply
-
-# Clonar upstream fresh antes de sync
-python3 .cursor/scripts/sync_upstream.py --apply --clone
+echo ".agents/" >> .git/info/exclude
 ```
-
-O script:
-
-- Copia **agents** de `.agents/agent/` → `.claude/agents/` (paths Cursor)
-- Copia **skills** e **memory**
-- Converte **workflows** → `.cursor/commands/` (`$ARGUMENTS` → texto livre)
-- **Preserva** `/ui-ux-pro-max` (comando exclusivo Cursor)
-- **Não sobrescreve** `AGENTS.md`, `.cursor/rules/`, `README.md`
-
-Recomendação: rode dry-run após cada release upstream; revise diff antes de `--apply` em projetos customizados.
 
 ---
 
-## Estrutura resumida
+## Estrutura
 
 ```
 .
-├── AGENTS.md                 # Regras sempre-ativas
-├── AGENT_FLOW.md             # Diagrama de fluxo
-├── README.md                 # Este guia
-├── package.json              # Monorepo (workspace cli/)
-├── .npmrc                    # Registry @zanetta → registry.npmjs.org
-├── cli/                      # @zanetta/axion (npm)
+├── AGENTS.md                 # Regras sempre ativas
+├── AGENT_FLOW.md             # Fluxo de agents e validação
+├── README.md
+├── package.json              # Workspace cli/
+├── .npmrc                    # @zanetta → registry.npmjs.org
+├── cli/                      # @zanetta/axion
 ├── .github/workflows/        # publish-npm.yml (tag v*)
-├── .claude/agents/           # 20 personas
+├── .claude/agents/           # 20 agents
 ├── .agents/
-│   ├── skills/               # 45 skills top-level
-│   └── memory/               # Memória cross-session
+│   ├── skills/               # 45 skills
+│   └── memory/
 └── .cursor/
     ├── ARCHITECTURE.md
     ├── commands/             # 14 slash commands
@@ -483,25 +313,32 @@ Recomendação: rode dry-run após cada release upstream; revise diff antes de `
     └── mcp.json
 ```
 
-Documentação adicional: [`cli/README.md`](cli/README.md) · [`.cursor/ARCHITECTURE.md`](.cursor/ARCHITECTURE.md) · [`.cursor/scripts/README.md`](.cursor/scripts/README.md)
+| Documento | Conteúdo |
+| --- | --- |
+| [`.cursor/ARCHITECTURE.md`](.cursor/ARCHITECTURE.md) | Agents, skills, commands, npm |
+| [`AGENT_FLOW.md`](AGENT_FLOW.md) | Fluxo de agents e validação |
+| [`AGENTS.md`](AGENTS.md) | Regras sempre ativas |
+| [`cli/README.md`](cli/README.md) | CLI, publish, troubleshooting |
+| [`.cursor/scripts/README.md`](.cursor/scripts/README.md) | Scripts de validação e sync |
 
 ---
 
-## `.gitignore` e indexação do Cursor
+## Manutenção do kit
 
-**Não** coloque `.agents/` no `.gitignore` do projeto se quiser autocomplete dos slash commands no Cursor.
-
-Para excluir do remoto sem perder indexação local:
+Quem mantém este repositório alinha agents, skills, memória e commands com o [AG Kit](https://github.com/vudovn/ag-kit). O script adapta paths ao Cursor, não mexe em `/ui-ux-pro-max`, `AGENTS.md`, `.cursor/rules/` nem neste README.
 
 ```bash
-echo ".agents/" >> .git/info/exclude
+python3 .cursor/scripts/sync_upstream.py                 # comparar
+python3 .cursor/scripts/sync_upstream.py --apply         # aplicar
+python3 .cursor/scripts/sync_upstream.py --apply --clone # clonar a origem e aplicar
 ```
 
-(Conforme [recomendação upstream](https://github.com/vudovn/ag-kit#-important-note-on-gitignore).)
+Revise o diff do dry-run antes de `--apply`.
 
 ---
 
-## Créditos e licença
+## Licença
 
-- Baseado em [AG Kit / Antigravity Kit](https://github.com/vudovn/ag-kit) por [vudovn](https://github.com/vudovn) — MIT License
-- Port Cursor: [zanetta/axion](https://github.com/zanetta/axion)
+[MIT](LICENSE).
+
+Baseado no [AG Kit](https://github.com/vudovn/ag-kit) (vudovn/ag-kit), MIT.
