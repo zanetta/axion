@@ -43,7 +43,38 @@ Falha (exit 1) quando:
 | `--skip-checklist` | Não executa `checklist.py` |
 | `--checklist` | Caminho alternativo do checklist (padrão: `.cursor/scripts/checklist.py`) |
 
-Testes: `cli/test/verify-gate.test.js` (10 casos; suíte 35).
+Testes: `cli/test/verify-gate.test.js` (10 casos; suíte CLI 44).
+
+## trace_report.py
+
+Relatório de rastreabilidade (P2 O-02). Imprime a cobertura SPEC → PLAN → ACCEPTANCE de um slug. Não reexecuta os checks: a coluna `check` vem do ACCEPTANCE.
+
+Procura na raiz do projeto `{slug}.spec.md`, `{slug}.plan.md` (fallback `{slug}.md`), `{slug}.acceptance.md` e, se existir, `.axion/trace/{slug}.json`.
+
+```bash
+python3 .cursor/scripts/trace_report.py . {slug}
+```
+
+A tabela é `SPEC / PLAN / AC / check`, com `check` em `pass`, `open` ou `no-evidence`.
+
+| Exit | Significado |
+| --- | --- |
+| `0` | Cadeia coberta |
+| `1` | Gap |
+| `2` | Slug inválido (não casa `^[a-z0-9]+(?:-[a-z0-9]+)*$`, inclusive path traversal) |
+
+Um gap é qualquer um destes:
+
+- arquivo SPEC, PLAN ou ACCEPTANCE ausente
+- id da tabela de rastreabilidade da SPEC sem link de ACCEPTANCE
+- AC sem link SPEC/PLAN
+- task citada que não está no PLAN
+- critério desmarcado (`open`) ou com evidência vazia ou placeholder (`no-evidence`)
+- `.axion/trace/{slug}.json` que discorda dos links no markdown
+
+Linhas de rastreabilidade que ainda são `{placeholders}` são ignoradas. O script não volta a rodar os checks do ACCEPTANCE.
+
+Testes: `cli/test/trace-report.test.js` (9 casos; suíte CLI 44).
 
 ## verify_all.py
 

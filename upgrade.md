@@ -5,7 +5,7 @@ Documento de engenharia: evoluir o **Axion** de um pack instalável de agents e 
 | | |
 | --- | --- |
 | **Estado atual** | Pack de agents (`.claude/agents/`), skills (`.agents/skills/`), commands (`.cursor/commands/`), rules (`.cursor/rules/`), memória (`.agents/memory/`), scripts (`.cursor/scripts/`) e CLI npm `@zanetta/axion` (`cli/`) |
-| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) em andamento** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install, **W-03** ✅ (`verify_gate.py`) |
+| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) em andamento** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install, **W-03** ✅ (`verify_gate.py`), **O-02** ✅ (`trace_report.py`) |
 | **Público** | Maintainers do kit e consumidores que instalam via `npx @zanetta/axion` |
 
 ### Objetivo
@@ -88,11 +88,11 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 ### 6. Observability
 
-| ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| O-01 | P2 | Session / run log estruturado | Append-only log local de runs de command (command, slug, artefatos tocados, exit verify). Sem PII. | Pouca observabilidade entre sessões além de `.agents/memory/`. | `.axion/logs/runs.jsonl`; integração leve em `/verify` e `session_manager.py` | M | K-01 |
-| O-02 | P2 | Traceability report | Comando/script que imprime cobertura SPEC→ACCEPTANCE→checks para um slug. | Fecha o loop SDD para humanos e CI local. | `.cursor/scripts/trace_report.py`; menção em `/verify` | S | S-04 |
-| O-03 | P3 | Métricas de orquestração | Contadores: workers lançados, falhas, tempo estimado, circuit-breaker trips — no run log. | Necessário para calibrar W-04 e custo. | Extensão de O-01 + `coordinator-mode` | M | O-01, W-04 |
+| ID | Priority | Title | Description | Rationale | Suggested artifacts/paths | Effort | Dependencies | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| O-01 | P2 | Session / run log estruturado | Append-only log local de runs de command (command, slug, artefatos tocados, exit verify). Sem PII. | Pouca observabilidade entre sessões além de `.agents/memory/`. | `.axion/logs/runs.jsonl`; integração leve em `/verify` e `session_manager.py` | M | K-01 | — |
+| ✅ O-02 | P2 | Traceability report | Comando/script que imprime cobertura SPEC→ACCEPTANCE→checks para um slug. | Fecha o loop SDD para humanos e CI local. | `.cursor/scripts/trace_report.py`; menção em `/verify` | S | S-04 | **DONE** — `python3 .cursor/scripts/trace_report.py . {slug}` lê `{slug}.spec.md`, `{slug}.plan.md` (fallback `{slug}.md`), `{slug}.acceptance.md` e, se existir, `.axion/trace/{slug}.json`. Imprime SPEC / PLAN / AC / check (`pass`, `open`, `no-evidence`). Exit 0 com a cadeia coberta; exit 1 em gap (arquivo ausente, id da SPEC sem AC, AC sem link, task fora do PLAN, evidência aberta ou placeholder, JSON que discorda dos links markdown); exit 2 em slug inválido. Não reexecuta os checks. Placeholders `{…}` na rastreabilidade são ignorados. Testes: `cli/test/trace-report.test.js` (9 casos; suíte CLI 44) |
+| O-03 | P3 | Métricas de orquestração | Contadores: workers lançados, falhas, tempo estimado, circuit-breaker trips — no run log. | Necessário para calibrar W-04 e custo. | Extensão de O-01 + `coordinator-mode` | M | O-01, W-04 | — |
 
 ### 7. Security
 
@@ -133,11 +133,11 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 ### Fase 2 — Maturidade (P2) — 🚧 EM ANDAMENTO
 
-**Primeiro bloco ✅ (2026-10-30):** **Q-04 + Q-02 + E-03** — pre-publish gate, lint de contratos em 100% do pack e smoke pós-install (E-03 antecipado da Fase 3). Release `v1.1.0`. **Q-03** ✅ — paridade doc/inventário (`lint_inventory.py`). **W-03** ✅ — verify hard-gate (`verify_gate.py`, exit code real).
+**Primeiro bloco ✅ (2026-10-30):** **Q-04 + Q-02 + E-03** — pre-publish gate, lint de contratos em 100% do pack e smoke pós-install (E-03 antecipado da Fase 3). Release `v1.1.0`. **Q-03** ✅ — paridade doc/inventário (`lint_inventory.py`). **W-03** ✅ — verify hard-gate (`verify_gate.py`, exit code real). **O-02** ✅ — cobertura SPEC→ACCEPTANCE (`trace_report.py`; não reexecuta checks).
 
 1. **W-03** ✅ — Verify hard-gate.
 2. **Q-02** ✅, **Q-03** ✅, **Q-04** ✅ — Contracts CI, parity docs, pre-publish.
-3. Próximo: **O-02 → X-02 → D-03/D-04/O-01 → X-03** — secret scan na memory, logs/trace/status, allowlist de side effects.
+3. **O-02** ✅ — relatório de rastreabilidade (`trace_report.py`). Próximo: **X-02 → D-03/D-04/O-01 → X-03** — secret scan na memory, update/status e allowlist de side effects.
 
 *Saída:* kit “shippable” com CI de conteúdo e observabilidade local.
 
@@ -176,7 +176,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | Memory | `.agents/memory/MEMORY.md` |
 | Commands | `.cursor/commands/` |
 | Rules | `.cursor/rules/*.mdc` |
-| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_gate.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
+| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_gate.py`, `trace_report.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
 | Schemas de contrato | `.agents/schemas/` (`skill-contract.schema.json`, `command-contract.schema.json`) |
 | Templates SDD | `.agents/skills/plan-writing/templates/` (SPEC, PLAN); `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` |
 | Manifesto instalado | `.axion/kit.manifest.json` (escrito pelo CLI) |
@@ -192,5 +192,5 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 ## Como usar este backlog
 
 1. Abrir issue/PR por **ID** (ex.: `Q-01`).
-2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). 🚧 Fase 2: primeiro bloco fechado (**Q-04, Q-02, E-03**); **Q-03** ✅; **W-03** ✅. Próximo: **O-02 → X-02 → D-03/D-04/O-01 → X-03**.
+2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). 🚧 Fase 2: primeiro bloco fechado (**Q-04, Q-02, E-03**); **Q-03** ✅; **W-03** ✅; **O-02** ✅. Próximo: **X-02 → D-03/D-04/O-01 → X-03**.
 3. Toda mudança de path ou contrato deve atualizar este arquivo só se prioridade/escopo mudar — senão atualizar inventário/manifesto gerados.

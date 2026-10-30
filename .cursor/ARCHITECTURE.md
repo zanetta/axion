@@ -14,7 +14,7 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 10 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 11 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
 | **Schemas de contrato** | 2 | `.agents/schemas/` |
 | **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **Inventário** | — | `.axion/inventory.json` (`generate_inventory.py`) |
@@ -340,6 +340,7 @@ side_effects: [read-only]
 | --- | --- |
 | `checklist.py` | Validação core (dev, pre-commit) |
 | `verify_gate.py` | Gate hard do `/verify`: ACCEPTANCE + exit de `checklist.py`; não reexecuta os AC-* |
+| `trace_report.py` | Cobertura SPEC → PLAN → ACCEPTANCE de um slug (O-02); não reexecuta os checks |
 | `verify_all.py` | Suite completa (pre-deploy) |
 | `sync_upstream.py` | Compare/sync com upstream |
 | `lint_paths.py` | Fail CI se path legado `.agents/scripts/` |
@@ -395,7 +396,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 10 |
+| Scripts em `.cursor/scripts/` | 11 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |
 | CLI npm | `@zanetta/axion` |

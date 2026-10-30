@@ -54,7 +54,7 @@ Antes de modificar QUALQUER arquivo:
 | **Estado do kit (`.axion/`)** | `.axion/kit.manifest.json` — SemVer + profile; gravado no `init`/`update`; lido pelo `status` |
 | **Inventário** | `.axion/inventory.json` — `python3 .cursor/scripts/generate_inventory.py .` |
 | **Templates SDD** | SPEC/PLAN: `.agents/skills/plan-writing/templates/`; ACCEPTANCE: `.agents/skills/verify-changes/templates/` |
-| **Traceability** | `.axion/trace/` — opcional `{slug}.json` (ver README lá) |
+| **Traceability** | `.axion/trace/` — opcional `{slug}.json`; leitor `python3 .cursor/scripts/trace_report.py . {slug}` |
 | **Contratos (schemas)** | `.agents/schemas/` — `skill-contract.schema.json`, `command-contract.schema.json` |
 | **CLI npm (instalar kit)** | `npx @zanetta/axion init [--profile …] [--enable-offensive]` · código em `cli/` |
 | **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md`, `upgrade.md` |

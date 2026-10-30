@@ -62,6 +62,9 @@ WORKFLOW:
 python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
 
 5. REPORT evidence per AC-* only after the gate exits 0
+6. When a slug exists, print the SPEC / PLAN / AC / check table and include it in the report. This does not re-run the checks. Exit 0 means the chain is covered; exit 1 is a gap; exit 2 is an invalid slug:
+
+python3 .cursor/scripts/trace_report.py . {slug}
 
 RULES:
 1. Follow verify-changes/SKILL.md protocol

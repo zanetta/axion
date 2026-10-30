@@ -50,7 +50,7 @@ Exigir **um** dos seguintes:
 
 Sem gate → **não** avançar para plan/implement/orquestração (instrução aos agents/commands; não há bloqueio por tooling — ver E-02 em `upgrade.md`). Detalhes: skill `brainstorming`, `AGENTS.md` § Socratic Gate.
 
-Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Trace opcional: `.axion/trace/{slug}.json`.
+Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Trace opcional: `.axion/trace/{slug}.json` — leitor `python3 .cursor/scripts/trace_report.py . {slug}` (não reexecuta os checks).
 
 ---
 
