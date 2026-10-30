@@ -109,19 +109,21 @@ AXION_REPO=/path/to/axion \
 
 ## Publish (GitHub Actions)
 
-Publicação automática ao push de uma tag `v*`:
+Publicação automática ao push de uma tag `v*`. A versão vem de `cli/package.json` (o workflow **não** reescreve mais a versão a partir da tag):
 
 ```bash
-git tag v1.0.1
-git push origin v1.0.1
+# 1. bump "version" em cli/package.json (ex.: 1.1.0) e commit
+git commit -am "release: v1.1.0"
+# 2. tag igual à versão do package.json
+git tag v1.1.0
+git push origin main v1.1.0
 ```
 
 Workflow: [`.github/workflows/publish-npm.yml`](../.github/workflows/publish-npm.yml)
 
-1. Extrai versão da tag (`v1.2.3` → `1.2.3`)
-2. Atualiza `cli/package.json`
-3. Roda `npm ci` + `npm test`
-4. Publica no npm
+1. Job `pre-publish` — reusa [`.github/workflows/ci.yml`](../.github/workflows/ci.yml): `lint_paths.py`, `lint_contracts.py`, `npm test` (inclui smoke pós-install de todos os profiles em `cli/test/smoke.test.js`)
+2. Job `publish` (`needs: pre-publish`) — **falha** se a tag ≠ versão de `cli/package.json`
+3. `npm ci` + publica no npm
 
 ### Secret GitHub
 

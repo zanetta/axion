@@ -5,10 +5,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_call:
 
 jobs:
   lint-and-test:
-    name: Path lint + CLI tests
+    name: Pack lint + CLI tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -25,11 +26,17 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Python lint dependencies
+        run: pip install pyyaml jsonschema
+
       - name: Lint path drift (Q-01)
         run: python3 .cursor/scripts/lint_paths.py .
+
+      - name: Lint skill/command contracts (Q-02)
+        run: python3 .cursor/scripts/lint_contracts.py .
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run CLI tests
+      - name: Run CLI tests + post-install smoke (E-03)
         run: npm test

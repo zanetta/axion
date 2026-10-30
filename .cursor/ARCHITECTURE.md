@@ -1,6 +1,6 @@
 # Axion — Architecture
 
-> Framework de Spec-Driven Development para o Cursor IDE — **npm `@zanetta/axion@1.0.2`**
+> Framework de Spec-Driven Development para o Cursor IDE — **npm `@zanetta/axion@1.1.0`**
 
 ---
 
@@ -14,7 +14,7 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 7 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 8 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
 | **Schemas de contrato** | 2 | `.agents/schemas/` |
 | **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **Inventário** | — | `.axion/inventory.json` (`generate_inventory.py`) |
@@ -35,7 +35,7 @@ axion/
 ├── package.json                 # Monorepo (workspace cli/)
 ├── .npmrc                       # @zanetta → registry.npmjs.org
 ├── cli/                         # Pacote npm @zanetta/axion
-├── .github/workflows/           # ci.yml + publish-npm.yml (tag v*)
+├── .github/workflows/           # ci.yml (reusável) + publish-npm.yml (tag v*, gate pre-publish)
 ├── .axion/                      # Estado do kit (só trace/README.md é copiado ao consumidor)
 │   ├── kit.manifest.json        # SemVer, profile, checksums (gerado pelo CLI no consumidor)
 │   ├── inventory.json           # Contagens machine-readable (generate_inventory.py; não copiado)
@@ -51,7 +51,7 @@ axion/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 14 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
-    ├── scripts/                 # checklist, verify_all, lint_paths, generate_inventory, …
+    ├── scripts/                 # checklist, verify_all, lint_paths, lint_contracts, generate_inventory, …
     ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
@@ -62,7 +62,7 @@ axion/
 
 | Item | Detalhe |
 | --- | --- |
-| Pacote | `@zanetta/axion@1.0.2` |
+| Pacote | `@zanetta/axion@1.1.0` |
 | Binário | `axion` |
 | Comandos CLI | `init`, `update`, `status` |
 | Install default | Profile do manifesto (senão `standard`) + merge (`mcp.json`, rules); ver `--profile` |
@@ -71,7 +71,7 @@ axion/
 | Offensive | Só com `--profile security` ou `--enable-offensive` |
 | Contratos | `.agents/schemas/skill-contract.schema.json`, `command-contract.schema.json` |
 | Observabilidade SemVer | `init`/`update` gravam o manifesto; `status` compara installed vs latest no registry |
-| CI | `.github/workflows/ci.yml` (lint_paths + tests) · publish on tag `v*` |
+| CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + CLI tests + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
 | Docs CLI | [`cli/README.md`](../cli/README.md) |
 
 ---
@@ -91,7 +91,7 @@ Campos principais: `schema_version`, `package`, `version`, `profile`, `installed
 | `skill-contract.schema.json` | Frontmatter de `.agents/skills/*/SKILL.md` — `inputs`, `outputs`, `preconditions`, `postconditions`, `side_effects`, `forbidden_paths`, `verify_hooks` |
 | `command-contract.schema.json` | Frontmatter de `.cursor/commands/*.md` — `sdd_states`, `required_artifacts`, `scripts` (só `.cursor/scripts/` ou scripts da skill) |
 
-Piloto P0: skills `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode`; commands `/plan`, `/verify`, `/status`, `/orchestrate`. Validação CI em massa fica para Q-02.
+Piloto P0: skills `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode`; commands `/plan`, `/verify`, `/status`, `/orchestrate`. Validação CI de 100% das skills/commands via `lint_contracts.py` (Q-02).
 
 ### `lint_paths.py`
 
@@ -103,6 +103,16 @@ python3 .cursor/scripts/lint_paths.py . --fix   # reescreve só .cursor/commands
 ```
 
 Job CI: `.github/workflows/ci.yml`.
+
+### `lint_contracts.py`
+
+Valida o frontmatter YAML de todas as skills/commands contra os schemas acima (Draft 7) + regra: `name` da skill = nome da pasta. Requer `pip install pyyaml jsonschema`.
+
+```bash
+python3 .cursor/scripts/lint_contracts.py .
+```
+
+Job CI: `.github/workflows/ci.yml` (também roda no gate `pre-publish` de `publish-npm.yml`).
 
 ---
 
@@ -318,6 +328,7 @@ side_effects: [read-only]
 | `verify_all.py` | Suite completa (pre-deploy) |
 | `sync_upstream.py` | Compare/sync com upstream |
 | `lint_paths.py` | Fail CI se path legado `.agents/scripts/` |
+| `lint_contracts.py` | Fail CI se frontmatter de skill/command viola o schema |
 | `generate_inventory.py` | Gera `.axion/inventory.json` (agents/skills/commands/…) |
 | `@zanetta/axion` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
 | `session_manager.py` | Gestão de sessão |
@@ -337,6 +348,9 @@ python3 .cursor/scripts/sync_upstream.py --apply
 
 # Lint de path drift (P0)
 python3 .cursor/scripts/lint_paths.py .
+
+# Lint de contratos skill/command (P2 Q-02)
+python3 .cursor/scripts/lint_contracts.py .
 
 # Inventário versionado (P1 K-04)
 python3 .cursor/scripts/generate_inventory.py .
@@ -359,7 +373,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 7 |
+| Scripts em `.cursor/scripts/` | 8 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |
 | CLI npm | `@zanetta/axion` |

@@ -35,6 +35,30 @@ python3 .cursor/scripts/lint_paths.py . --fix   # reescreve .cursor/commands/
 
 Rodado no CI (`.github/workflows/ci.yml`).
 
+## lint_contracts.py
+
+Valida o frontmatter YAML contra os schemas de contrato (P2 Q-02), em **100%** das skills/commands:
+
+| Alvo | Schema |
+| --- | --- |
+| `.agents/skills/*/SKILL.md` | `.agents/schemas/skill-contract.schema.json` |
+| `.cursor/commands/*.md` | `.agents/schemas/command-contract.schema.json` |
+
+Regra extra: `name` da skill deve ser igual ao nome da pasta. Validador Draft 7.
+
+```bash
+pip install pyyaml jsonschema
+python3 .cursor/scripts/lint_contracts.py .
+```
+
+| Exit | Significado |
+| --- | --- |
+| `0` | Todos os arquivos batem com o schema |
+| `1` | Violações (frontmatter ausente, YAML inválido, campo fora do schema, `name` ≠ pasta, schema ausente) |
+| `2` | Dependência faltando (`pyyaml`/`jsonschema`) — imprime o `pip install` |
+
+Rodado no CI (`.github/workflows/ci.yml`) e no gate `pre-publish` de `publish-npm.yml`.
+
 ## generate_inventory.py
 
 Gera inventário machine-readable dos componentes do kit (P1 K-04):
@@ -74,7 +98,7 @@ npx @zanetta/axion init --enable-offensive          # opt-in ofensivo em qualque
 npx @zanetta/axion status
 ```
 
-Profiles: `minimal` \| `standard` (fallback) \| `security` \| `fullstack` \| `mobile` — sem `--profile`, `init`/`update` herdam do manifesto. Release automático: `.github/workflows/publish-npm.yml` (tag `v*`). Ver [`cli/README.md`](../../cli/README.md).
+Profiles: `minimal` \| `standard` (fallback) \| `security` \| `fullstack` \| `mobile` — sem `--profile`, `init`/`update` herdam do manifesto. Release automático: `.github/workflows/publish-npm.yml` (tag `v*`, gated por `ci.yml`; a tag deve bater com a versão de `cli/package.json`). Ver [`cli/README.md`](../../cli/README.md).
 
 ## Outros
 

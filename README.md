@@ -86,7 +86,7 @@ Use `--force` só quando quiser substituir customizações do kit.
 | `ENEEDAUTH` | Registry `registry.npmjs.org` (veja o `.npmrc` do projeto) |
 | `E403` (2FA) | 2FA com `--otp=…`, ou token granular com bypass de 2FA |
 
-Detalhes, publish e desenvolvimento local: [`cli/README.md`](cli/README.md). Tag `v*` dispara [`.github/workflows/publish-npm.yml`](.github/workflows/publish-npm.yml) (`NPM_TOKEN` no GitHub).
+Detalhes, publish e desenvolvimento local: [`cli/README.md`](cli/README.md). Tag `v*` dispara [`.github/workflows/publish-npm.yml`](.github/workflows/publish-npm.yml) (`NPM_TOKEN` no GitHub), que só publica após o gate de CI (lint de paths + contratos + testes/smoke) e se a tag for igual à versão de `cli/package.json`.
 
 ### Cópia manual
 
@@ -306,7 +306,7 @@ echo ".agents/" >> .git/info/exclude
 ├── package.json              # Workspace cli/
 ├── .npmrc                    # @zanetta → registry.npmjs.org
 ├── cli/                      # @zanetta/axion
-├── .github/workflows/        # ci.yml + publish-npm.yml (tag v*)
+├── .github/workflows/        # ci.yml (reusável) + publish-npm.yml (tag v*, gate pre-publish)
 ├── .axion/                   # kit.manifest.json, inventory.json, trace/ (consumidor recebe só trace/README.md)
 ├── .claude/agents/           # 20 agents
 ├── .agents/
