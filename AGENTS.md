@@ -46,7 +46,7 @@ Antes de modificar QUALQUER arquivo:
 | **Skills**          | `.agents/skills/<name>/SKILL.md`           |
 | **Workflows**       | `.cursor/commands/<name>.md` (`/<name>`)   |
 | **MCP**             | `.cursor/mcp.json`                         |
-| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
+| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
 | **Shared assets**   | `.cursor/shared/` (ex.: `ui-ux-pro-max`)   |
 | **Rules globais**   | `AGENTS.md` (este arquivo) — sempre aplicado |
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |
@@ -133,6 +133,7 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 | **Sync**         | `python3 .cursor/scripts/sync_upstream.py --apply`      | Paridade com zanetta/axion   |
 | **Path lint**    | `python3 .cursor/scripts/lint_paths.py .`               | Drift `.agents/scripts/`     |
 | **Contract lint** | `python3 .cursor/scripts/lint_contracts.py .`          | Frontmatter vs schemas (requer `pyyaml` + `jsonschema`) |
+| **Inventory parity** | `python3 .cursor/scripts/lint_inventory.py .`       | Contagens da overview e do `inventory.json` vs filesystem |
 
 **Ordem de prioridade**: Segurança → Lint → Schema → Tests → UX → SEO → Lighthouse/E2E.
 

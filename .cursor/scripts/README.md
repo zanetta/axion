@@ -68,7 +68,48 @@ python3 .cursor/scripts/generate_inventory.py .
 python3 .cursor/scripts/generate_inventory.py . -o /tmp/inventory.json
 ```
 
-Saída padrão: **`.axion/inventory.json`** — listas e contagens de `agents`, `skills`, `commands`, `rules`, `scripts` e `schemas` (`schema_version` 1.1.0). Saída **determinística**: sem `root` nem `generated_at`, então rodar de novo sem mudanças não gera diff. `-o` aceita caminho fora do projeto. Útil para parity com `.cursor/ARCHITECTURE.md` e para sync/`status` (fonte única de counts).
+Saída padrão: **`.axion/inventory.json`** — listas e contagens de `agents`, `skills`, `commands`, `rules`, `scripts` e `schemas` (`schema_version` 1.1.0). Saída **determinística**: sem `root` nem `generated_at`, então rodar de novo sem mudanças não gera diff. `-o` aceita caminho fora do projeto. Fonte única de counts para sync/`status`. A paridade com o filesystem e com `.cursor/ARCHITECTURE.md` é checada por `lint_inventory.py` (seção seguinte).
+
+## lint_inventory.py
+
+Paridade doc/inventário (P2 Q-03). Falha se as contagens documentadas divergirem do filesystem. Sem dependências extras: só `python3` e `generate_inventory.py` no mesmo diretório.
+
+O que compara com o filesystem:
+
+- Contagens da tabela **Overview** de `.cursor/ARCHITECTURE.md`
+- Campo `counts` do `.axion/inventory.json` commitado
+- Comentários de contagem na árvore de diretórios, quando existem
+
+Contrato dos rótulos em negrito da overview — o script lê esse texto; não renomeie:
+
+| Rótulo | Chave |
+| --- | --- |
+| Agents | `agents` |
+| Skills | `skills` |
+| Workflows | `commands` (slash commands, não uma pasta `workflows/`) |
+| Regras por domínio | `rules` |
+| Scripts master | `scripts` |
+| Schemas de contrato | `schemas` |
+
+Comentários da árvore, conferidos só se o texto aparecer: `# N personas` → agents, `# N skills top-level` → skills, `# N slash commands` → commands, `# N regras` → rules.
+
+```bash
+python3 .cursor/scripts/lint_inventory.py .
+```
+
+| Exit | Significado |
+| --- | --- |
+| `0` | Overview, comentários presentes e `inventory.json` batem com o filesystem |
+| `1` | Divergência |
+
+Como corrigir:
+
+- Overview ou comentário da árvore desatualizado: edite a **contagem** em `.cursor/ARCHITECTURE.md` para o valor do filesystem. Mantenha os rótulos em negrito.
+- Só `.axion/inventory.json` desatualizado: `python3 .cursor/scripts/generate_inventory.py .`
+
+Não crie nem apague arquivos para fazer um número antigo do doc “fechar”.
+
+Rodado no CI (`.github/workflows/ci.yml`), passo **Lint doc/inventory parity (Q-03)**, depois de `lint_contracts`.
 
 ## sync_upstream.py
 

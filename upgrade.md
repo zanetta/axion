@@ -5,7 +5,7 @@ Documento de engenharia: evoluir o **Axion** de um pack instalável de agents e 
 | | |
 | --- | --- |
 | **Estado atual** | Pack de agents (`.claude/agents/`), skills (`.agents/skills/`), commands (`.cursor/commands/`), rules (`.cursor/rules/`), memória (`.agents/memory/`), scripts (`.cursor/scripts/`) e CLI npm `@zanetta/axion` (`cli/`) |
-| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) em andamento** — `lint_contracts.py`, gate pre-publish, smoke pós-install |
+| **Já existe** | `coordinator-mode`, `memory-system`, `verify-changes`, `sync_upstream.py`, publish npm, merge no `init`; **Fase 0 (P0) concluída** — manifesto, schemas, `lint_paths.py` + CI; **Fase 1 (P1) concluída** — templates SPEC/PLAN/ACCEPTANCE, FSM SDD, Socratic Gate, profiles CLI + offensive opt-in, inventário `.axion/inventory.json`; **Fase 2 (P2) em andamento** — `lint_contracts.py`, `lint_inventory.py` (Q-03), gate pre-publish, smoke pós-install |
 | **Público** | Maintainers do kit e consumidores que instalam via `npx @zanetta/axion` |
 
 ### Objetivo
@@ -74,7 +74,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ✅ Q-01 | P0 | Lint de path drift | Scanner CI que falha se docs/commands/skills referenciam `.agents/scripts/` em vez de `.cursor/scripts/` (exceto menção histórica em ARCHITECTURE). Corrigir ocorrências atuais (`enhance.md`, `preview.md`, `status.md`). | Drift já conhecido; `sync_upstream.py` remapeia no sync, mas o pack shippa paths quebrados. | `.cursor/scripts/lint_paths.py`; job em `.github/workflows/`; fix nos commands afetados | S | — | **DONE** — `lint_paths.py` + `.github/workflows/ci.yml` |
 | ✅ Q-02 | P2 | Validador de contratos | CI valida frontmatter das skills/commands contra schemas K-02/K-03; falha em skills-piloto, depois em 100%. | Contratos sem CI viram doc morta. | Extensão de `lint_paths.py` ou `.cursor/scripts/lint_contracts.py`; testes em `cli/test/` | M | K-02, K-03 | **DONE** — `.cursor/scripts/lint_contracts.py` (Draft 7 + `name` = pasta) em 100% das skills/commands (59 arquivos); corrigiu YAML inválido em `lint-and-validate` e frontmatter ausente em `/ui-ux-pro-max`; job em `ci.yml` |
-| Q-03 | P2 | Doc-inventory parity | Diff ARCHITECTURE counts vs filesystem (agents/skills/commands/rules/scripts); falha se divergir. | Doc drift é fraqueza explícita. | Script + referência a `.cursor/ARCHITECTURE.md` | S | K-04 | — |
+| ✅ Q-03 | P2 | Doc-inventory parity | Diff ARCHITECTURE counts vs filesystem (agents/skills/commands/rules/scripts); falha se divergir. | Doc drift é fraqueza explícita. | Script + referência a `.cursor/ARCHITECTURE.md` | S | K-04 | **DONE** — `.cursor/scripts/lint_inventory.py` (sem deps extras) falha se a tabela overview de `.cursor/ARCHITECTURE.md` ou `.axion/inventory.json` divergir do filesystem; passo "Lint doc/inventory parity (Q-03)" em `ci.yml`, após `lint_contracts` |
 | ✅ Q-04 | P2 | Hook pre-publish | Antes de tag `v*`, rodar lint paths + contracts + `cli` tests (além do workflow publish atual). | Publish npm já existe; falta gate de conteúdo do pack. | `.github/workflows/publish-npm.yml` ou workflow `ci.yml` | S | Q-01, Q-02 | **DONE** — `ci.yml` reusável (`workflow_call`); `publish-npm.yml` job `pre-publish` → `publish` (`needs`); publish falha se tag ≠ versão de `cli/package.json` |
 
 ### 5. DX / CLI
@@ -133,10 +133,10 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 
 ### Fase 2 — Maturidade (P2) — 🚧 EM ANDAMENTO
 
-**Primeiro bloco ✅ (2026-10-30):** **Q-04 + Q-02 + E-03** — pre-publish gate, lint de contratos em 100% do pack e smoke pós-install (E-03 antecipado da Fase 3). Release `v1.1.0`.
+**Primeiro bloco ✅ (2026-10-30):** **Q-04 + Q-02 + E-03** — pre-publish gate, lint de contratos em 100% do pack e smoke pós-install (E-03 antecipado da Fase 3). Release `v1.1.0`. **Q-03** ✅ — paridade doc/inventário (`lint_inventory.py`).
 
 1. **W-03** — Verify hard-gate.
-2. **Q-02** ✅, **Q-03**, **Q-04** ✅ — Contracts CI, parity docs, pre-publish.
+2. **Q-02** ✅, **Q-03** ✅, **Q-04** ✅ — Contracts CI, parity docs, pre-publish.
 3. **O-01, O-02, D-03, D-04** — Logs, trace report, update/status ricos.
 4. **X-02, X-03** — Secret scan na memory + allowlist de side effects.
 
@@ -177,7 +177,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | Memory | `.agents/memory/MEMORY.md` |
 | Commands | `.cursor/commands/` |
 | Rules | `.cursor/rules/*.mdc` |
-| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
+| Scripts master | `.cursor/scripts/` (`checklist.py`, `verify_all.py`, `sync_upstream.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, `generate_inventory.py`, `session_manager.py`, `auto_preview.py`) |
 | Schemas de contrato | `.agents/schemas/` (`skill-contract.schema.json`, `command-contract.schema.json`) |
 | Templates SDD | `.agents/skills/plan-writing/templates/` (SPEC, PLAN); `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` |
 | Manifesto instalado | `.axion/kit.manifest.json` (escrito pelo CLI) |
@@ -185,7 +185,7 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 | Traceability | `.axion/trace/README.md` + opcional `{slug}.json` |
 | Arquitetura | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `AGENTS.md` |
 | CLI | `cli/` → `@zanetta/axion` (`init`, `update`, `status`; `--profile`, `--enable-offensive`) |
-| CI | `.github/workflows/ci.yml` (path lint + contract lint + CLI tests + smoke pós-install; reusável via `workflow_call`) |
+| CI | `.github/workflows/ci.yml` (path lint + contract lint + inventory parity + CLI tests + smoke pós-install; reusável via `workflow_call`) |
 | Publish | `.github/workflows/publish-npm.yml` (gated por `ci.yml`; tag `vX.Y.Z` deve = `cli/package.json`) |
 
 ---
@@ -193,5 +193,5 @@ Tornar skills/commands **contratos verificáveis**, introduzir artefatos SPEC/PL
 ## Como usar este backlog
 
 1. Abrir issue/PR por **ID** (ex.: `Q-01`).
-2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). 🚧 Fase 2: primeiro bloco fechado (**Q-04, Q-02, E-03**). Próximo: **Q-03 → W-03 → O-02 → X-02 → D-03/D-04/O-01 → X-03**.
+2. ✅ Fase 0 fechada (**Q-01, K-01, D-01, K-02, K-03**). ✅ Fase 1 fechada (**S-01..S-04, W-01, W-02, D-02, X-01, K-04**). 🚧 Fase 2: primeiro bloco fechado (**Q-04, Q-02, E-03**); **Q-03** ✅. Próximo: **W-03 → O-02 → X-02 → D-03/D-04/O-01 → X-03**.
 3. Toda mudança de path ou contrato deve atualizar este arquivo só se prioridade/escopo mudar — senão atualizar inventário/manifesto gerados.

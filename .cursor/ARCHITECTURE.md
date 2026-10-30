@@ -14,7 +14,7 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 8 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 9 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
 | **Schemas de contrato** | 2 | `.agents/schemas/` |
 | **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **Inventário** | — | `.axion/inventory.json` (`generate_inventory.py`) |
@@ -38,7 +38,7 @@ axion/
 ├── .github/workflows/           # ci.yml (reusável) + publish-npm.yml (tag v*, gate pre-publish)
 ├── .axion/                      # Estado do kit (só trace/README.md é copiado ao consumidor)
 │   ├── kit.manifest.json        # SemVer, profile, checksums (gerado pelo CLI no consumidor)
-│   ├── inventory.json           # Contagens machine-readable (generate_inventory.py; não copiado)
+│   ├── inventory.json           # Contagens machine-readable (generate_inventory.py; paridade: lint_inventory.py; não copiado)
 │   └── trace/                   # Traceability opcional {slug}.json
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
@@ -51,7 +51,7 @@ axion/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 14 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
-    ├── scripts/                 # checklist, verify_all, lint_paths, lint_contracts, generate_inventory, …
+    ├── scripts/                 # checklist, verify_all, lint_paths, lint_contracts, lint_inventory, …
     ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
@@ -71,7 +71,7 @@ axion/
 | Offensive | Só com `--profile security` ou `--enable-offensive` |
 | Contratos | `.agents/schemas/skill-contract.schema.json`, `command-contract.schema.json` |
 | Observabilidade SemVer | `init`/`update` gravam o manifesto; `status` compara installed vs latest no registry |
-| CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + CLI tests + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
+| CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + lint_inventory + CLI tests + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
 | Docs CLI | [`cli/README.md`](../cli/README.md) |
 
 ---
@@ -114,6 +114,18 @@ python3 .cursor/scripts/lint_contracts.py .
 
 Job CI: `.github/workflows/ci.yml` (também roda no gate `pre-publish` de `publish-npm.yml`).
 
+### `lint_inventory.py`
+
+Paridade doc/inventário (P2 Q-03): falha se as contagens da tabela overview (rótulos em negrito — o texto é o contrato do script), os comentários de contagem da árvore quando presentes, ou o `.axion/inventory.json` commitado divergirem do filesystem. Sem dependências extras.
+
+```bash
+python3 .cursor/scripts/lint_inventory.py .
+```
+
+Contagem da overview ou de um comentário (`# N personas`, `# N skills top-level`, `# N slash commands`, `# N regras`) desatualizada: edite o número no doc. Só o JSON desatualizado: `python3 .cursor/scripts/generate_inventory.py .`. Rótulos e como corrigir: [scripts/README.md](scripts/README.md).
+
+Job CI: `.github/workflows/ci.yml`, passo "Lint doc/inventory parity (Q-03)", depois de `lint_contracts`.
+
 ---
 
 ## 🔀 FSM SDD (P1)
@@ -142,7 +154,7 @@ discover → specify → plan → implement → verify → remember
 | Template PLAN | `.agents/skills/plan-writing/templates/PLAN.template.md` |
 | Template ACCEPTANCE | `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` |
 | Traceability | `.axion/trace/README.md` · opcional `.axion/trace/{slug}.json` |
-| Inventário | `python3 .cursor/scripts/generate_inventory.py .` → `.axion/inventory.json` |
+| Inventário | `python3 .cursor/scripts/generate_inventory.py .` → `.axion/inventory.json` · paridade: `python3 .cursor/scripts/lint_inventory.py .` |
 
 Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md). Backlog: [`upgrade.md`](../upgrade.md) (Fase 1 ✅).
 
@@ -329,6 +341,7 @@ side_effects: [read-only]
 | `sync_upstream.py` | Compare/sync com upstream |
 | `lint_paths.py` | Fail CI se path legado `.agents/scripts/` |
 | `lint_contracts.py` | Fail CI se frontmatter de skill/command viola o schema |
+| `lint_inventory.py` | Fail CI se counts da overview ou do `inventory.json` divergirem do filesystem |
 | `generate_inventory.py` | Gera `.axion/inventory.json` (agents/skills/commands/…) |
 | `@zanetta/axion` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
 | `session_manager.py` | Gestão de sessão |
@@ -352,6 +365,9 @@ python3 .cursor/scripts/lint_paths.py .
 # Lint de contratos skill/command (P2 Q-02)
 python3 .cursor/scripts/lint_contracts.py .
 
+# Paridade doc/inventário (P2 Q-03)
+python3 .cursor/scripts/lint_inventory.py .
+
 # Inventário versionado (P1 K-04)
 python3 .cursor/scripts/generate_inventory.py .
 
@@ -373,13 +389,13 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 8 |
+| Scripts em `.cursor/scripts/` | 9 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |
 | CLI npm | `@zanetta/axion` |
 | Regras por domínio | 7 |
 | Cobertura | ~95% web/mobile + orquestração |
-| Fonte de counts | `.axion/inventory.json` |
+| Fonte de counts | `.axion/inventory.json` (paridade: `lint_inventory.py`) |
 
 ---
 

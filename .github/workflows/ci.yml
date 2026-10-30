@@ -35,6 +35,9 @@ jobs:
       - name: Lint skill/command contracts (Q-02)
         run: python3 .cursor/scripts/lint_contracts.py .
 
+      - name: Lint doc/inventory parity (Q-03)
+        run: python3 .cursor/scripts/lint_inventory.py .
+
       - name: Install dependencies
         run: npm ci
 

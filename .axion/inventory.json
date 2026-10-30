@@ -5,7 +5,7 @@
     "skills": 45,
     "commands": 14,
     "rules": 7,
-    "scripts": 8,
+    "scripts": 9,
     "schemas": 2
   },
   "agents": [
@@ -107,6 +107,7 @@
     "checklist.py",
     "generate_inventory.py",
     "lint_contracts.py",
+    "lint_inventory.py",
     "lint_paths.py",
     "session_manager.py",
     "sync_upstream.py",
