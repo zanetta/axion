@@ -66,6 +66,10 @@ python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
 
 python3 .cursor/scripts/trace_report.py . {slug}
 
+7. LOG the run (paths and exit only, no evidence text):
+
+python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
+
 RULES:
 1. Follow verify-changes/SKILL.md protocol
 2. "It should work" is NOT verification — run it

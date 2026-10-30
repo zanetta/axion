@@ -39,7 +39,8 @@ axion/
 ├── .axion/                      # Estado do kit (só trace/README.md é copiado ao consumidor)
 │   ├── kit.manifest.json        # SemVer, profile, checksums (gerado pelo CLI no consumidor)
 │   ├── inventory.json           # Contagens machine-readable (generate_inventory.py; paridade: lint_inventory.py; não copiado)
-│   └── trace/                   # Traceability opcional {slug}.json
+│   ├── logs/runs.jsonl          # Run log append-only (O-01); o .gitignore `logs` já ignora o diretório
+│   └── trace/                   # Traceability opcional {slug}.json (protegido no update, exceto README.md)
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
@@ -70,7 +71,7 @@ axion/
 | Profiles | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (`cli/lib/profiles.js`; filtro na cópia em `cli/lib/install.js`, nunca apaga no alvo) |
 | Offensive | Só com `--profile security` ou `--enable-offensive` |
 | Contratos | `.agents/schemas/skill-contract.schema.json`, `command-contract.schema.json` |
-| Observabilidade SemVer | `init`/`update` gravam o manifesto; `status` compara installed vs latest no registry |
+| Observabilidade SemVer | `init`/`update` gravam o manifesto, listam drift e não sobrescrevem paths protegidos (SPEC/PLAN/ACCEPTANCE, `.agents/memory/`, `.axion/logs/`, `.axion/trace/*` exceto `README.md`) mesmo com `--force`; `status` compara installed vs latest e, se `session_manager.py` existir, imprime o doctor (memory index, path lint, último verify em `.axion/logs/runs.jsonl`) |
 | CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + lint_inventory + CLI tests + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
 | Docs CLI | [`cli/README.md`](../cli/README.md) |
 
@@ -348,7 +349,7 @@ side_effects: [read-only]
 | `lint_inventory.py` | Fail CI se counts da overview ou do `inventory.json` divergirem do filesystem |
 | `generate_inventory.py` | Gera `.axion/inventory.json` (agents/skills/commands/…) |
 | `@zanetta/axion` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
-| `session_manager.py` | Gestão de sessão |
+| `session_manager.py` | Gestão de sessão; `doctor` (JSON) e `log` append-only em `.axion/logs/runs.jsonl` |
 | `auto_preview.py` | Preview automático |
 
 ### Usage
@@ -381,6 +382,9 @@ python3 .cursor/scripts/generate_inventory.py .
 # Instalar kit (grava .axion/kit.manifest.json) e inspecionar SemVer
 npx @zanetta/axion init --profile standard
 npx @zanetta/axion status
+
+# Doctor do kit (D-04) — path lint local; não reexecuta o verify
+python3 .cursor/scripts/session_manager.py doctor .
 ```
 
 Skill-level scripts ficam em `.agents/skills/<skill>/scripts/`.

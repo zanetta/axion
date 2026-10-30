@@ -4,6 +4,7 @@ import { INSTALL_PATHS, KIT_AXION_FILES, MERGE_JSON_FILES } from "./constants.js
 import { mergeMcpJson } from "./merge.js";
 import { writeKitManifest } from "./manifest.js";
 import { DEFAULT_PROFILE, parseAgentSkills, resolveProfile } from "./profiles.js";
+import { isProtected } from "./protect.js";
 
 export const OFFENSIVE_NOTE = ".axion/OFFENSIVE_DISABLED.md";
 
@@ -58,6 +59,11 @@ async function copyFileWithMerge(srcFile, destFile, relativePath, force, log) {
         await fse.ensureDir(path.dirname(destFile));
         await fse.writeJson(destFile, merged, { spaces: 4 });
         log(relativePath, "merged");
+        return;
+    }
+
+    if (isProtected(relativePath) && (await fse.pathExists(destFile))) {
+        log(relativePath, "protected");
         return;
     }
 
@@ -176,6 +182,56 @@ export async function installKit(templateRoot, targetRoot, options = {}) {
         includeOffensive: ctx.plan.includeOffensive,
         outsideProfile: ctx.outsideProfile,
     };
+}
+
+async function visitTemplateFiles(templateRoot, targetRoot, plan, visit) {
+    async function walk(srcDir) {
+        const entries = await fse.readdir(srcDir, { withFileTypes: true });
+        for (const entry of entries) {
+            const src = path.join(srcDir, entry.name);
+            const rel = toPosixRelative(templateRoot, src);
+            if (entry.isDirectory()) {
+                if (!isInProfile(rel, true, plan)) continue;
+                await walk(src);
+                continue;
+            }
+            if (!isInProfile(rel, false, plan)) continue;
+            await visit(src, rel);
+        }
+    }
+
+    for (const item of [...INSTALL_PATHS, ...KIT_AXION_FILES]) {
+        const src = path.join(templateRoot, item);
+        if (!(await fse.pathExists(src))) continue;
+        if ((await fse.stat(src)).isDirectory()) await walk(src);
+        else await visit(src, item);
+    }
+}
+
+/** Files the next update would add, overwrite, or leave because they differ. */
+export async function diffKit(templateRoot, targetRoot, options = {}) {
+    const plan = resolveProfile(options.profile ?? DEFAULT_PROFILE, {
+        enableOffensive: options.enableOffensive === true,
+        agentSkills: await readAgentSkills(templateRoot),
+    });
+    const report = { missing: [], drifted: [], protected: [] };
+
+    await visitTemplateFiles(templateRoot, targetRoot, plan, async (src, rel) => {
+        const dest = path.join(targetRoot, rel);
+        if (!(await fse.pathExists(dest))) {
+            report.missing.push(rel);
+            return;
+        }
+        if (isProtected(rel)) {
+            report.protected.push(rel);
+            return;
+        }
+        const [left, right] = await Promise.all([fse.readFile(src), fse.readFile(dest)]);
+        if (!left.equals(right)) report.drifted.push(rel);
+    });
+
+    for (const key of Object.keys(report)) report[key].sort();
+    return report;
 }
 
 export async function isKitInstalled(targetRoot) {

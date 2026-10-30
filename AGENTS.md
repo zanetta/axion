@@ -141,6 +141,7 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 
 - Tarefa NÃO está concluída até `checklist.py` retornar sucesso.
 - **Hard gate (W-03):** `/verify` só fecha com `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` em exit 0 (AC-* em `[x]` com evidência, sign-off fechado, `checklist.py` ok). Exit 1 = tarefa não verificada.
+- **Run log (O-01):** depois do gate, `python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit <exit-do-gate> --artifact {slug}.acceptance.md` (append-only em `.axion/logs/runs.jsonl`). O número é o exit do gate: se não for 0, registre-o e pare o relatório. Token ou path inválido → exit 2, nada gravado.
 - Se falhar, corrija os blockers **Críticos** primeiro (Segurança/Lint).
 
 **Scripts disponíveis** (caminho: `.agents/skills/<skill>/scripts/`):

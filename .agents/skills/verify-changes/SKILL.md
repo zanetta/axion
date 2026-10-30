@@ -66,6 +66,12 @@ python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
 
 Exit 0 is required. Exit 1 fails the task: an AC-* is still `[ ]`, evidence is empty or a `{placeholder}`, the sign-off is open, or `checklist.py` exited non-zero. Do not write a passing report over a failed gate. The gate does not re-run the AC commands; it checks the record and the checklist exit code.
 
+Depois do gate, grave o run log — só paths e o exit, sem texto de evidência. O número em `--exit` é o exit do gate: `0` no exemplo é o caso de sucesso. Se o gate sair diferente de 0, registre esse exit e pare; não escreva o relatório.
+
+```bash
+python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
+```
+
 ### Step 1: Identify What Changed
 ```
 - Which files were modified?

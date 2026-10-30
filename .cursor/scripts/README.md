@@ -227,11 +227,48 @@ npx @zanetta/axion status
 
 Profiles: `minimal` \| `standard` (fallback) \| `security` \| `fullstack` \| `mobile` — sem `--profile`, `init`/`update` herdam do manifesto. Release automático: `.github/workflows/publish-npm.yml` (tag `v*`, gated por `ci.yml`; a tag deve bater com a versão de `cli/package.json`). Ver [`cli/README.md`](../../cli/README.md).
 
+## session_manager.py
+
+Gestão de sessão. Os subcomandos `status` e `info` resumem o projeto. `log` (O-01) e `doctor` (D-04) observam o kit instalado. Não é um script novo.
+
+```bash
+python3 .cursor/scripts/session_manager.py status .
+python3 .cursor/scripts/session_manager.py info .
+python3 .cursor/scripts/session_manager.py doctor .
+python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
+```
+
+### `log`
+
+Append-only em `.axion/logs/runs.jsonl`. Cada linha é um JSON. Não há campo de texto livre nem PII.
+
+| Campo | Origem | Regra |
+| --- | --- | --- |
+| `ts` | gerado | ISO UTC |
+| `command` | `--command-name` | obrigatório; `^[a-z0-9-]{1,40}$` |
+| `artifacts` | `--artifact` (repetível) | path relativo, sem espaço, sem absoluto e sem `..` (também com `\`) |
+| `slug` | `--slug` | opcional; o mesmo padrão de `command` |
+| `exit` | `--exit` | opcional; inteiro — no `/verify`, o exit do `verify_gate.py` |
+
+`--command-name` ausente, token inválido ou artifact inválido → exit 2 e nada é gravado. O `--exit 0` do exemplo é o sucesso do gate; grave o exit real. Se o gate falhar, registre esse número e pare o relatório. O `.gitignore` já tem `logs` (sem barra) e ignora qualquer diretório com esse nome, inclusive `.axion/logs/`.
+
+### `doctor`
+
+Imprime um JSON (sem indentação):
+
+| Campo | Valor |
+| --- | --- |
+| `memory_index_lines` | linhas de `.agents/memory/MEMORY.md`; `0` se o arquivo não existe |
+| `last_verify` | `{ts, slug, exit, artifacts}` do último registro com `command` `verify`, ou `null` |
+| `path_lint` | `pass`, `fail` ou `absent` quando `lint_paths.py` não está no projeto |
+
+`path_lint` executa `lint_paths.py`. Não reexecuta o verify. O `axion status` lê esse JSON quando `.cursor/scripts/session_manager.py` existe e imprime Memory index, Path lint e Last verify.
+
 ## Outros
 
 | Script | Uso |
 | --- | --- |
-| `session_manager.py` | Gestão de sessão |
+| `session_manager.py` | Gestão de sessão — `status`, `info`, `log`, `doctor` (seção acima) |
 | `auto_preview.py` | Preview de servidor local |
 
 Scripts por skill: `.agents/skills/<skill>/scripts/`.
