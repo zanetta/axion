@@ -24,13 +24,37 @@ import subprocess
 import sys
 from pathlib import Path
 
-CHECKED = {"[x]", "[X]", "✅"}
-PASS_CELL = re.compile(r"\[[ xX]\]|✅")
+CHECKED_CELL = re.compile(r"\[(?:\s*[xX]\s*)\]|✅")
+PASS_CELL = re.compile(r"\[(?:\s+|\s*[xX]\s*)\]|✅")
+SIGN_OFF_HEADING = re.compile(r"## Sign-off(?:\s+#*)?")
+HEADING = re.compile(r"#{1,6}\s+\S")
 PLACEHOLDER = ("{", "}")
 
 
 def split_row(line: str) -> list[str]:
-    return [cell.strip() for cell in line.strip().strip("|").split("|")]
+    cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+    while cells and not cells[-1]:
+        cells.pop()
+    return cells
+
+
+def evidence_missing(evidence: str) -> bool:
+    if any(marker in evidence for marker in PLACEHOLDER):
+        return True
+    return re.fullmatch(r"[`\s]*", evidence) is not None
+
+
+def open_sign_off(text: str) -> list[str]:
+    problems = []
+    in_sign_off = False
+    for line in text.splitlines():
+        stripped = line.strip()
+        if HEADING.match(stripped):
+            in_sign_off = SIGN_OFF_HEADING.fullmatch(stripped) is not None
+            continue
+        if in_sign_off and stripped.startswith("- [ ]"):
+            problems.append(f"sign-off still open: {stripped}")
+    return problems
 
 
 def acceptance_problems(text: str) -> list[str]:
@@ -54,17 +78,13 @@ def acceptance_problems(text: str) -> list[str]:
         if any(marker in ac_id for marker in PLACEHOLDER):
             problems.append(f"{ac_id}: id is still a template placeholder")
             continue
-        if passed not in CHECKED:
+        if not CHECKED_CELL.fullmatch(passed):
             problems.append(f"{ac_id}: Pass is '{passed or 'empty'}' — expected [x] after the check ran")
             continue
-        if not evidence or any(marker in evidence for marker in PLACEHOLDER):
+        if evidence_missing(evidence):
             problems.append(f"{ac_id}: checked without evidence (command output is missing)")
 
-    sign_off = text.split("## Sign-off", 1)
-    if len(sign_off) == 2:
-        for line in sign_off[1].splitlines():
-            if line.strip().startswith("- [ ]"):
-                problems.append(f"sign-off still open: {line.strip()}")
+    problems.extend(open_sign_off(text))
     return problems
 
 

@@ -43,7 +43,7 @@ Falha (exit 1) quando:
 | `--skip-checklist` | Não executa `checklist.py` |
 | `--checklist` | Caminho alternativo do checklist (padrão: `.cursor/scripts/checklist.py`) |
 
-Testes: `cli/test/verify-gate.test.js` (6 casos; suíte 31).
+Testes: `cli/test/verify-gate.test.js` (10 casos; suíte 35).
 
 ## verify_all.py
 

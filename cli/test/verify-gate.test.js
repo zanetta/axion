@@ -94,3 +94,61 @@ test("verify_gate fails when the checklist exits non-zero", async () => {
         assert.match(result.stdout, /CRITICAL: Lint Check failed/);
     });
 });
+
+test("verify_gate fails when a checkbox row has a trailing empty cell", async () => {
+    const body = COMPLETE.replace(
+        "| AC-1 | when the gate runs | unit | npm test: 18 passed | [x] |",
+        "| AC-1 | when the gate runs | unit | npm test: 18 passed | [x] |\n| AC-2 | when the other row is open | unit |  | [ ] | |"
+    );
+    await withProject({ "feature.acceptance.md": body }, async (root) => {
+        const result = run(root, ["--skip-checklist"]);
+        assert.equal(result.status, 1, result.stdout + result.stderr);
+        assert.match(result.stdout, /AC-2: Pass is '\[ \]'/);
+    });
+});
+
+test("verify_gate fails when checked evidence is only backticks", async () => {
+    const ticks = COMPLETE.replace("npm test: 18 passed", "` `");
+    await withProject({ "feature.acceptance.md": ticks }, async (root) => {
+        const result = run(root, ["--skip-checklist"]);
+        assert.equal(result.status, 1, result.stdout + result.stderr);
+        assert.match(result.stdout, /checked without evidence/);
+    });
+});
+
+test("verify_gate fails when a spaced checkbox has no evidence", async () => {
+    const body = COMPLETE.replace(
+        "| AC-1 | when the gate runs | unit | npm test: 18 passed | [x] |",
+        "| AC-1 | when the gate runs | unit | npm test: 18 passed | [x] |\n| AC-2 | when the box has spaces | unit |  | [ x ] |"
+    );
+    await withProject({ "feature.acceptance.md": body }, async (root) => {
+        const result = run(root, ["--skip-checklist"]);
+        assert.equal(result.status, 1, result.stdout + result.stderr);
+        assert.match(result.stdout, /AC-2: checked without evidence/);
+    });
+});
+
+test("verify_gate does not treat another heading as Sign-off", async () => {
+    const body = `# ACCEPTANCE
+
+| ID | Given / When / Then | Method | Command / evidence | Pass |
+| --- | --- | --- | --- | --- |
+| AC-1 | when the gate runs | unit | npm test: 18 passed | [x] |
+
+## Sign-off notes
+
+- [ ] draft note outside the sign-off section
+
+## Sign-off
+
+- [x] All AC-* checked with evidence
+
+## Notes
+
+- [ ] leftover outside sign-off
+`;
+    await withProject({ "feature.acceptance.md": body }, async (root) => {
+        const result = run(root, ["--skip-checklist"]);
+        assert.equal(result.status, 0, result.stdout + result.stderr);
+    });
+});
