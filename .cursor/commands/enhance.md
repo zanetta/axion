@@ -1,5 +1,21 @@
 ---
 description: Add or update features in existing application. Used for iterative development.
+name: enhance
+contract_version: "1.0.0"
+sdd_states:
+  - implement
+required_skills:
+  - plan-writing
+  - brainstorming
+required_agents: []
+required_artifacts: []
+preconditions:
+  - "For major changes: PLAN approved or ≥3 Socratic answers"
+scripts:
+  - ".cursor/scripts/session_manager.py"
+side_effects:
+  - write-files
+  - invoke-agents
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
@@ -8,11 +24,17 @@ description: Add or update features in existing application. Used for iterative 
 
 (texto livre após o comando)
 
+**FSM:** `plan` → **`implement`** (same gate as `/create` for non-trivial scope)
+
 ---
 
 ## Task
 
 This command adds features or makes updates to existing application.
+
+### Gate
+
+Major / multi-file changes: require `{slug}.plan.md` (or inline `/plan` with SPEC **or** ≥3 Socratic answers) + user OK before coding. Tiny fixes may proceed after confirming impact.
 
 ### Steps:
 
@@ -21,6 +43,7 @@ This command adds features or makes updates to existing application.
    - Understand existing features, tech stack
 
 2. **Plan Changes**
+   - Prefer PLAN/ACCEPTANCE templates for non-trivial work
    - Determine what will be added/changed
    - Detect affected files
    - Check dependencies

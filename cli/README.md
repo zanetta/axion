@@ -8,6 +8,9 @@ Install the Axion kit — spec-driven development for Cursor — into any projec
 
 ```bash
 npx @zanetta/axion init
+npx @zanetta/axion init --profile standard
+npx @zanetta/axion init --profile security
+npx @zanetta/axion init --profile minimal --enable-offensive
 npx @zanetta/axion init --force
 npx @zanetta/axion init --dry-run
 npx @zanetta/axion update
@@ -16,6 +19,27 @@ npx @zanetta/axion status
 
 `init` instala no **diretório atual** (`cwd`). Para outro path: `init --path ~/dev/meu-app`.
 
+## Profiles (`--profile`)
+
+Após a cópia do template, o CLI aplica um **profile** (`cli/lib/profiles.js` + `cli/lib/apply-profile.js`). Default: **`standard`**.
+
+| Profile | Conteúdo (resumo) |
+| --- | --- |
+| `minimal` | Allowlist de agents/skills core (planejamento, verify, orquestração básica) |
+| `standard` | Pack completo **sem** superfície ofensiva (default) |
+| `security` | Pack completo **com** `red-team-tactics` + `penetration-tester` |
+| `fullstack` | Pack sem game/mobile (e skills relacionadas) |
+| `mobile` | Pack focado mobile; exclui game, SEO e parte do stack web |
+
+### Offensive opt-in (`--enable-offensive`)
+
+Skills/agents ofensivos (`red-team-tactics`, `penetration-tester`) só entram se:
+
+- `--profile security`, **ou**
+- `--enable-offensive` (qualquer profile)
+
+Caso contrário são **removidos** do install e o CLI pode gravar **`.axion/OFFENSIVE_DISABLED.md`**.
+
 ## Manifesto e status (SemVer)
 
 `init` e `update` gravam **`.axion/kit.manifest.json`** no projeto (via `cli/lib/manifest.js`). O arquivo **não** vem do template do pack — é estado local do kit instalado.
@@ -23,7 +47,8 @@ npx @zanetta/axion status
 | Campo (resumo) | Significado |
 | --- | --- |
 | `version` | SemVer do pacote `@zanetta/axion` usado no install/update |
-| `profile` | Profile aplicado (hoje: `standard`) |
+| `profile` | Profile aplicado (`minimal` \| `standard` \| `security` \| `fullstack` \| `mobile`) |
+| `enable_offensive` | `true` se `--profile security` ou `--enable-offensive` |
 | `installed_at` / `updated_at` | Timestamps ISO |
 | `components` | Contagem de agents, skills, commands, rules |
 | `checksums` | Hash parcial de `AGENTS.md` (expansível) |
@@ -35,13 +60,17 @@ npx @zanetta/axion status
 
 Se o manifesto não existir (install antigo), rode `init`/`update` de novo para criá-lo.
 
-## Install scope (full)
+## Install scope
+
+Cópia base (depois filtrada pelo profile):
 
 - `.claude/agents/`
-- `.agents/` (skills + memory + `schemas/`)
+- `.agents/` (skills + memory + `schemas/` + templates SDD)
 - `.cursor/` (commands, rules, scripts, mcp, shared)
 - `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`
 - **`.axion/kit.manifest.json`** — gravado pelo CLI (não vem do template)
+
+Inventário machine-readable do monorepo (maintainers): `python3 .cursor/scripts/generate_inventory.py .` → `.axion/inventory.json`.
 
 ## Merge behavior (default)
 

@@ -3,6 +3,7 @@ import fse from "fs-extra";
 import { INSTALL_PATHS, MERGE_JSON_FILES } from "./constants.js";
 import { mergeMcpJson, shouldSkipExistingFile } from "./merge.js";
 import { writeKitManifest } from "./manifest.js";
+import { applyProfile } from "./apply-profile.js";
 
 function toPosixRelative(root, filePath) {
     return path.relative(root, filePath).split(path.sep).join("/");
@@ -86,10 +87,46 @@ export async function installKit(templateRoot, targetRoot, options = {}) {
         await copyInstallItem(templateRoot, targetRoot, item, force, log);
     }
 
+    // Optional kit extras under .axion/ (trace README, inventory) — never overwrite consumer SPEC/PLAN
+    const axionSrc = path.join(templateRoot, ".axion");
+    if (await fse.pathExists(axionSrc)) {
+        const skipNames = new Set(["kit.manifest.json", "logs"]);
+        const entries = await fse.readdir(axionSrc, { withFileTypes: true });
+        for (const entry of entries) {
+            if (skipNames.has(entry.name)) continue;
+            const src = path.join(axionSrc, entry.name);
+            const dest = path.join(targetRoot, ".axion", entry.name);
+            if (entry.isDirectory()) {
+                await fse.copy(src, dest, {
+                    overwrite: force,
+                    filter: (s) => !s.endsWith("kit.manifest.json"),
+                });
+                log(`.axion/${entry.name}`, force ? "overwritten" : "installed");
+            } else if (force || !(await fse.pathExists(dest))) {
+                await fse.copy(src, dest, { overwrite: force });
+                log(`.axion/${entry.name}`, force ? "overwritten" : "installed");
+            } else {
+                log(`.axion/${entry.name}`, "skipped");
+            }
+        }
+    }
+
+    const profile = options.profile ?? "standard";
+    const enableOffensive = options.enableOffensive === true;
+    const profileResult = await applyProfile(targetRoot, profile, { enableOffensive });
+    for (const rem of profileResult.removed) {
+        if (!rem.startsWith("(")) {
+            actions.push({ file: rem, action: "skipped" });
+            options.onAction?.(rem, "skipped");
+        }
+    }
+    options.onProfile?.(profileResult);
+
     if (options.writeManifest !== false && options.version) {
         const manifest = await writeKitManifest(targetRoot, {
             version: options.version,
-            profile: options.profile ?? "standard",
+            profile,
+            enableOffensive: profileResult.includeOffensive,
             packageName: options.packageName,
             templateSource: options.templateSource ?? null,
             action: options.action ?? "init",

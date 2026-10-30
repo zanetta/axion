@@ -14,12 +14,43 @@ cp .env.example .env   # opcional — MCP Context7
 
 | Modo | Comportamento |
 | --- | --- |
-| `init` (padrão) | Full install + **merge** (`mcp.json`, rules existentes preservados) |
+| `init` (padrão) | Profile **`standard`** + **merge** (`mcp.json`, rules existentes preservados) |
+| `init --profile <name>` | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` |
+| `init --enable-offensive` | Inclui `red-team-tactics` + `penetration-tester` (ou use `--profile security`) |
 | `init --force` | Sobrescreve todos os arquivos do kit |
 | `update` | Baixa template atual e faz merge |
-| `status` | Verifica `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md` |
+| `status` | Lê `.axion/kit.manifest.json` + verifica `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md` |
 
 Pacote: [`@zanetta/axion`](https://www.npmjs.com/package/@zanetta/axion) · troubleshooting: [`cli/README.md`](cli/README.md)
+
+---
+
+## 🔀 FSM SDD — commands ↔ estados
+
+```plaintext
+discover → specify → plan → implement → verify → remember
+```
+
+| Estado FSM | Command | Artefato / saída |
+| --- | --- | --- |
+| `discover` / `specify` | `/brainstorm` | SPEC (template em `.agents/skills/plan-writing/templates/SPEC.template.md`) |
+| `plan` | `/plan` | PLAN (+ Traceability → SPEC/ACCEPTANCE) |
+| `implement` | `/create` \| `/enhance` | código alinhado ao PLAN |
+| `verify` | `/verify` | ACCEPTANCE + evidência de execução |
+| `remember` | `/remember` | `.agents/memory/` |
+
+Commands de apoio (fora da FSM linear): `/debug`, `/test`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
+
+### Socratic Gate (antes de `/plan`, `/create`, `/orchestrate`)
+
+Exigir **um** dos seguintes:
+
+1. Arquivo **SPEC** preenchido a partir do template, **ou**
+2. ≥ **3** perguntas socráticas **respondidas** registradas no SPEC ou no PLAN.
+
+Sem gate → **não** avançar para plan/implement/orquestração. Detalhes: skill `brainstorming`, `AGENTS.md` § Socratic Gate.
+
+Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Trace opcional: `.axion/trace/{slug}.json`.
 
 ---
 
@@ -84,24 +115,25 @@ Pacote: [`@zanetta/axion`](https://www.npmjs.com/package/@zanetta/axion) · trou
 
 ## 🎯 Slash Commands (`.cursor/commands/`)
 
-| Comando | Skill / agent principal | Uso |
-| --- | --- | --- |
-| `/brainstorm` | `brainstorming` | Explorar opções antes de codar |
-| `/coordinate` | `coordinator-mode` + `orchestrator` | Orquestração avançada paralela |
-| `/create` | `app-builder` | Nova feature ou app |
-| `/debug` | `systematic-debugging` | Debug baseado em evidência |
-| `/deploy` | `deployment-procedures` | Pré-flight + deploy |
-| `/enhance` | domain agents | Melhorar código existente |
-| `/orchestrate` | `parallel-agents` + `orchestrator` | Multi-agente (mín. 3) |
-| `/plan` | `plan-writing`, `architecture` | Plano estruturado |
-| `/preview` | `auto_preview.py` | Preview local |
-| `/remember` | `memory-system` | Persistir em `.agents/memory/` |
-| `/status` | — | Relatório de progresso |
-| `/test` | `testing-patterns`, `webapp-testing` | Testes |
-| `/verify` | `verify-changes` | Executar e provar |
-| `/ui-ux-pro-max` | `.cursor/shared/ui-ux-pro-max` | **Cursor-only** — design |
+| Comando | FSM | Skill / agent principal | Uso |
+| --- | --- | --- | --- |
+| `/brainstorm` | discover/specify | `brainstorming` | Explorar + produzir SPEC; alimenta o gate |
+| `/plan` | plan | `plan-writing`, `architecture` | PLAN estruturado (**gate**) |
+| `/create` | implement | `app-builder` | Nova feature/app (**gate**) |
+| `/enhance` | implement | domain agents | Melhorar código existente |
+| `/verify` | verify | `verify-changes` | Executar e provar vs ACCEPTANCE |
+| `/remember` | remember | `memory-system` | Persistir em `.agents/memory/` |
+| `/orchestrate` | — (multi) | `parallel-agents` + `orchestrator` | Multi-agente (mín. 3) (**gate**) |
+| `/coordinate` | — (multi) | `coordinator-mode` + `orchestrator` | Orquestração avançada paralela |
+| `/debug` | — | `systematic-debugging` | Debug baseado em evidência |
+| `/deploy` | — | `deployment-procedures` | Pré-flight + deploy |
+| `/preview` | — | `auto_preview.py` | Preview local |
+| `/status` | — | — | Relatório de progresso |
+| `/test` | — (apoio verify) | `testing-patterns`, `webapp-testing` | Testes |
+| `/ui-ux-pro-max` | — | `.cursor/shared/ui-ux-pro-max` | **Cursor-only** — design |
 
 > **Cursor:** argumentos são texto livre após o comando (ex.: `/plan auth JWT`), não `$ARGUMENTS`.
+> **Gate:** `/plan`, `/create`, `/orchestrate` exigem SPEC **ou** ≥3 respostas socráticas no SPEC/PLAN.
 
 ---
 
@@ -189,4 +221,4 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 - Sync: `python3 .cursor/scripts/sync_upstream.py`
 - Repositório: https://github.com/zanetta/axion
 
-**Last Updated:** 2026-06-17 · **npm:** `@zanetta/axion@1.0.0`
+**Last Updated:** 2026-10-30 · **npm:** `@zanetta/axion@1.0.2` · FSM SDD P1

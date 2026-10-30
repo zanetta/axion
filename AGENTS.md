@@ -52,8 +52,11 @@ Antes de modificar QUALQUER arquivo:
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |
 | **Memória persistente** | `.agents/memory/MEMORY.md` |
 | **Estado do kit (`.axion/`)** | `.axion/kit.manifest.json` — SemVer + profile; gravado no `init`/`update`; lido pelo `status` |
+| **Inventário** | `.axion/inventory.json` — `python3 .cursor/scripts/generate_inventory.py .` |
+| **Templates SDD** | SPEC/PLAN: `.agents/skills/plan-writing/templates/`; ACCEPTANCE: `.agents/skills/verify-changes/templates/` |
+| **Traceability** | `.axion/trace/` — opcional `{slug}.json` (ver README lá) |
 | **Contratos (schemas)** | `.agents/schemas/` — `skill-contract.schema.json`, `command-contract.schema.json` |
-| **CLI npm (instalar kit)** | `npx @zanetta/axion init` · código em `cli/` |
+| **CLI npm (instalar kit)** | `npx @zanetta/axion init [--profile …] [--enable-offensive]` · código em `cli/` |
 | **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md`, `upgrade.md` |
 | **MCP env vars**    | `.env` (no `.gitignore`); template em `.env.example` |
 
@@ -97,6 +100,8 @@ Antes de codificar, responda:
 
 ## 🛑 Socratic Gate (para tarefas complexas)
 
+FSM: `discover → specify → plan → implement → verify → remember` (commands: `/brainstorm` → `/plan` → `/create`\|`/enhance` → `/verify` → `/remember`).
+
 | Tipo de pedido            | Ação obrigatória                                                  |
 | ------------------------- | ----------------------------------------------------------------- |
 | **Nova feature / Build**  | Faça mín. 3 perguntas estratégicas antes de codar                 |
@@ -104,6 +109,8 @@ Antes de codificar, responda:
 | **Vago / Simples**        | Esclareça Propósito, Usuários e Escopo                            |
 | **Orquestração total**    | **PAUSE** subagents até o usuário confirmar o plano               |
 | **"Proceed" direto**      | Mesmo com respostas, faça 2 perguntas de Edge Case antes de iniciar |
+
+**Gate enforceável:** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`).
 
 Protocolo:
 
@@ -180,7 +187,7 @@ Esses agents contêm:
 **Skills-chave** (em `.agents/skills/`):
 `clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
 
-**CLI npm:** `@zanetta/axion` — `init`, `update`, `status` ([`cli/README.md`](cli/README.md)).
+**CLI npm:** `@zanetta/axion` — `init [--profile minimal|standard|security|fullstack|mobile] [--enable-offensive]`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 
 **Slash commands** (em `.cursor/commands/`):
 `/brainstorm`, `/coordinate`, `/create`, `/debug`, `/deploy`, `/enhance`, `/orchestrate`, `/plan`, `/preview`, `/remember`, `/status`, `/test`, `/ui-ux-pro-max`, `/verify`.

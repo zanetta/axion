@@ -10,9 +10,10 @@ required_skills:
 required_agents:
   - project-planner
 required_artifacts:
-  - "{task-slug}.md"
+  - "{slug}.plan.md"
+  - "{slug}.acceptance.md"
 preconditions:
-  - "Socratic Gate completed or requirements clear"
+  - "SPEC exists OR ≥3 Socratic answers recorded"
 scripts: []
 side_effects:
   - write-files
@@ -25,14 +26,26 @@ side_effects:
 
 (texto livre após o comando)
 
+**FSM:** `specify` → **`plan`** (blocked without SPEC / Socratic evidence)
+
 ---
 
 ## 🔴 CRITICAL RULES
 
-1. **NO CODE WRITING** - This command creates plan file only
+1. **NO CODE WRITING** - Plan / ACCEPTANCE only
 2. **Use project-planner agent** - not the editor's native Plan mode
-3. **Socratic Gate** - Ask clarifying questions before planning
-4. **Dynamic Naming** - Plan file named based on task
+3. **Socratic Gate (blocking)** - refuse to write PLAN until SPEC exists **or** ≥3 answered questions are recorded
+4. **Templates** - base on `.agents/skills/plan-writing/templates/PLAN.template.md` + `verify-changes/templates/ACCEPTANCE.template.md`
+5. **Traceability** - fill SPEC ↔ PLAN ↔ ACCEPTANCE IDs (optional `.axion/trace/{slug}.json`)
+
+---
+
+## Gate checklist (before writing)
+
+- [ ] `{slug}.spec.md` exists, **or** Socratic Q&A (≥3) embedded in PLAN Gate section
+- [ ] User direction confirmed (from `/brainstorm` or explicit answers)
+
+If gate fails → run `/brainstorm` or ask 3 questions; **do not** invent a plan.
 
 ---
 
@@ -44,20 +57,25 @@ Use the `project-planner` agent with this context:
 CONTEXT:
 - User Request: (texto livre após o comando)
 - Mode: PLANNING ONLY (no code)
-- Output: {task-slug}.md in project root (dynamic naming)
+- Templates:
+  - .agents/skills/plan-writing/templates/PLAN.template.md
+  - .agents/skills/verify-changes/templates/ACCEPTANCE.template.md
+- Output:
+  - {slug}.plan.md (or {slug}.md for backward compat)
+  - {slug}.acceptance.md
 
 NAMING RULES:
 1. Extract 2-3 key words from request
 2. Lowercase, hyphen-separated
 3. Max 30 characters
-4. Example: "e-commerce cart" → ecommerce-cart.md
+4. Example: "e-commerce cart" → ecommerce-cart.plan.md
 
 RULES:
 1. Follow project-planner.md Phase -1 (Context Check)
-2. Follow project-planner.md Phase 0 (Socratic Gate)
-3. Create {slug}.md with task breakdown
-4. DO NOT write any code files
-5. REPORT the exact file name created
+2. Enforce Socratic Gate / SPEC precondition
+3. Create PLAN + ACCEPTANCE with Traceability table
+4. DO NOT write any application code
+5. REPORT the exact file names created
 ```
 
 ---
@@ -66,10 +84,9 @@ RULES:
 
 | Deliverable | Location |
 |-------------|----------|
-| Project Plan | `{task-slug}.md` in project root |
-| Task Breakdown | Inside plan file |
-| Agent Assignments | Inside plan file |
-| Verification Checklist | Phase X in plan file |
+| PLAN | `{slug}.plan.md` (or `{slug}.md`) |
+| ACCEPTANCE | `{slug}.acceptance.md` |
+| Trace (optional) | `.axion/trace/{slug}.json` |
 
 ---
 
@@ -77,12 +94,13 @@ RULES:
 
 Tell user:
 ```
-[OK] Plan created: {slug}.md in project root
+[OK] Plan: {slug}.plan.md
+[OK] Acceptance: {slug}.acceptance.md
 
 Next steps:
-- Review the plan
-- Run `/create` to start implementation
-- Or modify plan manually
+- Review + approve
+- `/create` or `/enhance` for implementation
+- `/verify` against ACCEPTANCE
 ```
 
 ---

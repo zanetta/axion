@@ -35,6 +35,17 @@ python3 .cursor/scripts/lint_paths.py . --fix   # reescreve .cursor/commands/
 
 Rodado no CI (`.github/workflows/ci.yml`).
 
+## generate_inventory.py
+
+Gera inventário machine-readable dos componentes do kit (P1 K-04):
+
+```bash
+python3 .cursor/scripts/generate_inventory.py .
+python3 .cursor/scripts/generate_inventory.py . -o /tmp/inventory.json
+```
+
+Saída padrão: **`.axion/inventory.json`** — listas e contagens de `agents`, `skills`, `commands`, `rules`, `scripts` e `schemas`. Útil para parity com `.cursor/ARCHITECTURE.md` e para sync/`status` (fonte única de counts).
+
 ## sync_upstream.py
 
 Compare ou sincronize com [zanetta/axion](https://github.com/zanetta/axion):
@@ -57,10 +68,13 @@ Instalar o kit em outro projeto (grava `.axion/kit.manifest.json`):
 
 ```bash
 NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init
+npx @zanetta/axion init --profile standard
+npx @zanetta/axion init --profile security          # inclui superfície ofensiva
+npx @zanetta/axion init --enable-offensive          # opt-in ofensivo em qualquer profile
 npx @zanetta/axion status
 ```
 
-Release automático: `.github/workflows/publish-npm.yml` (tag `v*`). Ver [`cli/README.md`](../../cli/README.md).
+Profiles: `minimal` \| `standard` (default) \| `security` \| `fullstack` \| `mobile`. Release automático: `.github/workflows/publish-npm.yml` (tag `v*`). Ver [`cli/README.md`](../../cli/README.md).
 
 ## Outros
 
@@ -76,6 +90,6 @@ Scripts por skill: `.agents/skills/<skill>/scripts/`.
 | Arquivo | Conteúdo |
 | --- | --- |
 | [`README.md`](../../README.md) | Guia principal, comandos, fluxos |
-| [`AGENT_FLOW.md`](../../AGENT_FLOW.md) | Fluxo de agentes |
-| [`.cursor/ARCHITECTURE.md`](../ARCHITECTURE.md) | Arquitetura completa |
+| [`AGENT_FLOW.md`](../../AGENT_FLOW.md) | Fluxo de agents + FSM SDD |
+| [`.cursor/ARCHITECTURE.md`](../ARCHITECTURE.md) | Arquitetura, FSM, profiles, inventário |
 | [`cli/README.md`](../../cli/README.md) | CLI npm + troubleshooting |

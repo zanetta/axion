@@ -9,14 +9,18 @@ inputs:
   - name: change_scope
     description: Files/behavior to verify; empty means latest session changes
     required: false
+  - name: acceptance_file
+    description: "{slug}.acceptance.md when present — drive AC-* checks"
+    required: false
 outputs:
   - name: verification_report
-    description: Evidence of pass/fail with command output
+    description: Evidence of pass/fail with command output (per AC-* when linked)
 preconditions:
   - "Code under test already exists"
 postconditions:
   - "At least one execution-based check was run"
   - "Report includes evidence, not assumptions"
+  - "If ACCEPTANCE exists, each AC-* has pass/fail + evidence"
 side_effects:
   - run-shell
   - read-only
@@ -39,7 +43,18 @@ verify_hooks:
 
 ---
 
+## ACCEPTANCE template
+
+`.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` — prefer checking AC-* from `{slug}.acceptance.md` before ad-hoc probes.
+
 ## Verification Protocol
+
+### Step 0: Load ACCEPTANCE (if present)
+```
+- Find {slug}.acceptance.md for the active work
+- Map each AC-* to a command / runtime check
+- Do not mark done while required AC-* lack evidence
+```
 
 ### Step 1: Identify What Changed
 ```

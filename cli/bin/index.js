@@ -16,6 +16,7 @@ import {
 } from "../lib/constants.js";
 import { installKit, isKitInstalled } from "../lib/install.js";
 import { readKitManifest } from "../lib/manifest.js";
+import { isValidProfile, PROFILE_NAMES } from "../lib/profiles.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -138,14 +139,22 @@ const printDryRun = async (targetDir, options) => {
     console.log(
         `  1. Download from: ${chalk.cyan(repoSource)}${options.branch ? "#" + options.branch : ""}`,
     );
-    console.log(`  2. Install (full) to: ${chalk.cyan(targetDir)}`);
-    console.log("  3. Copy: .claude/, .agents/, .cursor/, AGENTS.md, AGENT_FLOW.md, .env.example");
+    console.log(`  2. Install to: ${chalk.cyan(targetDir)}`);
+    console.log(`  3. Profile: ${chalk.cyan(options.profile || "standard")}`);
     console.log(
-        `  4. Merge mode: ${options.force ? chalk.red("OFF (--force overwrite)") : chalk.green("ON (mcp.json merge, rules skip if exist)")}`,
+        `  4. Offensive skills: ${
+            options.enableOffensive || options.profile === "security"
+                ? chalk.yellow("ON")
+                : chalk.gray("OFF")
+        }`,
+    );
+    console.log("  5. Copy: .claude/, .agents/, .cursor/, AGENTS.md, AGENT_FLOW.md, .env.example");
+    console.log(
+        `  6. Merge mode: ${options.force ? chalk.red("OFF (--force overwrite)") : chalk.green("ON (mcp.json merge, rules skip if exist)")}`,
     );
 
     if (await isKitInstalled(targetDir)) {
-        console.log(`  5. ${chalk.yellow("Kit partially or fully present — merge/skip unless --force")}`);
+        console.log(`  7. ${chalk.yellow("Kit partially or fully present — merge/skip unless --force")}`);
     }
 
     console.log(chalk.gray("────────────────────────────────────────\n"));
@@ -155,6 +164,17 @@ const runInstall = async (options) => {
     const quiet = options.quiet ?? false;
     const dryRun = options.dryRun ?? false;
     const force = options.force ?? false;
+    const profile = options.profile ?? "standard";
+    const enableOffensive = options.enableOffensive ?? false;
+
+    if (!isValidProfile(profile)) {
+        console.error(
+            chalk.red(
+                `Invalid --profile "${profile}". Allowed: ${PROFILE_NAMES.join(", ")}`,
+            ),
+        );
+        process.exit(1);
+    }
 
     showBanner(quiet);
     const updatePromise = checkUpdate(quiet);
@@ -166,7 +186,12 @@ const runInstall = async (options) => {
         : repoSource;
 
     if (dryRun) {
-        await printDryRun(targetDir, { ...options, branch: options.branch });
+        await printDryRun(targetDir, {
+            ...options,
+            branch: options.branch,
+            profile,
+            enableOffensive,
+        });
         return;
     }
 
@@ -190,19 +215,24 @@ const runInstall = async (options) => {
     try {
         await fetchTemplate(repoSource, tempDir, options.branch);
 
-        if (spinner) spinner.text = "Installing (full, merge)...";
+        if (spinner) spinner.text = `Installing (profile: ${profile})...`;
 
         const summary = { installed: 0, merged: 0, skipped: 0, overwritten: 0 };
+        let profileMeta = { includeOffensive: false, removed: [] };
 
         await installKit(tempDir, targetDir, {
             force,
             version: pkg.version,
             packageName: PACKAGE_NAME,
-            profile: "standard",
+            profile,
+            enableOffensive,
             templateSource: source,
             action: installed ? "update" : "init",
             onAction: (_file, action) => {
                 if (summary[action] !== undefined) summary[action] += 1;
+            },
+            onProfile: (result) => {
+                profileMeta = result;
             },
         });
 
@@ -219,11 +249,22 @@ const runInstall = async (options) => {
             console.log(`   Merged:      ${chalk.cyan(summary.merged)}`);
             console.log(`   Skipped:     ${chalk.yellow(summary.skipped)}`);
             console.log(`   Overwritten: ${chalk.red(summary.overwritten)}`);
+            console.log(`   Profile:     ${chalk.cyan(profile)}`);
+            console.log(
+                `   Offensive:   ${
+                    profileMeta.includeOffensive ? chalk.yellow("enabled") : chalk.gray("disabled")
+                }`,
+            );
             console.log(`   Manifest:    ${chalk.cyan(".axion/kit.manifest.json")} @ ${pkg.version}`);
             console.log(chalk.gray("────────────────────────────────────────"));
             console.log(chalk.white("\nNext steps:"));
             console.log(`   1. ${chalk.cyan("cp .env.example .env")} and set CONTEXT7_API_KEY (optional)`);
             console.log(`   2. Open in Cursor and use ${chalk.cyan("/plan")}, ${chalk.cyan("/debug")}, etc.`);
+            console.log(
+                chalk.gray(
+                    `   3. Inventory: ${chalk.cyan("python3 .cursor/scripts/generate_inventory.py .")}`,
+                ),
+            );
             console.log(chalk.green("\nHappy coding!\n"));
         }
 
@@ -285,6 +326,11 @@ const statusCommand = async (options) => {
     if (manifest) {
         console.log(chalk.gray("────────────────────────────────────────"));
         console.log(`Installed kit: ${chalk.cyan(manifest.version)} (profile: ${manifest.profile})`);
+        console.log(
+            `Offensive:     ${
+                manifest.enable_offensive ? chalk.yellow("enabled") : chalk.gray("disabled")
+            }`,
+        );
         console.log(`Updated at:    ${chalk.gray(manifest.updated_at)}`);
         if (manifest.components) {
             console.log(
@@ -318,6 +364,12 @@ program
     .description("Install Axion, a spec-driven development kit for Cursor IDE")
     .version(pkg.version, "-v, --version", "Display version number");
 
+const profileOption = [
+    "--profile <name>",
+    `Install profile: ${PROFILE_NAMES.join("|")} (default: standard)`,
+    "standard",
+];
+
 program
     .command("init")
     .description("Full install: .claude, .agents, .cursor, AGENTS.md (merge by default)")
@@ -326,6 +378,12 @@ program
     .option("-b, --branch <name>", "Git branch of the template repository")
     .option("-q, --quiet", "Minimal output (CI/CD)", false)
     .option("--dry-run", "Preview actions without writing files", false)
+    .option(...profileOption)
+    .option(
+        "--enable-offensive",
+        "Keep red-team-tactics + penetration-tester (also implied by --profile security)",
+        false,
+    )
     .action(runInstall);
 
 program
@@ -336,6 +394,12 @@ program
     .option("-b, --branch <name>", "Git branch of the template repository")
     .option("-q, --quiet", "Minimal output", false)
     .option("--dry-run", "Preview only", false)
+    .option(...profileOption)
+    .option(
+        "--enable-offensive",
+        "Keep red-team-tactics + penetration-tester (also implied by --profile security)",
+        false,
+    )
     .action(async (options) => {
         if (!options.force && !options.quiet && !options.dryRun) {
             const ok = await confirm(

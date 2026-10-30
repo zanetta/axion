@@ -13,13 +13,16 @@ outputs:
     description: Clarified purpose, users, constraints, and recommended direction
   - name: questions_answered
     description: Evidence that Socratic Gate (≥3 questions) was completed
+  - name: spec_file
+    description: "{slug}.spec.md from plan-writing/templates/SPEC.template.md"
 preconditions:
   - "Do not write application code yet"
 postconditions:
   - "At least 3 clarifying questions asked or skipped via memory"
   - "User confirmed direction or remaining unknowns listed"
+  - "SPEC written when user picks a direction (or Q&A recorded for /plan)"
 side_effects:
-  - read-only
+  - write-files
   - write-memory
 forbidden_paths:
   - "src/**"
@@ -65,6 +68,7 @@ verify_hooks: []
    - 📦 Scope: Must-have vs nice-to-have?
 4. **WAIT** - Get response before proceeding
 5. **SAVE** - After brainstorming, save key decisions: `/remember [decision]`
+6. **SPEC** - After direction is chosen, write `{slug}.spec.md` from `.agents/skills/plan-writing/templates/SPEC.template.md` (hand-off to `/plan`)
 
 ---
 

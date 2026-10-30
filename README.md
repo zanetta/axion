@@ -8,24 +8,23 @@ Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@za
 
 ## Spec-Driven Development
 
-O trabalho segue um ciclo. Cada fase fecha um acordo antes da próxima escrever código:
+O trabalho segue a FSM: **`discover → specify → plan → implement → verify → remember`**. Cada fase fecha um acordo (artefato) antes da próxima escrever código.
 
-**descobrir → especificar → planejar → implementar → verificar → lembrar**
-
-| Fase | O que fica decidido | Command |
+| Estado | Artefato / decisão | Command |
 | --- | --- | --- |
-| Descobrir | opções, riscos, escopo | `/brainstorm` |
-| Especificar | problema, restrições e o que fica de fora | saída do `/brainstorm`, carregada no `/plan` |
-| Planejar | passos, pastas, checklist | `/plan` |
-| Implementar | código que segue o plano | `/create` (projeto novo) ou `/enhance` (código existente) |
-| Verificar | evidência de que o resultado cumpre o plano | `/test`, `/verify`, `checklist.py` |
-| Lembrar | decisões que a próxima sessão deve repetir | `/remember` |
+| `discover` / `specify` | SPEC (problema, actors, constraints, non-goals) | `/brainstorm` |
+| `plan` | PLAN + links para SPEC/ACCEPTANCE | `/plan` |
+| `implement` | código que segue o PLAN | `/create` ou `/enhance` |
+| `verify` | ACCEPTANCE + evidência de execução | `/verify` (e `/test`, `checklist.py`) |
+| `remember` | decisões cross-session | `/remember` |
 
-A especificação, hoje, é esse acordo: problema, restrições e non-goals registrados na conversa e no plano. A direção do framework é gravar spec, plano e critérios de aceite como artefatos que a fase seguinte possa ler. Esses arquivos ainda não fazem parte do pacote.
+**Templates (P1):** `.agents/skills/plan-writing/templates/SPEC.template.md`, `PLAN.template.md`; `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md`. Traceability opcional: `.axion/trace/{slug}.json` (ver `.axion/trace/README.md`).
 
-Quem sustenta o ciclo são os slash commands, 20 agents, 45 skills e as regras em `AGENTS.md`. `/brainstorm` questiona stack, escopo e trade-offs antes de `/plan` ou `/create`. A fase seguinte começa quando você chama o command correspondente.
+**Socratic Gate:** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN.
 
-Commands de apoio, fora das seis fases: `/debug`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
+**Profiles no `init`:** `minimal` \| `standard` (default) \| `security` \| `fullstack` \| `mobile`. Superfície ofensiva só com `--profile security` ou `--enable-offensive`.
+
+Quem sustenta o ciclo: slash commands, 20 agents, 45 skills e `AGENTS.md`. Commands de apoio: `/debug`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
 
 ---
 
@@ -37,13 +36,15 @@ Na raiz do repositório da aplicação:
 
 ```bash
 npx @zanetta/axion init
+npx @zanetta/axion init --profile standard
+npx @zanetta/axion init --profile security   # inclui red-team / penetration-tester
 ```
 
-O `init` instala no diretório atual. Exemplo: `cd ~/dev/meu-app && npx @zanetta/axion init`.
+O `init` instala no diretório atual. Exemplo: `cd ~/dev/meu-app && npx @zanetta/axion init`. Profiles e `--enable-offensive`: [`cli/README.md`](cli/README.md).
 
 ```bash
 npm install -g @zanetta/axion
-axion init
+axion init --profile standard
 ```
 
 **O que o `init` copia:**
@@ -112,7 +113,7 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 
 Maintainers do kit (opcional): `python3 .cursor/scripts/lint_paths.py .` — falha se docs/commands ainda apontarem para o path legado `.agents/scripts/`.
 
-Roadmap SDD (Fase 0 concluída; próxima: Fase 1): [`upgrade.md`](upgrade.md).
+Roadmap SDD (Fases 0 e 1 concluídas; próxima: Fase 2): [`upgrade.md`](upgrade.md).
 
 No chat do Agent, digite `/` para o autocomplete dos commands em `.cursor/commands/`.
 
@@ -195,13 +196,12 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 
 ```mermaid
 flowchart LR
-  A["Descobrir\n/brainstorm"] --> B["Especificar\nrestrições no plano"]
-  B --> C["Planejar\n/plan"]
-  C --> D["Implementar\n/create"]
-  D --> E["Verificar\n/test /verify"]
-  E --> F{Cumpre o plano?}
+  A["discover/specify\n/brainstorm → SPEC"] --> C["plan\n/plan → PLAN"]
+  C --> D["implement\n/create|/enhance"]
+  D --> E["verify\n/verify + ACCEPTANCE"]
+  E --> F{Cumpre ACCEPTANCE?}
   F -->|Não| D
-  F -->|Sim| G["Lembrar\n/remember"]
+  F -->|Sim| G["remember\n/remember"]
   G --> H["/deploy"]
 ```
 
@@ -302,33 +302,33 @@ echo ".agents/" >> .git/info/exclude
 ├── AGENTS.md                 # Regras sempre ativas
 ├── AGENT_FLOW.md             # Fluxo de agents e validação
 ├── README.md
-├── upgrade.md                # Roadmap SDD (Fase 0 done → Fase 1)
+├── upgrade.md                # Roadmap SDD (Fases 0–1 done → Fase 2)
 ├── package.json              # Workspace cli/
 ├── .npmrc                    # @zanetta → registry.npmjs.org
 ├── cli/                      # @zanetta/axion
 ├── .github/workflows/        # ci.yml + publish-npm.yml (tag v*)
-├── .axion/                   # Estado local (kit.manifest.json via CLI)
+├── .axion/                   # kit.manifest.json, inventory.json, trace/
 ├── .claude/agents/           # 20 agents
 ├── .agents/
 │   ├── schemas/              # Contratos skill/command
-│   ├── skills/               # 45 skills
+│   ├── skills/               # 45 skills (+ templates SPEC/PLAN/ACCEPTANCE)
 │   └── memory/
 └── .cursor/
     ├── ARCHITECTURE.md
     ├── commands/             # 14 slash commands
     ├── rules/                # 7 regras por domínio
-    ├── scripts/              # checklist, verify_all, lint_paths, sync_upstream
+    ├── scripts/              # checklist, verify_all, lint_paths, generate_inventory, …
     ├── shared/ui-ux-pro-max/
     └── mcp.json
 ```
 
 | Documento | Conteúdo |
 | --- | --- |
-| [`.cursor/ARCHITECTURE.md`](.cursor/ARCHITECTURE.md) | Agents, skills, commands, npm, P0 |
-| [`AGENT_FLOW.md`](AGENT_FLOW.md) | Fluxo de agents e validação |
+| [`.cursor/ARCHITECTURE.md`](.cursor/ARCHITECTURE.md) | Agents, skills, FSM SDD, npm, P0/P1 |
+| [`AGENT_FLOW.md`](AGENT_FLOW.md) | Fluxo de agents, FSM e gates |
 | [`AGENTS.md`](AGENTS.md) | Regras sempre ativas |
-| [`upgrade.md`](upgrade.md) | Backlog SDD — Fase 0 concluída; Fase 1 em seguida |
-| [`cli/README.md`](cli/README.md) | CLI, manifesto SemVer, publish, troubleshooting |
+| [`upgrade.md`](upgrade.md) | Backlog SDD — Fases 0–1 concluídas; Fase 2 em seguida |
+| [`cli/README.md`](cli/README.md) | CLI, profiles, manifesto SemVer, publish |
 | [`.cursor/scripts/README.md`](.cursor/scripts/README.md) | Scripts de validação e sync |
 
 ---

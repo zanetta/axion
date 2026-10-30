@@ -57,6 +57,7 @@ export async function writeKitManifest(targetRoot, options = {}) {
     const {
         version,
         profile = "standard",
+        enableOffensive = false,
         packageName,
         templateSource = null,
         action = "init",
@@ -79,6 +80,7 @@ export async function writeKitManifest(targetRoot, options = {}) {
         package: packageName,
         version,
         profile,
+        enable_offensive: Boolean(enableOffensive),
         installed_at: installedAt,
         updated_at: now,
         last_action: action,

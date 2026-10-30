@@ -1,5 +1,17 @@
 ---
 description: Save information to persistent memory for cross-session recall. Stores preferences, conventions, decisions, and context.
+name: remember
+contract_version: "1.0.0"
+sdd_states:
+  - remember
+required_skills:
+  - memory-system
+required_agents: []
+required_artifacts: []
+preconditions: []
+scripts: []
+side_effects:
+  - write-memory
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
@@ -7,6 +19,8 @@ description: Save information to persistent memory for cross-session recall. Sto
 # /remember — Persistent Memory Management
 
 (texto livre após o comando)
+
+**FSM:** final state after `verify` — persist decisions / conventions (no app code).
 
 ---
 
