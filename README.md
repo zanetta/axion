@@ -51,10 +51,12 @@ axion init
 | Item | Destino |
 | --- | --- |
 | 20 agents | `.claude/agents/` |
-| 45 skills (+ sub-skills de game-dev) e memória | `.agents/` |
+| 45 skills (+ sub-skills de game-dev), memória e schemas | `.agents/` |
 | 14 slash commands (13 + `/ui-ux-pro-max`), 7 regras por domínio, scripts, MCP | `.cursor/` |
 | Regras globais e fluxo | `AGENTS.md`, `AGENT_FLOW.md` |
 | Template de env | `.env.example` |
+
+O `init` (e o `update`) também grava **`.axion/kit.manifest.json`** — estado local do kit (SemVer, profile). Não faz parte do template do pack. `npx @zanetta/axion status` lê esse manifesto e mostra a versão instalada (e compara com o latest no npm, se a rede responder).
 
 **Merge é o padrão.** Arquivos novos entram; arquivos que já existem ficam como estão.
 
@@ -107,6 +109,10 @@ Servidores em [`.cursor/mcp.json`](.cursor/mcp.json) (Context7, Playwright, shad
 python3 .cursor/scripts/checklist.py .
 python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 ```
+
+Maintainers do kit (opcional): `python3 .cursor/scripts/lint_paths.py .` — falha se docs/commands ainda apontarem para o path legado `.agents/scripts/`.
+
+Roadmap SDD (Fase 0 concluída; próxima: Fase 1): [`upgrade.md`](upgrade.md).
 
 No chat do Agent, digite `/` para o autocomplete dos commands em `.cursor/commands/`.
 
@@ -296,29 +302,33 @@ echo ".agents/" >> .git/info/exclude
 ├── AGENTS.md                 # Regras sempre ativas
 ├── AGENT_FLOW.md             # Fluxo de agents e validação
 ├── README.md
+├── upgrade.md                # Roadmap SDD (Fase 0 done → Fase 1)
 ├── package.json              # Workspace cli/
 ├── .npmrc                    # @zanetta → registry.npmjs.org
 ├── cli/                      # @zanetta/axion
-├── .github/workflows/        # publish-npm.yml (tag v*)
+├── .github/workflows/        # ci.yml + publish-npm.yml (tag v*)
+├── .axion/                   # Estado local (kit.manifest.json via CLI)
 ├── .claude/agents/           # 20 agents
 ├── .agents/
+│   ├── schemas/              # Contratos skill/command
 │   ├── skills/               # 45 skills
 │   └── memory/
 └── .cursor/
     ├── ARCHITECTURE.md
     ├── commands/             # 14 slash commands
     ├── rules/                # 7 regras por domínio
-    ├── scripts/              # checklist, verify_all, sync_upstream
+    ├── scripts/              # checklist, verify_all, lint_paths, sync_upstream
     ├── shared/ui-ux-pro-max/
     └── mcp.json
 ```
 
 | Documento | Conteúdo |
 | --- | --- |
-| [`.cursor/ARCHITECTURE.md`](.cursor/ARCHITECTURE.md) | Agents, skills, commands, npm |
+| [`.cursor/ARCHITECTURE.md`](.cursor/ARCHITECTURE.md) | Agents, skills, commands, npm, P0 |
 | [`AGENT_FLOW.md`](AGENT_FLOW.md) | Fluxo de agents e validação |
 | [`AGENTS.md`](AGENTS.md) | Regras sempre ativas |
-| [`cli/README.md`](cli/README.md) | CLI, publish, troubleshooting |
+| [`upgrade.md`](upgrade.md) | Backlog SDD — Fase 0 concluída; Fase 1 em seguida |
+| [`cli/README.md`](cli/README.md) | CLI, manifesto SemVer, publish, troubleshooting |
 | [`.cursor/scripts/README.md`](.cursor/scripts/README.md) | Scripts de validação e sync |
 
 ---
@@ -328,6 +338,7 @@ echo ".agents/" >> .git/info/exclude
 O script compara agents, skills, memória e commands com [zanetta/axion](https://github.com/zanetta/axion). Não altera `/ui-ux-pro-max`, `AGENTS.md`, `.cursor/rules/` nem este README.
 
 ```bash
+python3 .cursor/scripts/lint_paths.py .                  # drift de paths (legado .agents/scripts/)
 python3 .cursor/scripts/sync_upstream.py                 # comparar
 python3 .cursor/scripts/sync_upstream.py --apply         # aplicar
 python3 .cursor/scripts/sync_upstream.py --apply --clone # clonar a origem e aplicar
