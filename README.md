@@ -4,11 +4,21 @@ Framework de Spec-Driven Development (SDD) para o Cursor IDE. A especificação 
 
 Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.1.0`](https://www.npmjs.com/package/@zanetta/axion)
 
+| | |
+| --- | --- |
+| [Introdução](#spec-driven-development) | O que o kit é |
+| [Instalação](#quick-start) | `init`, profiles, o que é copiado |
+| [Troubleshooting da instalação](#troubleshooting-da-instalação) | `npx`, diretório, profile, arquivos protegidos |
+| [FSM](#spec-driven-development) | Estados e o que cada um exige |
+| [Fluxo de trabalho](#fluxo-de-trabalho) | Projeto do zero e projeto que já existe |
+| [Comandos e skills](#comandos-e-skills) | O que cada `/comando` carrega |
+| [Cada comando](#cada-comando) | Quando usar e o que ele produz |
+
 ---
 
 ## Spec-Driven Development
 
-O trabalho segue a FSM: **`discover → specify → plan → implement → verify → remember`**. Cada fase fecha um acordo (artefato) antes da próxima escrever código.
+O trabalho segue a FSM: `discover → specify → plan → implement → verify → remember`. Cada fase fecha um acordo (artefato) antes da próxima escrever código.
 
 | Estado | Artefato / decisão | Command |
 | --- | --- | --- |
@@ -18,15 +28,17 @@ O trabalho segue a FSM: **`discover → specify → plan → implement → verif
 | `verify` | ACCEPTANCE + evidência de execução | `/verify` (e `/test`, `checklist.py`) |
 | `remember` | decisões cross-session | `/remember` |
 
-`/verify` roda `python3 .cursor/scripts/checklist.py .` antes do gate; o gate roda o checklist de novo. Exit diferente de 0 bloqueia o relatório.
+O que cada estado exige:
 
-**Templates (P1):** `.agents/skills/plan-writing/templates/SPEC.template.md`, `PLAN.template.md`; `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md`. Traceability opcional: `.axion/trace/{slug}.json` (ver `.axion/trace/README.md`).
+| Estado | Pode avançar quando |
+| --- | --- |
+| `discover` / `specify` | Existe `{slug}.spec.md` **ou** três perguntas respondidas no SPEC/PLAN. Célula com `{placeholder}` não conta. |
+| `plan` | O usuário aprovou `{slug}.plan.md` (ou o legado `{slug}.md`) e o `{slug}.acceptance.md`. |
+| `implement` | O plano está aprovado. App novo usa `/create`. Código que já existe usa `/enhance`. Correção pequena pode seguir depois de confirmar o impacto. |
+| `verify` | Os critérios AC-* têm evidência e `[x]`, o checklist sai 0 e o `verify_gate.py` sai 0. |
+| `remember` | A nota passou no `memory_secret_scan.py`. Segredo não entra em `.agents/memory/`. |
 
-**Socratic Gate:** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN.
-
-**Profiles no `init`:** `minimal` \| `standard` (default no primeiro install; depois herdado do manifesto) \| `security` \| `fullstack` \| `mobile`. Superfície ofensiva só com `--profile security` ou `--enable-offensive`. O filtro é aplicado na cópia — trocar para um profile menor não apaga arquivos já instalados.
-
-Quem sustenta o ciclo: slash commands, 20 agents, 45 skills e `AGENTS.md`. Commands de apoio: `/debug`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
+Commands de apoio: `/debug`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
 
 ---
 
@@ -49,17 +61,17 @@ npm install -g @zanetta/axion
 axion init --profile standard
 ```
 
-**O que o `init` copia:**
+**O que o** `init` **copia:**
 
 | Item | Destino |
 | --- | --- |
-| 20 agents | `.claude/agents/` |
-| 45 skills (+ sub-skills de game-dev), memória e schemas | `.agents/` |
+| Agents do profile | `.claude/agents/` |
+| Skills do profile (+ sub-skills de game-dev), memória e schemas | `.agents/` |
 | 14 slash commands (13 + `/ui-ux-pro-max`), 7 regras por domínio, scripts, MCP | `.cursor/` |
 | Regras globais e fluxo | `AGENTS.md`, `AGENT_FLOW.md` |
 | Template de env | `.env.example` |
 
-O `init` (e o `update`) também grava **`.axion/kit.manifest.json`** — estado local do kit (SemVer, profile). Não faz parte do template do pack. `npx @zanetta/axion status` lê esse manifesto e mostra a versão instalada (e compara com o latest no npm, se a rede responder).
+O `init` (e o `update`) também grava `.axion/kit.manifest.json` — estado local do kit (SemVer, profile). Não faz parte do template do pack. `npx @zanetta/axion status` lê esse manifesto e mostra a versão instalada (e compara com o latest no npm, se a rede responder).
 
 **Merge é o padrão.** Arquivos novos entram; arquivos que já existem ficam como estão.
 
@@ -70,7 +82,7 @@ O `init` (e o `update`) também grava **`.axion/kit.manifest.json`** — estado 
 | Demais arquivos do kit | Ignorados se já existirem |
 
 ```bash
-npx @zanetta/axion init --force     # sobrescreve os arquivos do kit
+npx @zanetta/axion init --force     # sobrescreve arquivos do kit que não são protegidos
 npx @zanetta/axion init --dry-run   # simula sem escrever
 npx @zanetta/axion status
 npx @zanetta/axion update           # merge de arquivos novos
@@ -90,6 +102,19 @@ Use `--force` só quando quiser substituir customizações do kit.
 
 Detalhes, publish e desenvolvimento local: [`cli/README.md`](cli/README.md). Tag `v*` dispara [`.github/workflows/publish-npm.yml`](.github/workflows/publish-npm.yml) (`NPM_TOKEN` no GitHub), que só publica após o gate de CI (lint de paths + contratos + paridade doc/inventário + testes/smoke) e se a tag for igual à versão de `cli/package.json`.
 
+### Troubleshooting da instalação
+
+| Sintoma | O que fazer |
+| --- | --- |
+| `npx` não acha o pacote recém-publicado | `NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init`. Confira com `npm view @zanetta/axion version`. |
+| O kit caiu na pasta errada | `init` grava no diretório atual. Entre na raiz do app e rode de novo. |
+| `/comando` não aparece no chat | Os commands estão em `.cursor/commands/`. Abra a raiz do projeto no Cursor e digite `/` no Agent. |
+| Troquei para `minimal` e os agents antigos continuam | O CLI não apaga arquivo do projeto. O que ficou de fora do profile aparece como *outside profile* e sai só se você remover. |
+| `--force` e o SPEC/PLAN sumiu | Não deve sumir. `*.spec.md`, `*.plan.md`, `*.acceptance.md`, `.agents/memory/`, `.axion/logs/` e `.axion/trace/` (exceto o `README.md`) não são sobrescritos se já existem. |
+| `update` diz que há drift | A lista é informativa. Sem `--force`, o arquivo local fica. Com `--force`, só arquivo do kit que não é protegido é substituído. |
+| `status` não mostra o manifesto | Rode `init` ou `update` de novo. O `.axion/kit.manifest.json` é gravado pelo CLI, não vem no template. |
+| Script Python falha ao verificar | Vários commands chamam `python3`. Sem Python 3 no PATH, checklist e gate não rodam. |
+
 ### Cópia manual
 
 ```bash
@@ -106,30 +131,11 @@ cp .env.example .env
 
 Servidores em [`.cursor/mcp.json`](.cursor/mcp.json) (Context7, Playwright, shadcn).
 
-### Validar
-
-```bash
-python3 .cursor/scripts/checklist.py .
-python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
-```
-
-Maintainers do kit (opcional): `python3 .cursor/scripts/lint_paths.py .` — falha se docs/commands ainda apontarem para o path legado `.agents/scripts/`.
-
-Roadmap SDD (Fases 0 e 1 concluídas; próxima: Fase 2): [`upgrade.md`](upgrade.md).
-
-No chat do Agent, digite `/` para o autocomplete dos commands em `.cursor/commands/`.
-
 ---
 
-## O ciclo com os commands
+## Fluxo de trabalho
 
-Sintaxe, no chat do **Agent**:
-
-```text
-/<comando> [descrição em texto livre]
-```
-
-O texto depois do comando é o pedido. Um command por mensagem. Commands que editam arquivos precisam de permissão de escrita no workspace.
+Um command por mensagem, no chat do Agent: `/<comando>` e o pedido em texto livre. Commands que editam arquivos pedem permissão de escrita.
 
 | Command | Quando | Exemplo |
 | --- | --- | --- |
@@ -148,9 +154,11 @@ O texto depois do comando é o pedido. Um command por mensagem. Commands que edi
 | `/remember` | Convenção entre sessões | `/remember prefiro bun em vez de npm neste projeto` |
 | `/ui-ux-pro-max` | Direção visual | `/ui-ux-pro-max dashboard fintech dark mode minimalista` |
 
-Definição de cada workflow: [`.cursor/commands/`](.cursor/commands/).
+Definição de cada workflow: [`.cursor/commands/`](.cursor/commands/). A lista com as skills e o texto de cada command estão em [Comandos e skills](#comandos-e-skills) e [Cada comando](#cada-comando).
 
-### Projeto novo
+### a) Projeto iniciado do zero
+
+App que ainda não existe. Instale o kit, feche o SPEC e o PLAN, e só então peça código.
 
 ```bash
 npx @zanetta/axion init
@@ -207,7 +215,7 @@ flowchart LR
   G --> H["/deploy"]
 ```
 
-### Projeto que já tem código
+### b) Projeto que já está em andamento
 
 ```bash
 npx @zanetta/axion init
@@ -279,6 +287,85 @@ Memória fica em `.agents/memory/` e volta nas sessões seguintes pela skill `me
 
 ---
 
+## Comandos e skills
+
+O frontmatter de cada arquivo em `.cursor/commands/` declara as skills que o agent deve ler. Onde a coluna está vazia, o command não declara `required_skills`.
+
+| Command | Skills |
+| --- | --- |
+| `/brainstorm` | `brainstorming` |
+| `/plan` | `plan-writing`, `brainstorming` |
+| `/create` | `app-builder`, `brainstorming`, `plan-writing` |
+| `/enhance` | `plan-writing`, `brainstorming` |
+| `/verify` | `verify-changes` |
+| `/remember` | `memory-system` |
+| `/orchestrate` | `parallel-agents`, `coordinator-mode`, `plan-writing` |
+| `/coordinate` | `coordinator-mode` (pedido no corpo do command; o frontmatter não lista `required_skills`) |
+| `/status` | — |
+| `/debug` | — |
+| `/test` | — |
+| `/deploy` | — |
+| `/preview` | — (usa `.cursor/scripts/auto_preview.py`) |
+| `/ui-ux-pro-max` | — (usa `.cursor/shared/ui-ux-pro-max/scripts/search.py`) |
+
+## Cada comando
+
+### `/brainstorm`
+
+Estado `discover` / `specify`. Explora opções e grava `{slug}.spec.md`. Não escreve código da aplicação. Sem `{slug}.spec.md`, três respostas reais registradas no PLAN também abrem o `/plan`.
+
+### `/plan`
+
+Estado `plan`. O `project-planner` produz `{slug}.plan.md` e `{slug}.acceptance.md` a partir dos templates. Exige SPEC ou três respostas reais, e para antes de codar até você aprovar. A seção `## Write allowlist` lista os paths que a implementação pode alterar.
+
+### `/create`
+
+Estado `implement` para aplicação nova. Sem PLAN aprovado, volta para `/brainstorm` e `/plan`. Com o plano aprovado, a skill `app-builder` coordena schema, API e UI. No fim, prefira `/verify` e, se couber, `.cursor/scripts/auto_preview.py`.
+
+### `/enhance`
+
+Estado `implement` em código que já existe. Mudança grande pede PLAN ou três respostas e o seu OK. Correção pequena segue depois de confirmar o impacto. O primeiro passo lê o projeto com `python3 .cursor/scripts/session_manager.py info`.
+
+### `/verify`
+
+Estado `verify`. Prova por execução. Ordem: gravar evidência em cada AC-*, `python3 .cursor/scripts/checklist.py .`, depois `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md`. Os dois precisam sair 0. O gate roda o checklist de novo e não repete os comandos dos AC-*. Sem arquivo de acceptance, o gate aceita `--allow-missing-acceptance` e o checklist continua. Em seguida, `trace_report.py` (se houver slug) e o log em `.axion/logs/runs.jsonl`.
+
+### `/test`
+
+Gera ou roda testes do alvo que você nomear, inclusive coverage e watch. Não substitui o `/verify`: o teste é uma evidência; o gate é quem fecha a tarefa.
+
+### `/debug`
+
+Investigação sistemática: sintoma, hipóteses, teste de cada hipótese, causa e correção.
+
+### `/preview`
+
+Sobe, para ou consulta o servidor local. Por baixo, `python3 .cursor/scripts/auto_preview.py start|stop|status`.
+
+### `/status`
+
+Mostra o quadro do projeto e pede o doctor do kit: `python3 .cursor/scripts/session_manager.py doctor .` (linhas do índice de memória, path lint e o último `/verify`).
+
+### `/deploy`
+
+Pré-flight e release. O command cobre checagem, preview, produção e rollback. Ele não publica o pacote npm do Axion; isso é a tag `v*` e o workflow `publish-npm.yml`.
+
+### `/orchestrate`
+
+Vários specialists no mesmo pedido, no mínimo três. Não despacha workers sem SPEC ou três respostas e sem PLAN. Antes de cada escrita, o path tem de estar na allowlist. Antes de cada dispatch ou retry, `circuit_breaker.py` decide se ainda dá para lançar. No fim, o log pode receber os contadores `--workers`, `--failures`, `--duration-ms` e `--breaker-trips`.
+
+### `/coordinate`
+
+Pesquisa em paralelo e síntese. O corpo do command manda ler `coordinator-mode`. Leituras em paralelo; escritas em sequência, só nos paths da allowlist, com `circuit_breaker.py` antes de cada dispatch.
+
+### `/remember`
+
+Estado `remember`. Grava preferência ou decisão em `.agents/memory/`. Antes de escrever, `python3 .cursor/scripts/memory_secret_scan.py` precisa sair 0. Exit 1 recusa o texto e não mostra o segredo.
+
+### `/ui-ux-pro-max`
+
+Consulta o guia visual em `.cursor/shared/ui-ux-pro-max/` (estilos, paletas, tipos, UX). A busca é `python3 .cursor/shared/ui-ux-pro-max/scripts/search.py`. Em seguida sintetiza o design system e implementa a tela.
+
 ## Configuração
 
 | Item | Onde | Nota |
@@ -304,7 +391,6 @@ echo ".agents/" >> .git/info/exclude
 ├── AGENTS.md                 # Regras sempre ativas
 ├── AGENT_FLOW.md             # Fluxo de agents e validação
 ├── README.md
-├── upgrade.md                # Roadmap SDD (Fases 0–1 done → Fase 2)
 ├── package.json              # Workspace cli/
 ├── .npmrc                    # @zanetta → registry.npmjs.org
 ├── cli/                      # @zanetta/axion
@@ -329,7 +415,6 @@ echo ".agents/" >> .git/info/exclude
 | [`.cursor/ARCHITECTURE.md`](.cursor/ARCHITECTURE.md) | Agents, skills, FSM SDD, npm, P0/P1 |
 | [`AGENT_FLOW.md`](AGENT_FLOW.md) | Fluxo de agents, FSM e gates |
 | [`AGENTS.md`](AGENTS.md) | Regras sempre ativas |
-| [`upgrade.md`](upgrade.md) | Backlog SDD — Fases 0–1 concluídas; Fase 2 em seguida |
 | [`cli/README.md`](cli/README.md) | CLI, profiles, manifesto SemVer, publish |
 | [`.cursor/scripts/README.md`](.cursor/scripts/README.md) | Scripts de validação e sync |
 

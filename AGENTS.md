@@ -57,7 +57,7 @@ Antes de modificar QUALQUER arquivo:
 | **Traceability** | `.axion/trace/` — opcional `{slug}.json`; leitor `python3 .cursor/scripts/trace_report.py . {slug}` |
 | **Contratos (schemas)** | `.agents/schemas/` — `skill-contract.schema.json`, `command-contract.schema.json` |
 | **CLI npm (instalar kit)** | `npx @zanetta/axion init [--profile …] [--enable-offensive]` · código em `cli/` |
-| **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md`, `upgrade.md` |
+| **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md` |
 | **MCP env vars**    | `.env` (no `.gitignore`); template em `.env.example` |
 
 > O Cursor lê `.agents/skills/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md` nativamente.

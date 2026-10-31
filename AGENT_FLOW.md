@@ -48,7 +48,7 @@ Exigir **um** dos seguintes:
 1. Arquivo **SPEC** preenchido a partir do template, **ou**
 2. ≥ **3** perguntas socráticas **respondidas** registradas no SPEC ou no PLAN.
 
-Sem gate → **não** avançar para plan/implement/orquestração (instrução aos agents/commands; não há bloqueio por tooling — ver E-02 em `upgrade.md`). Detalhes: skill `brainstorming`, `AGENTS.md` § Socratic Gate.
+Sem gate → **não** avançar para plan/implement/orquestração (instrução aos agents/commands; o IDE não bloqueia a transição). O eval E-02 (`python3 .cursor/scripts/eval_routing.py . --gates`) regressa essa regra. Detalhes: skill `brainstorming`, `AGENTS.md` § Socratic Gate.
 
 Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Trace opcional: `.axion/trace/{slug}.json` — leitor `python3 .cursor/scripts/trace_report.py . {slug}` (não reexecuta os checks).
 
