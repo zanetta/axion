@@ -146,7 +146,7 @@ discover → specify → plan → implement → verify → remember
 | `verify` | `/verify` | ACCEPTANCE + evidência; `verify_gate.py` exit 0 (W-03) |
 | `remember` | `/remember` | entradas em `.agents/memory/` só com `memory_secret_scan.py` limpo (X-02) |
 
-**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate continuam instrução em commands/agents (advisory): o IDE não bloqueia a transição sozinho e o agente honra o exit. O eval E-02 (`eval_routing.py --gates` e `--plan`) regressa esses gates ([`upgrade.md`](../upgrade.md)). O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
+**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate continuam instrução em commands/agents (advisory): o IDE não bloqueia a transição sozinho e o agente honra o exit. O eval E-02 (`eval_routing.py --gates` e `--plan`) regressa esses gates. O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
 
 **Verify hard gate (W-03):** `/verify` roda os AC-*, grava a evidência, marca `[x]` e roda `python3 .cursor/scripts/checklist.py .` antes do gate. Só conclui se esse comando e `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0. O gate roda o checklist de novo e não reexecuta os AC-*. Exit diferente de 0 (ACCEPTANCE incompleto, sign-off aberto ou `checklist.py` ≠ 0) impede o relatório. O IDE não bloqueia a FSM sozinho; o agente honra o exit.
 
@@ -160,7 +160,7 @@ discover → specify → plan → implement → verify → remember
 | Traceability | `.axion/trace/README.md` · opcional `.axion/trace/{slug}.json` |
 | Inventário | `python3 .cursor/scripts/generate_inventory.py .` → `.axion/inventory.json` · paridade: `python3 .cursor/scripts/lint_inventory.py .` |
 
-Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md). Backlog: [`upgrade.md`](../upgrade.md) (Fase 1 ✅).
+Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 

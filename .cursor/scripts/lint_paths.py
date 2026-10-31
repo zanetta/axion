@@ -41,11 +41,6 @@ ALLOW_SUBSTRINGS = (
     "python .agents/scripts/",  # only in sync_upstream replacement tuples — handled by path filter
 )
 
-SKIP_FILES = {
-    "upgrade.md",  # backlog may cite the anti-pattern
-}
-
-
 def is_allowed_line(line: str) -> bool:
     if FORBIDDEN not in line:
         return True
@@ -78,8 +73,6 @@ def collect_files(root: Path) -> list[Path]:
 def lint(root: Path) -> list[tuple[Path, int, str]]:
     violations: list[tuple[Path, int, str]] = []
     for path in collect_files(root):
-        if path.name in SKIP_FILES:
-            continue
         # sync_upstream may contain the old string as replacement source
         if path.name == "sync_upstream.py":
             continue
