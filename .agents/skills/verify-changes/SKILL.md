@@ -56,22 +56,6 @@ verify_hooks:
 - Map each AC-* to a command / runtime check
 ```
 
-### Step 5: Hard gate (blocking)
-
-After the AC commands have run and the file records evidence plus `[x]`:
-
-```bash
-python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
-```
-
-Exit 0 is required. Exit 1 fails the task: an AC-* is still `[ ]`, evidence is empty or a `{placeholder}`, the sign-off is open, or `checklist.py` exited non-zero. Do not write a passing report over a failed gate. The gate does not re-run the AC commands; it checks the record and the checklist exit code.
-
-Depois do gate, grave o run log — só paths e o exit, sem texto de evidência. O número em `--exit` é o exit do gate: `0` no exemplo é o caso de sucesso. Se o gate sair diferente de 0, registre esse exit e pare; não escreva o relatório.
-
-```bash
-python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
-```
-
 ### Step 1: Identify What Changed
 ```
 - Which files were modified?
@@ -109,7 +93,33 @@ curl http://localhost:3000/api/endpoint
 python script.py --test
 ```
 
-### Step 4: Report Evidence
+### Step 4: Checklist (blocking)
+
+After the AC commands have run, run the master checklist. Keep the output for the report only when it exits 0. Exit non-zero stops `/verify`; do not write the verification report.
+
+```bash
+python3 .cursor/scripts/checklist.py .
+```
+
+### Step 5: Hard gate (blocking)
+
+After the checklist exits 0 and the file records evidence plus `[x]`:
+
+```bash
+python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
+```
+
+Exit 0 is required. Exit 1 fails the task: an AC-* is still `[ ]`, evidence is empty or a `{placeholder}`, the sign-off is open, or `checklist.py` exited non-zero. Do not write a passing report over a failed gate. The gate does not re-run the AC commands; it runs `checklist.py` again and checks the ACCEPTANCE record.
+
+Depois do gate, grave o run log — só paths e o exit, sem texto de evidência. O número em `--exit` é o exit do gate: `0` no exemplo é o caso de sucesso. Se o gate sair diferente de 0, registre esse exit e pare; não escreva o relatório.
+
+```bash
+python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
+```
+
+### Step 6: Report Evidence
+
+Write this report only after Step 4 and Step 5 both exit 0.
 
 ```markdown
 ## Verification Report

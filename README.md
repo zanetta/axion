@@ -18,6 +18,8 @@ O trabalho segue a FSM: **`discover → specify → plan → implement → verif
 | `verify` | ACCEPTANCE + evidência de execução | `/verify` (e `/test`, `checklist.py`) |
 | `remember` | decisões cross-session | `/remember` |
 
+`/verify` roda `python3 .cursor/scripts/checklist.py .` antes do gate; o gate roda o checklist de novo. Exit diferente de 0 bloqueia o relatório.
+
 **Templates (P1):** `.agents/skills/plan-writing/templates/SPEC.template.md`, `PLAN.template.md`; `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md`. Traceability opcional: `.axion/trace/{slug}.json` (ver `.axion/trace/README.md`).
 
 **Socratic Gate:** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN.
