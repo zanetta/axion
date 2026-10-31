@@ -57,16 +57,20 @@ WORKFLOW:
 1. LOAD {slug}.acceptance.md — one AC-* row per check
 2. IDENTIFY what changed (files, functions, behavior)
 3. RUN each AC command and write the result in the evidence column; set Pass to [x]
-4. RUN the hard gate and stop if it fails:
+4. RUN the project checklist and stop if it exits non-zero. Include its output in the report:
+
+python3 .cursor/scripts/checklist.py .
+
+5. RUN the hard gate and stop if it fails. The gate runs checklist.py again; either failure blocks the report:
 
 python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
 
-5. REPORT evidence per AC-* only after the gate exits 0
-6. When a slug exists, print the SPEC / PLAN / AC / check table and include it in the report. This does not re-run the checks. Exit 0 means the chain is covered; exit 1 is a gap; exit 2 is an invalid slug:
+6. REPORT evidence per AC-* only after checklist.py and the gate both exit 0
+7. When a slug exists, print the SPEC / PLAN / AC / check table and include it in the report. This does not re-run the checks. Exit 0 means the chain is covered; exit 1 is a gap; exit 2 is an invalid slug:
 
 python3 .cursor/scripts/trace_report.py . {slug}
 
-7. LOG the run (paths and exit only, no evidence text):
+8. LOG the run (paths and exit only, no evidence text):
 
 python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
 

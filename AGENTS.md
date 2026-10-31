@@ -140,7 +140,7 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 **Regras**:
 
 - Tarefa NÃO está concluída até `checklist.py` retornar sucesso.
-- **Hard gate (W-03):** `/verify` só fecha com `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` em exit 0 (AC-* em `[x]` com evidência, sign-off fechado, `checklist.py` ok). Exit 1 = tarefa não verificada.
+- **Hard gate (W-03):** `/verify` roda `python3 .cursor/scripts/checklist.py .` e só fecha se esse comando e `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0 (AC-* em `[x]` com evidência, sign-off fechado, `checklist.py` ok). Exit diferente de 0 = tarefa não verificada.
 - **Run log (O-01):** depois do gate, `python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit <exit-do-gate> --artifact {slug}.acceptance.md` (append-only em `.axion/logs/runs.jsonl`). O número é o exit do gate: se não for 0, registre-o e pare o relatório. Token ou path inválido → exit 2, nada gravado. No fim de `/coordinate`, `/orchestrate` ou `coordinator-mode`, `--workers`, `--failures`, `--duration-ms` e `--breaker-trips` são opcionais e a chave só entra se a flag foi passada.
 - **Write allowlist (X-03):** antes de gravar, `python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write <path>`; exit 1 recusa — mantenha a allowlist e honre o exit code.
 - Se falhar, corrija os blockers **Críticos** primeiro (Segurança/Lint).

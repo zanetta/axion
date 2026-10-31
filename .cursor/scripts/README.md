@@ -19,7 +19,7 @@ Usa `sys.executable` (compatível com ambientes só `python3`).
 
 Gate hard do `/verify` (P2 W-03). Checagem executável: exit code real. Ignorar um exit 1 é violação do agent. O FSM de W-01/W-02 continua só instrução.
 
-O script **não** reexecuta os comandos dos AC-*. `/verify` roda cada check, grava o resultado na coluna de evidência, marca Pass `[x]` e só então chama o gate. Exit 1 = tarefa não verificada — não reporte como concluída.
+O script **não** reexecuta os comandos dos AC-*. `/verify` roda cada check, grava o resultado na coluna de evidência, marca Pass `[x]`, roda `python3 .cursor/scripts/checklist.py .` e só então chama o gate. O gate roda o checklist de novo. Exit diferente de 0 bloqueia o relatório — não reporte a tarefa como concluída.
 
 ```bash
 python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
