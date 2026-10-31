@@ -46,15 +46,15 @@ Antes de modificar QUALQUER arquivo:
 | **Skills**          | `.agents/skills/<name>/SKILL.md`           |
 | **Workflows**       | `.cursor/commands/<name>.md` (`/<name>`)   |
 | **MCP**             | `.cursor/mcp.json`                         |
-| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
+| **Runtime scripts** | `.cursor/scripts/` (master: `checklist.py`, `verify_gate.py`, `circuit_breaker.py`, `eval_routing.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
 | **Shared assets**   | `.cursor/shared/` (ex.: `ui-ux-pro-max`)   |
 | **Rules globais**   | `AGENTS.md` (este arquivo) — sempre aplicado |
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |
-| **Memória persistente** | `.agents/memory/MEMORY.md` |
+| **Memória persistente** | `.agents/memory/MEMORY.md` — `memory_secret_scan.py` antes de gravar |
 | **Estado do kit (`.axion/`)** | `.axion/kit.manifest.json` — SemVer + profile; gravado no `init`/`update`; lido pelo `status` |
 | **Inventário** | `.axion/inventory.json` — `python3 .cursor/scripts/generate_inventory.py .` |
 | **Templates SDD** | SPEC/PLAN: `.agents/skills/plan-writing/templates/`; ACCEPTANCE: `.agents/skills/verify-changes/templates/` |
-| **Traceability** | `.axion/trace/` — opcional `{slug}.json` (ver README lá) |
+| **Traceability** | `.axion/trace/` — opcional `{slug}.json`; leitor `python3 .cursor/scripts/trace_report.py . {slug}` |
 | **Contratos (schemas)** | `.agents/schemas/` — `skill-contract.schema.json`, `command-contract.schema.json` |
 | **CLI npm (instalar kit)** | `npx @zanetta/axion init [--profile …] [--enable-offensive]` · código em `cli/` |
 | **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md`, `upgrade.md` |
@@ -110,7 +110,7 @@ FSM: `discover → specify → plan → implement → verify → remember` (comm
 | **Orquestração total**    | **PAUSE** subagents até o usuário confirmar o plano               |
 | **"Proceed" direto**      | Mesmo com respostas, faça 2 perguntas de Edge Case antes de iniciar |
 
-**Gate (instrução ao agent, sem enforcement por tooling):** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`).
+**Gate (instrução ao agent, sem enforcement por tooling):** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`). O eval E-02 (`python3 .cursor/scripts/eval_routing.py . --plan {slug}.plan.md`) regressa esse gate: o agente honra o exit e o IDE não bloqueia a transição sozinho.
 
 Protocolo:
 
@@ -133,12 +133,16 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 | **Sync**         | `python3 .cursor/scripts/sync_upstream.py --apply`      | Paridade com zanetta/axion   |
 | **Path lint**    | `python3 .cursor/scripts/lint_paths.py .`               | Drift `.agents/scripts/`     |
 | **Contract lint** | `python3 .cursor/scripts/lint_contracts.py .`          | Frontmatter vs schemas (requer `pyyaml` + `jsonschema`) |
+| **Inventory parity** | `python3 .cursor/scripts/lint_inventory.py .`       | Contagens da overview e do `inventory.json` vs filesystem |
 
 **Ordem de prioridade**: Segurança → Lint → Schema → Tests → UX → SEO → Lighthouse/E2E.
 
 **Regras**:
 
 - Tarefa NÃO está concluída até `checklist.py` retornar sucesso.
+- **Hard gate (W-03):** `/verify` só fecha com `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` em exit 0 (AC-* em `[x]` com evidência, sign-off fechado, `checklist.py` ok). Exit 1 = tarefa não verificada.
+- **Run log (O-01):** depois do gate, `python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit <exit-do-gate> --artifact {slug}.acceptance.md` (append-only em `.axion/logs/runs.jsonl`). O número é o exit do gate: se não for 0, registre-o e pare o relatório. Token ou path inválido → exit 2, nada gravado. No fim de `/coordinate`, `/orchestrate` ou `coordinator-mode`, `--workers`, `--failures`, `--duration-ms` e `--breaker-trips` são opcionais e a chave só entra se a flag foi passada.
+- **Write allowlist (X-03):** antes de gravar, `python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write <path>`; exit 1 recusa — mantenha a allowlist e honre o exit code.
 - Se falhar, corrija os blockers **Críticos** primeiro (Segurança/Lint).
 
 **Scripts disponíveis** (caminho: `.agents/skills/<skill>/scripts/`):

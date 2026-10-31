@@ -14,7 +14,7 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 8 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 15 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
 | **Schemas de contrato** | 2 | `.agents/schemas/` |
 | **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **Inventário** | — | `.axion/inventory.json` (`generate_inventory.py`) |
@@ -38,8 +38,10 @@ axion/
 ├── .github/workflows/           # ci.yml (reusável) + publish-npm.yml (tag v*, gate pre-publish)
 ├── .axion/                      # Estado do kit (só trace/README.md é copiado ao consumidor)
 │   ├── kit.manifest.json        # SemVer, profile, checksums (gerado pelo CLI no consumidor)
-│   ├── inventory.json           # Contagens machine-readable (generate_inventory.py; não copiado)
-│   └── trace/                   # Traceability opcional {slug}.json
+│   ├── inventory.json           # Contagens machine-readable (generate_inventory.py; paridade: lint_inventory.py; não copiado)
+│   ├── logs/runs.jsonl          # Run log append-only (O-01); contadores opcionais (O-03) só se a flag foi passada. O .gitignore `logs` já ignora o diretório
+│   ├── eval/routing.cases.json  # 16 golden cases de roteamento (E-01); não entra na cópia do install
+│   └── trace/                   # Traceability opcional {slug}.json (protegido no update, exceto README.md)
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
@@ -51,7 +53,7 @@ axion/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 14 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
-    ├── scripts/                 # checklist, verify_all, lint_paths, lint_contracts, generate_inventory, …
+    ├── scripts/                 # checklist, verify_gate, side_effect_guard, circuit_breaker, eval_routing, verify_all, lint_paths, lint_contracts, lint_inventory, …
     ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
@@ -70,8 +72,8 @@ axion/
 | Profiles | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (`cli/lib/profiles.js`; filtro na cópia em `cli/lib/install.js`, nunca apaga no alvo) |
 | Offensive | Só com `--profile security` ou `--enable-offensive` |
 | Contratos | `.agents/schemas/skill-contract.schema.json`, `command-contract.schema.json` |
-| Observabilidade SemVer | `init`/`update` gravam o manifesto; `status` compara installed vs latest no registry |
-| CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + CLI tests + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
+| Observabilidade SemVer | `init`/`update` gravam o manifesto, listam drift e não sobrescrevem paths protegidos (SPEC/PLAN/ACCEPTANCE, `.agents/memory/`, `.axion/logs/`, `.axion/trace/*` exceto `README.md`) mesmo com `--force`; `status` compara installed vs latest e, se `session_manager.py` existir, imprime o doctor (memory index, path lint, último verify em `.axion/logs/runs.jsonl`) |
+| CI | `.github/workflows/ci.yml` (lint_paths + lint_contracts + lint_inventory + eval routing golden cases (E-01) + passo "Eval FSM gates (E-02)" depois do E-01, antes dos testes npm + smoke pós-install) · publish on tag `v*` gated por `ci.yml` (tag deve = versão de `cli/package.json`) |
 | Docs CLI | [`cli/README.md`](../cli/README.md) |
 
 ---
@@ -114,6 +116,18 @@ python3 .cursor/scripts/lint_contracts.py .
 
 Job CI: `.github/workflows/ci.yml` (também roda no gate `pre-publish` de `publish-npm.yml`).
 
+### `lint_inventory.py`
+
+Paridade doc/inventário (P2 Q-03): falha se as contagens da tabela overview (rótulos em negrito — o texto é o contrato do script), os comentários de contagem da árvore quando presentes, ou o `.axion/inventory.json` commitado divergirem do filesystem. Sem dependências extras.
+
+```bash
+python3 .cursor/scripts/lint_inventory.py .
+```
+
+Contagem da overview ou de um comentário (`# N personas`, `# N skills top-level`, `# N slash commands`, `# N regras`) desatualizada: edite o número no doc. Só o JSON desatualizado: `python3 .cursor/scripts/generate_inventory.py .`. Rótulos e como corrigir: [scripts/README.md](scripts/README.md).
+
+Job CI: `.github/workflows/ci.yml`, passo "Lint doc/inventory parity (Q-03)", depois de `lint_contracts`.
+
 ---
 
 ## 🔀 FSM SDD (P1)
@@ -129,10 +143,12 @@ discover → specify → plan → implement → verify → remember
 | `discover` / `specify` | `/brainstorm` | SPEC (a partir de `SPEC.template.md`) |
 | `plan` | `/plan` | PLAN (+ links SPEC/ACCEPTANCE) |
 | `implement` | `/create`, `/enhance` | código alinhado ao PLAN |
-| `verify` | `/verify` | ACCEPTANCE + evidência (`checklist.py`, etc.) |
-| `remember` | `/remember` | entradas em `.agents/memory/` |
+| `verify` | `/verify` | ACCEPTANCE + evidência; `verify_gate.py` exit 0 (W-03) |
+| `remember` | `/remember` | entradas em `.agents/memory/` só com `memory_secret_scan.py` limpo (X-02) |
 
-**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e gate são instruções em commands/agents (advisory), sem enforcement por tooling — eval mecânico planejado em E-02 ([`upgrade.md`](../upgrade.md)).
+**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate continuam instrução em commands/agents (advisory): o IDE não bloqueia a transição sozinho e o agente honra o exit. O eval E-02 (`eval_routing.py --gates` e `--plan`) regressa esses gates ([`upgrade.md`](../upgrade.md)). O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
+
+**Verify hard gate (W-03):** `/verify` roda os AC-*, grava a evidência, marca `[x]` e só conclui se `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` sair 0. O script não reexecuta os comandos. Exit 1 (ACCEPTANCE incompleto, sign-off aberto ou `checklist.py` ≠ 0) impede reportar a tarefa como concluída.
 
 **Paths P1:**
 
@@ -142,7 +158,7 @@ discover → specify → plan → implement → verify → remember
 | Template PLAN | `.agents/skills/plan-writing/templates/PLAN.template.md` |
 | Template ACCEPTANCE | `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` |
 | Traceability | `.axion/trace/README.md` · opcional `.axion/trace/{slug}.json` |
-| Inventário | `python3 .cursor/scripts/generate_inventory.py .` → `.axion/inventory.json` |
+| Inventário | `python3 .cursor/scripts/generate_inventory.py .` → `.axion/inventory.json` · paridade: `python3 .cursor/scripts/lint_inventory.py .` |
 
 Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md). Backlog: [`upgrade.md`](../upgrade.md) (Fase 1 ✅).
 
@@ -325,13 +341,19 @@ side_effects: [read-only]
 | Script | Propósito |
 | --- | --- |
 | `checklist.py` | Validação core (dev, pre-commit) |
+| `verify_gate.py` | Gate hard do `/verify`: ACCEPTANCE + exit de `checklist.py`; não reexecuta os AC-* |
+| `trace_report.py` | Cobertura SPEC → PLAN → ACCEPTANCE de um slug (O-02); não reexecuta os checks |
 | `verify_all.py` | Suite completa (pre-deploy) |
 | `sync_upstream.py` | Compare/sync com upstream |
 | `lint_paths.py` | Fail CI se path legado `.agents/scripts/` |
 | `lint_contracts.py` | Fail CI se frontmatter de skill/command viola o schema |
+| `lint_inventory.py` | Fail CI se counts da overview ou do `inventory.json` divergirem do filesystem |
 | `generate_inventory.py` | Gera `.axion/inventory.json` (agents/skills/commands/…) |
 | `@zanetta/axion` | CLI npm: `init`, `update`, `status` (pasta `cli/`) |
-| `session_manager.py` | Gestão de sessão |
+| `session_manager.py` | Gestão de sessão; `doctor` (JSON) e `log` append-only em `.axion/logs/runs.jsonl` |
+| `side_effect_guard.py` | Allowlist de escrita do PLAN (X-03); o agente honra o exit |
+| `circuit_breaker.py` | Circuit breaker da orquestração (W-04); um domínio por chamada; o agente honra o exit |
+| `eval_routing.py` | Golden cases (E-01) e gates FSM (E-02: `--gates`, `--plan`); estático, sem modelo; sem script novo |
 | `auto_preview.py` | Preview automático |
 
 ### Usage
@@ -339,6 +361,9 @@ side_effects: [read-only]
 ```bash
 # Validação rápida
 python3 .cursor/scripts/checklist.py .
+
+# Gate hard do /verify (P2 W-03) — depois de gravar evidência e [x]
+python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
 
 # Verificação completa
 python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
@@ -352,12 +377,31 @@ python3 .cursor/scripts/lint_paths.py .
 # Lint de contratos skill/command (P2 Q-02)
 python3 .cursor/scripts/lint_contracts.py .
 
+# Paridade doc/inventário (P2 Q-03)
+python3 .cursor/scripts/lint_inventory.py .
+
 # Inventário versionado (P1 K-04)
 python3 .cursor/scripts/generate_inventory.py .
 
 # Instalar kit (grava .axion/kit.manifest.json) e inspecionar SemVer
 npx @zanetta/axion init --profile standard
 npx @zanetta/axion status
+
+# Doctor do kit (D-04) — path lint local; não reexecuta o verify
+python3 .cursor/scripts/session_manager.py doctor .
+
+# Allowlist de escrita (P2 X-03) — antes de gravar; o agente honra o exit
+python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+
+# Circuit breaker (P3 W-04) — antes de cada dispatch ou retry; o agente honra o exit
+python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
+
+# Golden cases de roteamento (P3 E-01) — não chama modelo
+python3 .cursor/scripts/eval_routing.py .
+
+# Gates FSM (P3 E-02) — projetos temporários no --gates; o modo E-01 permanece
+python3 .cursor/scripts/eval_routing.py . --gates
+python3 .cursor/scripts/eval_routing.py . --plan {slug}.plan.md
 ```
 
 Skill-level scripts ficam em `.agents/skills/<skill>/scripts/`.
@@ -373,13 +417,13 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 8 |
+| Scripts em `.cursor/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |
 | CLI npm | `@zanetta/axion` |
 | Regras por domínio | 7 |
 | Cobertura | ~95% web/mobile + orquestração |
-| Fonte de counts | `.axion/inventory.json` |
+| Fonte de counts | `.axion/inventory.json` (paridade: `lint_inventory.py`) |
 
 ---
 

@@ -9,7 +9,8 @@ required_skills:
 required_agents: []
 required_artifacts: []
 preconditions: []
-scripts: []
+scripts:
+  - ".cursor/scripts/memory_secret_scan.py"
 side_effects:
   - write-memory
 ---
@@ -30,6 +31,7 @@ side_effects:
 2. **Never auto-delete memories** — Always ask user before pruning
 3. **Keep index under 200 lines** — Warn if approaching limit
 4. **Distill, don't copy** — Save insights, not full conversations
+5. **Secret gate** — scan the text before writing. Exit 1 means do not write it
 
 ---
 
@@ -45,9 +47,13 @@ CONTEXT:
 WORKFLOW:
 1. CLASSIFY the information type: user | feedback | project | reference
 2. CHECK if relevant topic file exists in .agents/memory/
-3. SAVE to appropriate topic file (create if needed)
-4. UPDATE .agents/memory/MEMORY.md index with one-line pointer
-5. CONFIRM to user what was saved
+3. SCAN the text to save. Exit 1: stop and tell the user; do not write the secret
+
+python3 .cursor/scripts/memory_secret_scan.py --text "<text to save>"
+
+4. SAVE to appropriate topic file (create if needed) only if the scan exits 0
+5. UPDATE .agents/memory/MEMORY.md index with one-line pointer
+6. CONFIRM to user what was saved
 
 RULES:
 1. Follow memory-system/SKILL.md taxonomy

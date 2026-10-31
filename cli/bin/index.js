@@ -6,6 +6,7 @@ import { downloadTemplate } from "giget";
 import path from "path";
 import fse from "fs-extra";
 import readline from "readline";
+import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
 import {
     BIN_NAME,
@@ -14,7 +15,7 @@ import {
     REPO_ENV,
     TEMP_FOLDER,
 } from "../lib/constants.js";
-import { installKit, isKitInstalled } from "../lib/install.js";
+import { diffKit, installKit, isKitInstalled } from "../lib/install.js";
 import { readKitManifest } from "../lib/manifest.js";
 import {
     isOffensiveEnabled,
@@ -223,7 +224,10 @@ const runInstall = async (options) => {
 
         if (spinner) spinner.text = `Installing (profile: ${profile})...`;
 
-        const summary = { installed: 0, merged: 0, skipped: 0, overwritten: 0, excluded: 0 };
+        const drift = await diffKit(tempDir, targetDir, { profile, enableOffensive });
+        if (!quiet) printDrift(drift, force);
+
+        const summary = { installed: 0, merged: 0, skipped: 0, overwritten: 0, excluded: 0, protected: 0 };
 
         const result = await installKit(tempDir, targetDir, {
             force,
@@ -252,6 +256,7 @@ const runInstall = async (options) => {
             console.log(`   Skipped:     ${chalk.yellow(summary.skipped)}`);
             console.log(`   Overwritten: ${chalk.red(summary.overwritten)}`);
             console.log(`   Excluded:    ${chalk.gray(summary.excluded)} (outside profile)`);
+            console.log(`   Protected:   ${chalk.green(summary.protected)} (user SPEC/PLAN/memory)`);
             console.log(`   Profile:     ${chalk.cyan(profile)}`);
             console.log(
                 `   Offensive:   ${
@@ -300,6 +305,32 @@ const runInstall = async (options) => {
         process.exit(1);
     }
 };
+
+function printDrift(drift, force) {
+    const show = (label, items) => {
+        if (items.length === 0) return;
+        console.log(chalk.white(`\n${label} (${items.length})`));
+        for (const item of items.slice(0, 20)) console.log(chalk.gray(`  ${item}`));
+        if (items.length > 20) console.log(chalk.gray(`  … ${items.length - 20} more`));
+    };
+    show(force ? "Drift, will overwrite" : "Drift, kept (pass --force to overwrite kit files)", drift.drifted);
+    show("Protected, never overwritten", drift.protected);
+    if (drift.missing.length > 0) {
+        console.log(chalk.white(`\nMissing from project: ${drift.missing.length} kit file(s) will be added`));
+    }
+}
+
+async function readDoctor(targetDir) {
+    const script = path.join(targetDir, ".cursor", "scripts", "session_manager.py");
+    if (!(await fse.pathExists(script))) return null;
+    const result = spawnSync("python3", [script, "doctor", targetDir], { encoding: "utf8" });
+    if (result.status !== 0) return null;
+    try {
+        return JSON.parse(result.stdout);
+    } catch {
+        return null;
+    }
+}
 
 const statusCommand = async (options) => {
     const targetDir = path.resolve(options.path || process.cwd());
@@ -352,6 +383,20 @@ const statusCommand = async (options) => {
         }
     } else {
         console.log(chalk.yellow("  (no .axion/kit.manifest.json — re-run init/update to create)"));
+    }
+
+    const doctor = await readDoctor(targetDir);
+    if (doctor) {
+        console.log(`Memory index:  ${chalk.cyan(doctor.memory_index_lines)} lines`);
+        console.log(`Path lint:     ${chalk.cyan(doctor.path_lint)}`);
+        const last = doctor.last_verify;
+        console.log(
+            `Last verify:   ${
+                last
+                    ? chalk.cyan(`${last.ts} slug=${last.slug ?? "-"} exit=${last.exit}`)
+                    : chalk.gray("none")
+            }`,
+        );
     }
     console.log(chalk.gray("────────────────────────────────────────\n"));
 

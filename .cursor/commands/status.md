@@ -49,6 +49,14 @@ Show current project and agent status.
    - URL
    - Health check
 
+5. **Kit doctor** — run and include the JSON:
+
+```bash
+python3 .cursor/scripts/session_manager.py doctor .
+```
+
+It reports memory index size, path-lint pass/fail, and the last `/verify` entry from `.axion/logs/runs.jsonl`.
+
 ---
 
 ## Example Output

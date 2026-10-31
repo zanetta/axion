@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0.0",
+  "cases": [
+    {
+      "id": "mobile-not-frontend",
+      "source": "agents",
+      "match": "**MOBILE**",
+      "agents": ["mobile-developer"],
+      "skills": ["mobile-design"],
+      "not_agents": ["frontend-specialist"]
+    },
+    {
+      "id": "web-frontend",
+      "source": "agents",
+      "match": "**WEB**",
+      "agents": ["frontend-specialist"],
+      "skills": ["frontend-design", "nextjs-react-expert", "tailwind-patterns"]
+    },
+    {
+      "id": "backend-api",
+      "source": "agents",
+      "match": "**BACKEND**",
+      "agents": ["backend-specialist"],
+      "skills": ["api-patterns", "database-design", "nodejs-best-practices"]
+    },
+    {
+      "id": "database",
+      "source": "agents",
+      "match": "database-architect",
+      "agents": ["database-architect"],
+      "skills": ["database-design"]
+    },
+    {
+      "id": "security-audit",
+      "source": "agents",
+      "match": "Segurança / Auditoria",
+      "agents": ["security-auditor", "penetration-tester"],
+      "skills": ["vulnerability-scanner", "red-team-tactics"]
+    },
+    {
+      "id": "testing",
+      "source": "agents",
+      "match": "qa-automation-engineer",
+      "agents": ["test-engineer", "qa-automation-engineer"],
+      "skills": ["testing-patterns", "tdd-workflow", "webapp-testing"]
+    },
+    {
+      "id": "debug",
+      "source": "agents",
+      "match": "systematic-debugging",
+      "agents": ["debugger"],
+      "skills": ["systematic-debugging"]
+    },
+    {
+      "id": "devops",
+      "source": "agents",
+      "match": "deployment-procedures",
+      "agents": ["devops-engineer"],
+      "skills": ["deployment-procedures", "server-management"]
+    },
+    {
+      "id": "planning",
+      "source": "agents",
+      "match": "Planejamento / Discovery",
+      "agents": ["project-planner"],
+      "skills": ["brainstorming", "plan-writing", "architecture"]
+    },
+    {
+      "id": "multi-domain",
+      "source": "agents",
+      "match": "Multi-domínio / complexo",
+      "agents": ["orchestrator"],
+      "skills": ["coordinator-mode", "parallel-agents", "memory-system", "verify-changes"]
+    },
+    {
+      "id": "routing-auth",
+      "source": "routing",
+      "match": "**Authentication**",
+      "agents": ["security-auditor", "backend-specialist"]
+    },
+    {
+      "id": "routing-mobile-ui",
+      "source": "routing",
+      "match": "**Mobile UI**",
+      "agents": ["mobile-developer"],
+      "not_agents": ["frontend-specialist"]
+    },
+    {
+      "id": "routing-api",
+      "source": "routing",
+      "match": "**API Endpoint**",
+      "agents": ["backend-specialist"]
+    },
+    {
+      "id": "routing-bug",
+      "source": "routing",
+      "match": "**Bug Fix**",
+      "agents": ["debugger"]
+    },
+    {
+      "id": "routing-mobile-stack",
+      "source": "routing",
+      "match": "react native, flutter",
+      "agents": ["mobile-developer"],
+      "not_agents": ["frontend-specialist"]
+    },
+    {
+      "id": "routing-game",
+      "source": "routing",
+      "match": "unity, godot, phaser",
+      "agents": ["game-developer"]
+    }
+  ]
+}

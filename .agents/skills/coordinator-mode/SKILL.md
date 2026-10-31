@@ -27,6 +27,8 @@ forbidden_paths:
   - "**/*credentials*"
 verify_hooks:
   - ".cursor/scripts/checklist.py"
+  - ".cursor/scripts/side_effect_guard.py"
+  - ".cursor/scripts/circuit_breaker.py"
 ---
 
 # Coordinator Mode — Multi-Agent Orchestration
@@ -87,6 +89,47 @@ User Request
 - ❌ Implementation that depends on another agent's output
 - ❌ Database migration + code that uses the new schema
 - ❌ API change + frontend that consumes the API
+
+---
+
+## Write allowlist (X-03)
+
+Implementation workers write only paths listed under `## Write allowlist` in the active PLAN. Research workers stay read-only. `batch-operations` uses the same list: a pattern that would touch anything else is out of scope.
+
+Before the first write of a worker, check every target path:
+
+```bash
+python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+```
+
+Pass each `side_effects` value declared by the skill that will write (`write-files` for project files, `write-memory` for `.agents/memory/`). Exit 0 allows the write. Exit 1 refuses it (`outside-allowlist`, `forbidden`, `effect-denied`, or `no-allowlist`) — do not write, and do not widen the allowlist to make the write succeed. Exit 2 is a bad invocation; fix the arguments and run it again. `.env` and any path containing `credentials` are refused even when the plan lists them.
+
+---
+
+## Circuit breaker (W-04)
+
+Before every dispatch or retry, ask the breaker. `--domain` is a short token (`backend`, `frontend`, `security`, `database`, `testing`, `devops`, `mobile`). `--domain-failures` counts workers that already failed in that domain. `--worker-failures` counts failed attempts of this worker.
+
+```bash
+python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
+```
+
+| Exit | `action` | What to do |
+| --- | --- | --- |
+| 0 | `dispatch` or `retry` | Launch the worker. A worker may fail twice and still be retried (3 attempts). |
+| 1 | `open` (`domain-failures`) | Do not launch anyone else in that domain. Write a partial synthesis from the workers that finished, name the domain, and stop there. |
+| 1 | `stop-worker` (`retry-limit`) | Drop this worker. Other workers in the same domain may still run until the domain opens. |
+| 2 | — | Bad arguments. Fix them. Do not launch. |
+
+Domains are independent: an open `backend` does not block `frontend`. The report states the action and the counts. It does not paste worker transcripts or secrets.
+
+When the run finishes, append the counters (integers only, no narrative) to the run log:
+
+```bash
+python3 .cursor/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 0 --artifact {slug}.plan.md
+```
+
+`--workers` is how many workers launched. `--failures` is how many attempts failed. `--duration-ms` is the estimated elapsed time. `--breaker-trips` is how many times a domain opened. Omit a flag rather than invent a value. A negative count exits 2 and writes nothing. Workers, failures, and breaker trips stop at 1000. Duration stops at 86400000 (24h).
 
 ---
 

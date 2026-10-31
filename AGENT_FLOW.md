@@ -50,7 +50,7 @@ Exigir **um** dos seguintes:
 
 Sem gate → **não** avançar para plan/implement/orquestração (instrução aos agents/commands; não há bloqueio por tooling — ver E-02 em `upgrade.md`). Detalhes: skill `brainstorming`, `AGENTS.md` § Socratic Gate.
 
-Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Trace opcional: `.axion/trace/{slug}.json`.
+Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Trace opcional: `.axion/trace/{slug}.json` — leitor `python3 .cursor/scripts/trace_report.py . {slug}` (não reexecuta os checks).
 
 ---
 
@@ -121,7 +121,7 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 | `/plan` | plan | `plan-writing`, `architecture` | PLAN estruturado (**gate**) |
 | `/create` | implement | `app-builder` | Nova feature/app (**gate**) |
 | `/enhance` | implement | domain agents | Melhorar código existente |
-| `/verify` | verify | `verify-changes` | Executar e provar vs ACCEPTANCE |
+| `/verify` | verify | `verify-changes` | Roda os AC-*, grava evidência, marca `[x]`; `verify_gate.py` exit 0 fecha a tarefa |
 | `/remember` | remember | `memory-system` | Persistir em `.agents/memory/` |
 | `/orchestrate` | — (multi) | `parallel-agents` + `orchestrator` | Multi-agente (mín. 3) (**gate**) |
 | `/coordinate` | — (multi) | `coordinator-mode` + `orchestrator` | Orquestração avançada paralela |

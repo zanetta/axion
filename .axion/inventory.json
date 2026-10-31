@@ -5,7 +5,7 @@
     "skills": 45,
     "commands": 14,
     "rules": 7,
-    "scripts": 8,
+    "scripts": 15,
     "schemas": 2
   },
   "agents": [
@@ -105,12 +105,19 @@
   "scripts": [
     "auto_preview.py",
     "checklist.py",
+    "circuit_breaker.py",
+    "eval_routing.py",
     "generate_inventory.py",
     "lint_contracts.py",
+    "lint_inventory.py",
     "lint_paths.py",
+    "memory_secret_scan.py",
     "session_manager.py",
+    "side_effect_guard.py",
     "sync_upstream.py",
-    "verify_all.py"
+    "trace_report.py",
+    "verify_all.py",
+    "verify_gate.py"
   ],
   "schemas": [
     "command-contract.schema.json",

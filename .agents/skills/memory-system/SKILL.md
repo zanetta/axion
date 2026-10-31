@@ -117,6 +117,12 @@ updated: 2026-04-01
 | File paths that may move | Use glob patterns or descriptions instead |
 | Entire conversation transcripts | Memory is for distilled insights only |
 
+Before every write under `.agents/memory/`, scan the text. Exit 1 means do not write it. The report names the pattern, not the secret. `--redact` prints a safe copy only when the user wants the rest of the note kept.
+
+```bash
+python3 .cursor/scripts/memory_secret_scan.py --text "<text to save>"
+```
+
 ---
 
 ## Operations
@@ -124,11 +130,12 @@ updated: 2026-04-01
 ### Save (Trigger: user says "remember", "save", "don't forget")
 
 1. Identify the information type (user/feedback/project/reference)
-2. Check if relevant topic file exists
-3. If yes → append to existing topic file
-4. If no → create new topic file with frontmatter
-5. Update MEMORY.md index with one-line pointer
-6. Confirm to user: "Saved to memory: [summary]"
+2. Run `memory_secret_scan.py` on the text. Stop on exit 1
+3. Check if relevant topic file exists
+4. If yes → append to existing topic file
+5. If no → create new topic file with frontmatter
+6. Update MEMORY.md index with one-line pointer
+7. Confirm to user: "Saved to memory: [summary]"
 
 ### Recall (Trigger: session start, or "what do you remember about X")
 

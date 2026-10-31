@@ -71,8 +71,9 @@ Caso contrário **não são copiados** e o CLI grava **`.axion/OFFENSIVE_DISABLE
 
 `npx @zanetta/axion status` lê o manifesto e mostra:
 
-- versão **instalada** no projeto (+ profile)
+- versão do **CLI** e versão **instalada** no projeto (`version`, `profile`, `enable_offensive`)
 - comparação com a versão **latest** no registry npm (quando a rede responde)
+- se `.cursor/scripts/session_manager.py` existir, três campos do `doctor`: **Memory index** (linhas de `MEMORY.md`), **Path lint** (`pass`, `fail` ou `absent`) e **Last verify** (`ts`, slug e exit, ou `none`)
 
 Se o manifesto não existir (install antigo), rode `init`/`update` de novo para criá-lo.
 
@@ -95,7 +96,18 @@ O `inventory.json` e o manifesto do próprio repo do kit **não** são copiados.
 | --- | --- |
 | `.cursor/mcp.json` | Merge `mcpServers` (project wins on key conflict) |
 | `.cursor/rules/*.mdc` | Skip if file already exists |
-| Other files | Skip if exists; `--force` overwrites all |
+| Other files | Skip if exists; `--force` overwrites kit files that are not protected |
+| Protected | Se o destino já existe, ação `protected` e não sobrescreve, mesmo com `--force`. Destino ausente: a primeira instalação ainda copia |
+
+Paths protegidos (`cli/lib/protect.js`): `*.spec.md`, `*.plan.md`, `*.acceptance.md`, prefixo `.agents/memory/`, prefixo `.axion/logs/` e `.axion/trace/*` exceto `README.md` (`.axion/trace/README.md` ou qualquer path que termine em `/README.md`).
+
+Antes de copiar, `init`/`update` chamam `diffKit` (respeitando o profile) e comparam o conteúdo byte a byte. Sem `--quiet`, a lista é só informativa — não há prompt por path:
+
+- **Drift** — até 20 paths. Ficam como estão; `--force` sobrescreve esses arquivos do kit.
+- **Protected** — até 20 paths. Nunca sobrescritos se já existem.
+- **Missing** — contagem dos arquivos do kit que serão adicionados.
+
+`--force` é o interruptor global só para o que não é protegido. Um `.cursor/commands/plan.md` editado localmente entra no drift e pode ser sobrescrito; um `*.plan.md` de SPEC/PLAN do usuário, não. O resumo inclui o contador **Protected**.
 
 ## Development
 

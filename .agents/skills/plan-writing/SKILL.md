@@ -63,6 +63,7 @@ Break work into clear tasks with verification. **SDD artifacts** use templates u
 - Prefer `{slug}.plan.md` + `{slug}.acceptance.md` (legacy `{slug}.md` OK)
 - Name derived from task (e.g., "add auth" → `auth-feature.plan.md`)
 - **NEVER** inside `.agents/`, `docs/`, or temp folders
+- Include `## Write allowlist` (paths implementation may create or modify). Workers must not write outside it.
 
 ## Planning Principles
 
