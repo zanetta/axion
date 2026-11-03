@@ -70,3 +70,29 @@ test("writeKitManifest counts claude-code commands and records tool", async () =
         await fse.remove(tmp);
     }
 });
+
+test("writeKitManifest handles codex null componentDirs (agents/commands/rules = 0)", async () => {
+    const tmp = await fse.mkdtemp(path.join(os.tmpdir(), "axion-manifest-codex-"));
+    try {
+        await fse.writeFile(path.join(tmp, "AGENTS.md"), "# test\n");
+        await fse.ensureDir(path.join(tmp, ".agents", "skills", "foo"));
+        await fse.writeFile(path.join(tmp, ".agents", "skills", "foo", "SKILL.md"), "x");
+
+        const written = await writeKitManifest(tmp, {
+            version: "1.1.2",
+            packageName: "@zanetta/axion",
+            profile: "standard",
+            action: "init",
+            tool: "codex",
+        });
+
+        assert.strictEqual(written.tool, "codex");
+        assert.strictEqual(written.components.agents, 0);
+        assert.strictEqual(written.components.commands, 0);
+        assert.strictEqual(written.components.rules, 0);
+        assert.strictEqual(written.components.skills, 1);
+        assert.ok(written.install_paths.includes(".codex/config.toml"));
+    } finally {
+        await fse.remove(tmp);
+    }
+});

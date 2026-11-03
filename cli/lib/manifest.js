@@ -34,7 +34,7 @@ async function countSkills(dir) {
 async function collectComponentSummary(targetRoot, adapter) {
     const dirs = adapter.componentDirs;
     return {
-        agents: await countMarkdown(path.join(targetRoot, dirs.agents), ".md"),
+        agents: dirs.agents ? await countMarkdown(path.join(targetRoot, dirs.agents), ".md") : 0,
         skills: await countSkills(path.join(targetRoot, dirs.skills)),
         commands: dirs.commands
             ? await countMarkdown(path.join(targetRoot, dirs.commands), ".md")

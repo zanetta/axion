@@ -1,4 +1,5 @@
 import { claudeCodeAdapter } from "./claude-code.js";
+import { codexAdapter } from "./codex.js";
 import { cursorAdapter } from "./cursor.js";
 
 export const DEFAULT_TOOL = "cursor";
@@ -6,6 +7,7 @@ export const DEFAULT_TOOL = "cursor";
 const ADAPTERS = {
     cursor: cursorAdapter,
     "claude-code": claudeCodeAdapter,
+    codex: codexAdapter,
 };
 
 export const TOOL_NAMES = Object.keys(ADAPTERS);

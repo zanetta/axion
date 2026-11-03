@@ -88,3 +88,47 @@ test("installKit projects claude-code paths and leaves no false drift", async ()
         await fse.remove(tmp);
     }
 });
+
+test("installKit projects codex hybrid paths, merges .codex/config.toml, and leaves no false drift", async () => {
+    const tmp = await fse.mkdtemp(path.join(os.tmpdir(), "ag4c-codex-"));
+
+    try {
+        const target = path.join(tmp, "project");
+        await fse.ensureDir(path.join(target, ".codex"));
+        await fse.writeFile(
+            path.join(target, ".codex", "config.toml"),
+            'model = "o3"\n\n[mcp_servers.custom]\ncommand = "node"\nargs = ["server.js"]\n',
+            "utf8",
+        );
+
+        await installKit(fixtureRoot, target, {
+            force: false,
+            tool: "codex",
+            version: "0.0.0-test",
+            packageName: "@zanetta/axion",
+        });
+
+        assert.ok(await fse.pathExists(path.join(target, ".agents", "skills", "test-skill", "SKILL.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".axion", "scripts", "checklist.py")));
+        assert.ok(await fse.pathExists(path.join(target, ".codex", "config.toml")));
+        assert.ok(await fse.pathExists(path.join(target, "AGENTS.md")));
+
+        assert.equal(await fse.pathExists(path.join(target, ".claude", "agents")), false);
+        assert.equal(await fse.pathExists(path.join(target, ".claude", "commands")), false);
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands")), false);
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "rules")), false);
+        assert.equal(await fse.pathExists(path.join(target, "CLAUDE.md")), false);
+
+        const toml = await fse.readFile(path.join(target, ".codex", "config.toml"), "utf8");
+        assert.match(toml, /model = "o3"/);
+        assert.match(toml, /\[mcp_servers\.custom\]/);
+        assert.match(toml, /\[mcp_servers\.shadcn\]/);
+
+        const drift = await diffKit(fixtureRoot, target, { tool: "codex" });
+        assert.deepEqual(drift.drifted, []);
+        assert.deepEqual(drift.missing, []);
+        assert.equal(await isKitInstalled(target, "codex"), true);
+    } finally {
+        await fse.remove(tmp);
+    }
+});
