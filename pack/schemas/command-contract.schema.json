@@ -58,9 +58,9 @@
       "type": "array",
       "items": {
         "type": "string",
-        "pattern": "^(\\.cursor/scripts/|\\.agents/skills/.+/scripts/)"
+        "pattern": "^(\\.axion/scripts/|\\.agents/skills/.+/scripts/)"
       },
-      "description": "Canonical scripts only — never .agents/scripts/"
+      "description": "Canonical scripts only — never .agents/scripts/ or .cursor/scripts/"
     },
     "side_effects": {
       "type": "array",

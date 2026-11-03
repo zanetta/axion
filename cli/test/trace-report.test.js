@@ -7,7 +7,7 @@ import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
 
 const packRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const script = path.join(packRoot, ".cursor", "scripts", "trace_report.py");
+const script = path.join(packRoot, ".axion", "scripts", "trace_report.py");
 
 const SPEC = `# SPEC
 

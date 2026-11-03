@@ -7,7 +7,7 @@ Prints SPEC → PLAN → ACCEPTANCE coverage for one slug and exits 1 when the
 chain has a gap. It does not re-run checks; Pass comes from the ACCEPTANCE file.
 
 Usage:
-    python3 .cursor/scripts/trace_report.py . my-feature
+    python3 .axion/scripts/trace_report.py . my-feature
 """
 
 from __future__ import annotations

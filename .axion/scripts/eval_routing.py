@@ -6,9 +6,9 @@ Does not call a model. Each case names a unique snippet of a routing table.
 The runner checks that the one matching row lists the expected agents and
 skills, and that the named agent and skill files exist.
 
-    python3 .cursor/scripts/eval_routing.py .
-    python3 .cursor/scripts/eval_routing.py . --gates
-    python3 .cursor/scripts/eval_routing.py . --plan feature.plan.md
+    python3 .axion/scripts/eval_routing.py .
+    python3 .axion/scripts/eval_routing.py . --gates
+    python3 .axion/scripts/eval_routing.py . --plan feature.plan.md
 
 Exit 0: every case matches.
 Exit 1: one or more cases diverge, or a plan has neither a SPEC nor 3 answers.
@@ -16,7 +16,7 @@ Exit 2: the case file, a source document, or a required script is missing or inv
 
 `--gates` (E-02) runs the FSM checks in temporary projects: a plan without a
 SPEC and without 3 answered Socratic rows is not ready; verify_gate fails
-with no ACCEPTANCE; lint_paths fails on `.agents/scripts/`.
+with no ACCEPTANCE; lint_paths fails on legacy script paths.
 """
 
 from __future__ import annotations
@@ -109,17 +109,23 @@ def table_rows(text: str, needle: str) -> list[str]:
 def agent_file_exists(root: Path, agent: str) -> bool:
     if not is_single_segment(agent):
         return False
-    base = (root / ".claude" / "agents").resolve()
-    path = (base / f"{agent}.md").resolve()
-    return path.is_file() and path.parent == base
+    for candidate in (root / "pack" / "agents", root / ".claude" / "agents"):
+        base = candidate.resolve()
+        path = (base / f"{agent}.md").resolve()
+        if path.is_file() and path.parent == base:
+            return True
+    return False
 
 
 def skill_file_exists(root: Path, skill: str) -> bool:
     if not is_single_segment(skill):
         return False
-    base = (root / ".agents" / "skills").resolve()
-    path = (base / skill / "SKILL.md").resolve()
-    return path.is_file() and path.parent.parent == base
+    for candidate in (root / "pack" / "skills", root / ".agents" / "skills"):
+        base = candidate.resolve()
+        path = (base / skill / "SKILL.md").resolve()
+        if path.is_file() and path.parent.parent == base:
+            return True
+    return False
 
 
 def check_case(root: Path, case: dict, documents: dict[str, str]) -> list[str]:
@@ -155,6 +161,10 @@ def evaluate(root: Path, cases_path: Path) -> tuple[list[str], int]:
     documents = {}
     for key, relative in SOURCES.items():
         path = root / relative
+        if not path.is_file() and key == "routing":
+            packed = root / "pack" / "skills" / "intelligent-routing" / "SKILL.md"
+            if packed.is_file():
+                path = packed
         if not path.is_file():
             return [f"missing {relative}"], 2
         documents[key] = path.read_text(encoding="utf-8")
@@ -254,8 +264,12 @@ PLAN_ANSWERED = """# PLAN
 
 
 def evaluate_gates(root: Path) -> tuple[list[str], int]:
-    gate = root / ".cursor" / "scripts" / "verify_gate.py"
-    linter = root / ".cursor" / "scripts" / "lint_paths.py"
+    gate = root / ".axion" / "scripts" / "verify_gate.py"
+    linter = root / ".axion" / "scripts" / "lint_paths.py"
+    if not gate.is_file():
+        gate = root / ".cursor" / "scripts" / "verify_gate.py"
+    if not linter.is_file():
+        linter = root / ".cursor" / "scripts" / "lint_paths.py"
     if not gate.is_file() or not linter.is_file():
         return ["verify_gate.py and lint_paths.py must both exist"], 2
 
@@ -304,7 +318,7 @@ def evaluate_gates(root: Path) -> tuple[list[str], int]:
         clean = base / "clean"
         (clean / ".cursor" / "commands").mkdir(parents=True)
         (clean / ".cursor" / "commands" / "plan.md").write_text(
-            "Run python3 .cursor/scripts/foo.py\n", encoding="utf-8"
+            "Run python3 .axion/scripts/foo.py\n", encoding="utf-8"
         )
         if run_tool(linter, [str(clean)]) != 0:
             problems.append("canonical-scripts: expected exit 0")

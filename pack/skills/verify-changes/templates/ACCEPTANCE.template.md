@@ -25,14 +25,14 @@ updated: "{ISO_DATE}"
 | ID | Given / When / Then (or checklist) | Method | Command / evidence | Pass |
 | --- | --- | --- | --- | --- |
 | AC-1 | Given {context}, when {action}, then {result} | unit / e2e / manual | `npm test -- {pattern}` | [ ] |
-| AC-2 | {criterion} | lint | `python3 .cursor/scripts/checklist.py .` | [ ] |
+| AC-2 | {criterion} | lint | `python3 .axion/scripts/checklist.py .` | [ ] |
 | AC-3 | {criterion} | runtime | `{curl / UI steps}` | [ ] |
 
 ## Suggested verify hooks
 
 ```bash
-python3 .cursor/scripts/checklist.py .
-# python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
+python3 .axion/scripts/checklist.py .
+# python3 .axion/scripts/verify_all.py . --url http://localhost:3000
 ```
 
 ## Traceability

@@ -14,7 +14,7 @@
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
-| **Scripts master** | 15 | `.cursor/scripts/` (+ npm CLI em `cli/`) |
+| **Scripts master** | 15 | `.axion/scripts/` (+ npm CLI em `cli/`) |
 | **Schemas de contrato** | 2 | `.agents/schemas/` |
 | **Manifesto do kit** | — | `.axion/kit.manifest.json` (escrito pelo CLI) |
 | **Inventário** | — | `.axion/inventory.json` (`generate_inventory.py`) |
@@ -91,17 +91,17 @@ Campos principais: `schema_version`, `package`, `version`, `profile`, `installed
 | Schema | Uso |
 | --- | --- |
 | `skill-contract.schema.json` | Frontmatter de `.agents/skills/*/SKILL.md` — `inputs`, `outputs`, `preconditions`, `postconditions`, `side_effects`, `forbidden_paths`, `verify_hooks` |
-| `command-contract.schema.json` | Frontmatter de `.cursor/commands/*.md` — `sdd_states`, `required_artifacts`, `scripts` (só `.cursor/scripts/` ou scripts da skill) |
+| `command-contract.schema.json` | Frontmatter de `.cursor/commands/*.md` — `sdd_states`, `required_artifacts`, `scripts` (só `.axion/scripts/` ou scripts da skill) |
 
 Piloto P0: skills `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode`; commands `/plan`, `/verify`, `/status`, `/orchestrate`. Validação CI de 100% das skills/commands via `lint_contracts.py` (Q-02).
 
 ### `lint_paths.py`
 
-Scanner de drift de path: falha se docs/commands/skills referenciam o legado `.agents/scripts/` em vez do canônico `.cursor/scripts/`.
+Scanner de drift de path: falha se docs/commands/skills referenciam o legado `.agents/scripts/` em vez do canônico `.axion/scripts/`.
 
 ```bash
-python3 .cursor/scripts/lint_paths.py .
-python3 .cursor/scripts/lint_paths.py . --fix   # reescreve só .cursor/commands/
+python3 .axion/scripts/lint_paths.py .
+python3 .axion/scripts/lint_paths.py . --fix   # reescreve só .cursor/commands/
 ```
 
 Job CI: `.github/workflows/ci.yml`.
@@ -111,7 +111,7 @@ Job CI: `.github/workflows/ci.yml`.
 Valida o frontmatter YAML de todas as skills/commands contra os schemas acima (Draft 7) + regra: `name` da skill = nome da pasta. Requer `pip install pyyaml jsonschema`.
 
 ```bash
-python3 .cursor/scripts/lint_contracts.py .
+python3 .axion/scripts/lint_contracts.py .
 ```
 
 Job CI: `.github/workflows/ci.yml` (também roda no gate `pre-publish` de `publish-npm.yml`).
@@ -121,10 +121,10 @@ Job CI: `.github/workflows/ci.yml` (também roda no gate `pre-publish` de `publi
 Paridade doc/inventário (P2 Q-03): falha se as contagens da tabela overview (rótulos em negrito — o texto é o contrato do script), os comentários de contagem da árvore quando presentes, ou o `.axion/inventory.json` commitado divergirem do filesystem. Sem dependências extras.
 
 ```bash
-python3 .cursor/scripts/lint_inventory.py .
+python3 .axion/scripts/lint_inventory.py .
 ```
 
-Contagem da overview ou de um comentário (`# N personas`, `# N skills top-level`, `# N slash commands`, `# N regras`) desatualizada: edite o número no doc. Só o JSON desatualizado: `python3 .cursor/scripts/generate_inventory.py .`. Rótulos e como corrigir: [scripts/README.md](scripts/README.md).
+Contagem da overview ou de um comentário (`# N personas`, `# N skills top-level`, `# N slash commands`, `# N regras`) desatualizada: edite o número no doc. Só o JSON desatualizado: `python3 .axion/scripts/generate_inventory.py .`. Rótulos e como corrigir: [scripts/README.md](scripts/README.md).
 
 Job CI: `.github/workflows/ci.yml`, passo "Lint doc/inventory parity (Q-03)", depois de `lint_contracts`.
 
@@ -148,7 +148,7 @@ discover → specify → plan → implement → verify → remember
 
 **Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate continuam instrução em commands/agents (advisory): o IDE não bloqueia a transição sozinho e o agente honra o exit. O eval E-02 (`eval_routing.py --gates` e `--plan`) regressa esses gates. O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
 
-**Verify hard gate (W-03):** `/verify` roda os AC-*, grava a evidência, marca `[x]` e roda `python3 .cursor/scripts/checklist.py .` antes do gate. Só conclui se esse comando e `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0. O gate roda o checklist de novo e não reexecuta os AC-*. Exit diferente de 0 (ACCEPTANCE incompleto, sign-off aberto ou `checklist.py` ≠ 0) impede o relatório. O IDE não bloqueia a FSM sozinho; o agente honra o exit.
+**Verify hard gate (W-03):** `/verify` roda os AC-*, grava a evidência, marca `[x]` e roda `python3 .axion/scripts/checklist.py .` antes do gate. Só conclui se esse comando e `python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0. O gate roda o checklist de novo e não reexecuta os AC-*. Exit diferente de 0 (ACCEPTANCE incompleto, sign-off aberto ou `checklist.py` ≠ 0) impede o relatório. O IDE não bloqueia a FSM sozinho; o agente honra o exit.
 
 **Paths P1:**
 
@@ -158,7 +158,7 @@ discover → specify → plan → implement → verify → remember
 | Template PLAN | `.agents/skills/plan-writing/templates/PLAN.template.md` |
 | Template ACCEPTANCE | `.agents/skills/verify-changes/templates/ACCEPTANCE.template.md` |
 | Traceability | `.axion/trace/README.md` · opcional `.axion/trace/{slug}.json` |
-| Inventário | `python3 .cursor/scripts/generate_inventory.py .` → `.axion/inventory.json` · paridade: `python3 .cursor/scripts/lint_inventory.py .` |
+| Inventário | `python3 .axion/scripts/generate_inventory.py .` → `.axion/inventory.json` · paridade: `python3 .axion/scripts/lint_inventory.py .` |
 
 Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
@@ -360,48 +360,48 @@ side_effects: [read-only]
 
 ```bash
 # Validação rápida
-python3 .cursor/scripts/checklist.py .
+python3 .axion/scripts/checklist.py .
 
-# Gate hard do /verify (P2 W-03) — depois de `python3 .cursor/scripts/checklist.py .`; o gate roda o checklist de novo
-python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
+# Gate hard do /verify (P2 W-03) — depois de `python3 .axion/scripts/checklist.py .`; o gate roda o checklist de novo
+python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
 
 # Verificação completa
-python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
+python3 .axion/scripts/verify_all.py . --url http://localhost:3000
 
 # Sync com upstream
-python3 .cursor/scripts/sync_upstream.py --apply
+python3 .axion/scripts/sync_upstream.py --apply
 
 # Lint de path drift (P0)
-python3 .cursor/scripts/lint_paths.py .
+python3 .axion/scripts/lint_paths.py .
 
 # Lint de contratos skill/command (P2 Q-02)
-python3 .cursor/scripts/lint_contracts.py .
+python3 .axion/scripts/lint_contracts.py .
 
 # Paridade doc/inventário (P2 Q-03)
-python3 .cursor/scripts/lint_inventory.py .
+python3 .axion/scripts/lint_inventory.py .
 
 # Inventário versionado (P1 K-04)
-python3 .cursor/scripts/generate_inventory.py .
+python3 .axion/scripts/generate_inventory.py .
 
 # Instalar kit (grava .axion/kit.manifest.json) e inspecionar SemVer
 npx @zanetta/axion init --profile standard
 npx @zanetta/axion status
 
 # Doctor do kit (D-04) — path lint local; não reexecuta o verify
-python3 .cursor/scripts/session_manager.py doctor .
+python3 .axion/scripts/session_manager.py doctor .
 
 # Allowlist de escrita (P2 X-03) — antes de gravar; o agente honra o exit
-python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+python3 .axion/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
 
 # Circuit breaker (P3 W-04) — antes de cada dispatch ou retry; o agente honra o exit
-python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
+python3 .axion/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
 
 # Golden cases de roteamento (P3 E-01) — não chama modelo
-python3 .cursor/scripts/eval_routing.py .
+python3 .axion/scripts/eval_routing.py .
 
 # Gates FSM (P3 E-02) — projetos temporários no --gates; o modo E-01 permanece
-python3 .cursor/scripts/eval_routing.py . --gates
-python3 .cursor/scripts/eval_routing.py . --plan {slug}.plan.md
+python3 .axion/scripts/eval_routing.py . --gates
+python3 .axion/scripts/eval_routing.py . --plan {slug}.plan.md
 ```
 
 Skill-level scripts ficam em `.agents/skills/<skill>/scripts/`.
@@ -417,7 +417,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Agents | 20 |
 | Skills | 45 |
 | Workflows | 14 |
-| Scripts em `.cursor/scripts/` | 15 |
+| Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |
 | CLI npm | `@zanetta/axion` |

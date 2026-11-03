@@ -3,11 +3,11 @@
 Sync this checkout with https://github.com/zanetta/axion.
 
 Usage:
-    python3 .cursor/scripts/sync_upstream.py              # Compare only (default)
-    python3 .cursor/scripts/sync_upstream.py --apply      # Apply safe sync (skills + agents)
-    python3 .cursor/scripts/sync_upstream.py --apply --clone  # Clone upstream first
+    python3 .axion/scripts/sync_upstream.py              # Compare only (default)
+    python3 .axion/scripts/sync_upstream.py --apply      # Apply safe sync (skills + agents)
+    python3 .axion/scripts/sync_upstream.py --apply --clone  # Clone upstream first
 
-Cursor path adaptations are applied automatically when copying agents.
+Path adaptations are applied automatically when copying agents.
 """
 
 from __future__ import annotations
@@ -50,12 +50,14 @@ CURSOR_COMMANDS = [
 ]
 
 AGENT_PATH_REPLACEMENTS = [
-    (".agents/scripts/", ".cursor/scripts/"),
-    ("python .agents/scripts/", "python3 .cursor/scripts/"),
+    (".agents/scripts/", ".axion/scripts/"),
+    (".cursor/scripts/", ".axion/scripts/"),
+    ("python .agents/scripts/", "python3 .axion/scripts/"),
+    ("python .cursor/scripts/", "python3 .axion/scripts/"),
     ("`ARCHITECTURE.md`", "`.cursor/ARCHITECTURE.md`"),
     (
         "> 💡 **Script paths are relative to `.agents/` directory**",
-        "> 💡 **Master scripts:** `.cursor/scripts/` · skill scripts: `.agents/skills/<name>/scripts/`",
+        "> 💡 **Master scripts:** `.axion/scripts/` · skill scripts: `.agents/skills/<name>/scripts/`",
     ),
 ]
 
@@ -103,13 +105,18 @@ def list_top_level_skills(skills_root: Path) -> set[str]:
 
 
 def compare(upstream: Path) -> dict[str, list[str]]:
-    local_skills = list_top_level_skills(REPO_ROOT / ".agents" / "skills")
+    pack_dir = REPO_ROOT / "pack"
+    skills_dir = pack_dir / "skills" if pack_dir.is_dir() else REPO_ROOT / ".agents" / "skills"
+    cmds_dir = pack_dir / "commands" if pack_dir.is_dir() else REPO_ROOT / ".cursor" / "commands"
+    agents_dir = pack_dir / "agents" if pack_dir.is_dir() else REPO_ROOT / ".claude" / "agents"
+
+    local_skills = list_top_level_skills(skills_dir)
     upstream_skills = list_top_level_skills(upstream / ".agents" / "skills")
 
-    local_cmds = {f.stem for f in (REPO_ROOT / ".cursor" / "commands").glob("*.md")}
+    local_cmds = {f.stem for f in cmds_dir.glob("*.md")}
     upstream_cmds = {f.stem for f in (upstream / ".agents" / "workflows").glob("*.md")}
 
-    local_agents = {f.stem for f in (REPO_ROOT / ".claude" / "agents").glob("*.md")}
+    local_agents = {f.stem for f in agents_dir.glob("*.md")}
     upstream_agents = {f.stem for f in (upstream / ".agents" / "agent").glob("*.md")}
 
     memory_ok = (REPO_ROOT / ".agents" / "memory" / "MEMORY.md").exists()
@@ -127,7 +134,7 @@ def compare(upstream: Path) -> dict[str, list[str]]:
 
 def sync_agents(upstream: Path) -> int:
     src_dir = upstream / ".agents" / "agent"
-    dst_dir = REPO_ROOT / ".claude" / "agents"
+    dst_dir = REPO_ROOT / "pack" / "agents" if (REPO_ROOT / "pack").is_dir() else REPO_ROOT / ".claude" / "agents"
     count = 0
     for src in sorted(src_dir.glob("*.md")):
         content = adapt_agent_content(src.read_text(encoding="utf-8"))
@@ -138,7 +145,7 @@ def sync_agents(upstream: Path) -> int:
 
 def sync_skills(upstream: Path, skill_names: list[str] | None = None) -> int:
     src_root = upstream / ".agents" / "skills"
-    dst_root = REPO_ROOT / ".agents" / "skills"
+    dst_root = REPO_ROOT / "pack" / "skills" if (REPO_ROOT / "pack").is_dir() else REPO_ROOT / ".agents" / "skills"
     names = skill_names or sorted(d.name for d in src_root.iterdir() if d.is_dir())
     count = 0
     for name in names:
@@ -165,7 +172,7 @@ def sync_memory(upstream: Path) -> None:
 def sync_commands_from_upstream(upstream: Path, only: list[str] | None = None) -> int:
     """Sync upstream workflows — skips Cursor-only commands like ui-ux-pro-max."""
     src_dir = upstream / ".agents" / "workflows"
-    dst_dir = REPO_ROOT / ".cursor" / "commands"
+    dst_dir = REPO_ROOT / "pack" / "commands" if (REPO_ROOT / "pack").is_dir() else REPO_ROOT / ".cursor" / "commands"
     names = only or CURSOR_COMMANDS
     count = 0
     for name in names:

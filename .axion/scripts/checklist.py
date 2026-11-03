@@ -7,8 +7,8 @@ Orchestrates all validation scripts in priority order.
 Use this for incremental validation during development.
 
 Usage:
-    python scripts/checklist.py .                    # Run core checks
-    python scripts/checklist.py . --url <URL>        # Include performance checks
+    python3 .axion/scripts/checklist.py .                    # Run core checks
+    python3 .axion/scripts/checklist.py . --url <URL>        # Include performance checks
 
 Priority Order:
     P0: Security Scan (vulnerabilities, secrets)
@@ -68,6 +68,16 @@ PERFORMANCE_CHECKS = [
     ("Lighthouse Audit", ".agents/skills/performance-profiling/scripts/lighthouse_audit.py", True),
     ("Playwright E2E", ".agents/skills/webapp-testing/scripts/playwright_runner.py", False),
 ]
+
+def resolve_skill_script(project_path: Path, rel_path: str) -> Path:
+    installed = project_path / rel_path
+    if installed.exists():
+        return installed
+    if rel_path.startswith(".agents/skills/"):
+        packed = project_path / rel_path.replace(".agents/skills/", "pack/skills/", 1)
+        if packed.exists():
+            return packed
+    return installed
 
 def check_script_exists(script_path: Path) -> bool:
     """Check if script file exists"""
@@ -190,7 +200,7 @@ Examples:
     # Run core checks
     print_header("📋 CORE CHECKS")
     for name, script_path, required in CORE_CHECKS:
-        script = project_path / script_path
+        script = resolve_skill_script(project_path, script_path)
         result = run_script(name, script, str(project_path))
         results.append(result)
         
@@ -204,7 +214,7 @@ Examples:
     if args.url and not args.skip_performance:
         print_header("⚡ PERFORMANCE CHECKS")
         for name, script_path, required in PERFORMANCE_CHECKS:
-            script = project_path / script_path
+            script = resolve_skill_script(project_path, script_path)
             result = run_script(name, script, str(project_path), args.url)
             results.append(result)
     

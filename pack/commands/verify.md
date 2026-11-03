@@ -13,8 +13,8 @@ required_artifacts:
 preconditions:
   - "Code changes exist to verify"
 scripts:
-  - ".cursor/scripts/verify_gate.py"
-  - ".cursor/scripts/checklist.py"
+  - ".axion/scripts/verify_gate.py"
+  - ".axion/scripts/checklist.py"
 side_effects:
   - run-shell
   - read-only
@@ -59,20 +59,20 @@ WORKFLOW:
 3. RUN each AC command and write the result in the evidence column; set Pass to [x]
 4. RUN the project checklist and stop if it exits non-zero. Include its output in the report:
 
-python3 .cursor/scripts/checklist.py .
+python3 .axion/scripts/checklist.py .
 
 5. RUN the hard gate and stop if it fails. The gate runs checklist.py again; either failure blocks the report:
 
-python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
+python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
 
 6. REPORT evidence per AC-* only after checklist.py and the gate both exit 0
 7. When a slug exists, print the SPEC / PLAN / AC / check table and include it in the report. This does not re-run the checks. Exit 0 means the chain is covered; exit 1 is a gap; exit 2 is an invalid slug:
 
-python3 .cursor/scripts/trace_report.py . {slug}
+python3 .axion/scripts/trace_report.py . {slug}
 
 8. LOG the run (paths and exit only, no evidence text):
 
-python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
+python3 .axion/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
 
 RULES:
 1. Follow verify-changes/SKILL.md protocol

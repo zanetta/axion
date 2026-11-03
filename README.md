@@ -203,8 +203,8 @@ Verificar e, quando o plano estiver cumprido, preparar o release:
 ```
 
 ```bash
-python3 .cursor/scripts/checklist.py .
-python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
+python3 .axion/scripts/checklist.py .
+python3 .axion/scripts/verify_all.py . --url http://localhost:3000
 ```
 
 ```mermaid
@@ -263,7 +263,7 @@ Bug:
 /verify reproduzir fix no fluxo guest checkout e logged-in
 ```
 
-No dia a dia: leia `.agents/memory/MEMORY.md` no início da sessão; tarefa pequena vai de `/enhance`; tarefa média passa por `/plan` e `/verify`; antes do PR, `/test` e `python3 .cursor/scripts/checklist.py .`.
+No dia a dia: leia `.agents/memory/MEMORY.md` no início da sessão; tarefa pequena vai de `/enhance`; tarefa média passa por `/plan` e `/verify`; antes do PR, `/test` e `python3 .axion/scripts/checklist.py .`.
 
 | Prefira | Evite |
 | --- | --- |
@@ -308,7 +308,7 @@ O frontmatter de cada arquivo em `.cursor/commands/` declara as skills que o age
 | `/debug` | — |
 | `/test` | — |
 | `/deploy` | — |
-| `/preview` | — (usa `.cursor/scripts/auto_preview.py`) |
+| `/preview` | — (usa `.axion/scripts/auto_preview.py`) |
 | `/ui-ux-pro-max` | — (usa `.cursor/shared/ui-ux-pro-max/scripts/search.py`) |
 
 ## Cada comando
@@ -323,15 +323,15 @@ Estado `plan`. O `project-planner` produz `{slug}.plan.md` e `{slug}.acceptance.
 
 ### `/create`
 
-Estado `implement` para aplicação nova. Sem PLAN aprovado, volta para `/brainstorm` e `/plan`. Com o plano aprovado, a skill `app-builder` coordena schema, API e UI. No fim, prefira `/verify` e, se couber, `.cursor/scripts/auto_preview.py`.
+Estado `implement` para aplicação nova. Sem PLAN aprovado, volta para `/brainstorm` e `/plan`. Com o plano aprovado, a skill `app-builder` coordena schema, API e UI. No fim, prefira `/verify` e, se couber, `.axion/scripts/auto_preview.py`.
 
 ### `/enhance`
 
-Estado `implement` em código que já existe. Mudança grande pede PLAN ou três respostas e o seu OK. Correção pequena segue depois de confirmar o impacto. O primeiro passo lê o projeto com `python3 .cursor/scripts/session_manager.py info`.
+Estado `implement` em código que já existe. Mudança grande pede PLAN ou três respostas e o seu OK. Correção pequena segue depois de confirmar o impacto. O primeiro passo lê o projeto com `python3 .axion/scripts/session_manager.py info`.
 
 ### `/verify`
 
-Estado `verify`. Prova por execução. Ordem: gravar evidência em cada AC-*, `python3 .cursor/scripts/checklist.py .`, depois `python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md`. Os dois precisam sair 0. O gate roda o checklist de novo e não repete os comandos dos AC-*. Sem arquivo de acceptance, o gate aceita `--allow-missing-acceptance` e o checklist continua. Em seguida, `trace_report.py` (se houver slug) e o log em `.axion/logs/runs.jsonl`.
+Estado `verify`. Prova por execução. Ordem: gravar evidência em cada AC-*, `python3 .axion/scripts/checklist.py .`, depois `python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md`. Os dois precisam sair 0. O gate roda o checklist de novo e não repete os comandos dos AC-*. Sem arquivo de acceptance, o gate aceita `--allow-missing-acceptance` e o checklist continua. Em seguida, `trace_report.py` (se houver slug) e o log em `.axion/logs/runs.jsonl`.
 
 ### `/test`
 
@@ -343,11 +343,11 @@ Investigação sistemática: sintoma, hipóteses, teste de cada hipótese, causa
 
 ### `/preview`
 
-Sobe, para ou consulta o servidor local. Por baixo, `python3 .cursor/scripts/auto_preview.py start|stop|status`.
+Sobe, para ou consulta o servidor local. Por baixo, `python3 .axion/scripts/auto_preview.py start|stop|status`.
 
 ### `/status`
 
-Mostra o quadro do projeto e pede o doctor do kit: `python3 .cursor/scripts/session_manager.py doctor .` (linhas do índice de memória, path lint e o último `/verify`).
+Mostra o quadro do projeto e pede o doctor do kit: `python3 .axion/scripts/session_manager.py doctor .` (linhas do índice de memória, path lint e o último `/verify`).
 
 ### `/deploy`
 
@@ -363,7 +363,7 @@ Pesquisa em paralelo e síntese. O corpo do command manda ler `coordinator-mode`
 
 ### `/remember`
 
-Estado `remember`. Grava preferência ou decisão em `.agents/memory/`. Antes de escrever, `python3 .cursor/scripts/memory_secret_scan.py` precisa sair 0. Exit 1 recusa o texto e não mostra o segredo.
+Estado `remember`. Grava preferência ou decisão em `.agents/memory/`. Antes de escrever, `python3 .axion/scripts/memory_secret_scan.py` precisa sair 0. Exit 1 recusa o texto e não mostra o segredo.
 
 ### `/ui-ux-pro-max`
 
@@ -419,7 +419,7 @@ echo ".agents/" >> .git/info/exclude
 | [`AGENT_FLOW.md`](AGENT_FLOW.md) | Fluxo de agents, FSM e gates |
 | [`AGENTS.md`](AGENTS.md) | Regras sempre ativas |
 | [`cli/README.md`](cli/README.md) | CLI, profiles, manifesto SemVer, publish |
-| [`.cursor/scripts/README.md`](.cursor/scripts/README.md) | Scripts de validação e sync |
+| [`.axion/scripts/README.md`](.axion/scripts/README.md) | Scripts de validação e sync |
 
 ---
 
@@ -428,10 +428,10 @@ echo ".agents/" >> .git/info/exclude
 O script compara agents, skills, memória e commands com [zanetta/axion](https://github.com/zanetta/axion). Não altera `/ui-ux-pro-max`, `AGENTS.md`, `.cursor/rules/` nem este README.
 
 ```bash
-python3 .cursor/scripts/lint_paths.py .                  # drift de paths (legado .agents/scripts/)
-python3 .cursor/scripts/sync_upstream.py                 # comparar
-python3 .cursor/scripts/sync_upstream.py --apply         # aplicar
-python3 .cursor/scripts/sync_upstream.py --apply --clone # clonar a origem e aplicar
+python3 .axion/scripts/lint_paths.py .                  # drift de paths (legado .agents/scripts/)
+python3 .axion/scripts/sync_upstream.py                 # comparar
+python3 .axion/scripts/sync_upstream.py --apply         # aplicar
+python3 .axion/scripts/sync_upstream.py --apply --clone # clonar a origem e aplicar
 ```
 
 Revise o diff do dry-run antes de `--apply`.

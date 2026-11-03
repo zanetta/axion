@@ -5,9 +5,9 @@ Auto Preview - Axion
 Manages (start/stop/status) the local development server for previewing the application.
 
 Usage:
-    python .cursor/scripts/auto_preview.py start [port]
-    python .cursor/scripts/auto_preview.py stop
-    python .cursor/scripts/auto_preview.py status
+    python .axion/scripts/auto_preview.py start [port]
+    python .axion/scripts/auto_preview.py stop
+    python .axion/scripts/auto_preview.py status
 """
 
 import os

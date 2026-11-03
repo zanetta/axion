@@ -120,7 +120,7 @@ updated: 2026-04-01
 Before every write under `.agents/memory/`, scan the text. Exit 1 means do not write it. The report names the pattern, not the secret. `--redact` prints a safe copy only when the user wants the rest of the note kept.
 
 ```bash
-python3 .cursor/scripts/memory_secret_scan.py --text "<text to save>"
+python3 .axion/scripts/memory_secret_scan.py --text "<text to save>"
 ```
 
 ---

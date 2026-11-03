@@ -10,7 +10,7 @@ required_agents: []
 required_artifacts: []
 preconditions: []
 scripts:
-  - ".cursor/scripts/memory_secret_scan.py"
+  - ".axion/scripts/memory_secret_scan.py"
 side_effects:
   - write-memory
 ---
@@ -49,7 +49,7 @@ WORKFLOW:
 2. CHECK if relevant topic file exists in .agents/memory/
 3. SCAN the text to save. Exit 1: stop and tell the user; do not write the secret
 
-python3 .cursor/scripts/memory_secret_scan.py --text "<text to save>"
+python3 .axion/scripts/memory_secret_scan.py --text "<text to save>"
 
 4. SAVE to appropriate topic file (create if needed) only if the scan exits 0
 5. UPDATE .agents/memory/MEMORY.md index with one-line pointer

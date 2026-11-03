@@ -22,15 +22,15 @@ async function withTemplate(fn) {
     try {
         await fse.copy(fixtureRoot, template);
         const write = (rel, body) => fse.outputFile(path.join(template, rel), body);
-        await write(".agents/skills/red-team-tactics/SKILL.md", "# red\n");
-        await write(".agents/skills/clean-code/SKILL.md", "# clean\n");
-        await write(".agents/skills/api-patterns/SKILL.md", "# api\n");
-        await write(".agents/skills/game-development/SKILL.md", "# game\n");
-        await write(".agents/skills/doc.md", "# skills index\n");
-        await write(".claude/agents/penetration-tester.md", "# pentest\n");
-        await write(".claude/agents/game-developer.md", "# game\n");
+        await write("pack/skills/red-team-tactics/SKILL.md", "# red\n");
+        await write("pack/skills/clean-code/SKILL.md", "# clean\n");
+        await write("pack/skills/api-patterns/SKILL.md", "# api\n");
+        await write("pack/skills/game-development/SKILL.md", "# game\n");
+        await write("pack/skills/doc.md", "# skills index\n");
+        await write("pack/agents/penetration-tester.md", "# pentest\n");
+        await write("pack/agents/game-developer.md", "# game\n");
         await write(
-            ".claude/agents/backend-specialist.md",
+            "pack/agents/backend-specialist.md",
             "---\nname: backend-specialist\nskills: clean-code, api-patterns\n---\n# backend\n",
         );
         await write(".axion/trace/README.md", "# trace\n");

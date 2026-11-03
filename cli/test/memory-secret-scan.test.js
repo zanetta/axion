@@ -7,7 +7,7 @@ import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
 
 const packRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const script = path.join(packRoot, ".cursor", "scripts", "memory_secret_scan.py");
+const script = path.join(packRoot, ".axion", "scripts", "memory_secret_scan.py");
 const TOKEN = `ghp_${"a".repeat(36)}`;
 
 function run(args, input) {

@@ -5,13 +5,15 @@ Lint skill/command contracts — Axion (P2 Q-02)
 
 Validates YAML frontmatter against the contract schemas:
 
-    .agents/skills/*/SKILL.md   → .agents/schemas/skill-contract.schema.json
-    .cursor/commands/*.md       → .agents/schemas/command-contract.schema.json
+    pack/skills/*/SKILL.md (or .agents/skills/*/SKILL.md)
+        → pack/schemas/skill-contract.schema.json (or .agents/schemas/skill-contract.schema.json)
+    pack/commands/*.md (or .cursor/commands/*.md / .claude/commands/*.md)
+        → pack/schemas/command-contract.schema.json (or .agents/schemas/command-contract.schema.json)
 
 Extra rule: a skill's `name` must match its folder name.
 
 Usage:
-    python3 .cursor/scripts/lint_contracts.py .
+    python3 .axion/scripts/lint_contracts.py .
 
 Requires: pip install pyyaml jsonschema
 """
@@ -33,10 +35,20 @@ except ImportError:
 
 FRONTMATTER = re.compile(r"\A---\r?\n(.*?)\r?\n---", re.DOTALL)
 
-TARGETS = (
-    (".agents/skills/*/SKILL.md", ".agents/schemas/skill-contract.schema.json"),
-    (".cursor/commands/*.md", ".agents/schemas/command-contract.schema.json"),
-)
+
+def resolve_targets(root: Path) -> list[tuple[str, str]]:
+    if (root / "pack").is_dir():
+        return [
+            ("pack/skills/*/SKILL.md", "pack/schemas/skill-contract.schema.json"),
+            ("pack/commands/*.md", "pack/schemas/command-contract.schema.json"),
+        ]
+    cmd_pattern = ".cursor/commands/*.md"
+    if not (root / ".cursor" / "commands").is_dir() and (root / ".claude" / "commands").is_dir():
+        cmd_pattern = ".claude/commands/*.md"
+    return [
+        (".agents/skills/*/SKILL.md", ".agents/schemas/skill-contract.schema.json"),
+        (cmd_pattern, ".agents/schemas/command-contract.schema.json"),
+    ]
 
 
 def load_validator(schema_path: Path) -> Draft7Validator:
@@ -75,7 +87,7 @@ def lint_file(path: Path, validator) -> list[str]:
 def lint(root: Path) -> tuple[int, list[tuple[Path, str]]]:
     checked = 0
     violations: list[tuple[Path, str]] = []
-    for pattern, schema_rel in TARGETS:
+    for pattern, schema_rel in resolve_targets(root):
         schema_path = root / schema_rel
         if not schema_path.is_file():
             violations.append((schema_path, "schema not found"))

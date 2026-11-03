@@ -3,11 +3,21 @@ export const BIN_NAME = "axion";
 export const DEFAULT_REPO = "github:zanetta/axion";
 export const TEMP_FOLDER = ".temp_axion";
 
-/** Paths copied from template root into target project (full install). */
+/** Source paths walked in the template root when installing from pack/. */
+export const SOURCE_PATHS = [
+    "pack",
+    ".axion/scripts",
+    "AGENTS.md",
+    "AGENT_FLOW.md",
+    ".env.example",
+];
+
+/** Display/manifest paths for the default Cursor adapter. */
 export const INSTALL_PATHS = [
     ".claude",
     ".agents",
     ".cursor",
+    ".axion/scripts",
     "AGENTS.md",
     "AGENT_FLOW.md",
     ".env.example",

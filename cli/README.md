@@ -86,23 +86,24 @@ Caso contrário **não são copiados** e o CLI grava **`.axion/OFFENSIVE_DISABLE
 
 - versão do **CLI** e versão **instalada** no projeto (`version`, `profile`, `tool`, `enable_offensive`)
 - comparação com a versão **latest** no registry npm (quando a rede responde)
-- se `.cursor/scripts/session_manager.py` existir, três campos do `doctor`: **Memory index** (linhas de `MEMORY.md`), **Path lint** (`pass`, `fail` ou `absent`) e **Last verify** (`ts`, slug e exit, ou `none`)
+- se `.axion/scripts/session_manager.py` existir (com fallback para `.cursor/scripts/session_manager.py` em installs v1), três campos do `doctor`: **Memory index** (linhas de `MEMORY.md`), **Path lint** (`pass`, `fail` ou `absent`) e **Last verify** (`ts`, slug e exit, ou `none`)
 
 Se o manifesto não existir (install antigo), rode `init`/`update` de novo para criá-lo.
 
 ## Install scope
 
-Cópia base (filtrada pelo profile, projetada pelo `--tool`):
+A fonte do kit vive em `pack/` + `.axion/scripts/`. Cópia no destino (filtrada pelo profile, projetada pelo `--tool`):
 
 - `.claude/agents/`
 - `.agents/` (skills + memory + `schemas/` + templates SDD)
-- `cursor`: `.cursor/` (commands, rules, scripts, mcp, shared)
-- `claude-code`: `.claude/commands/`, `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/scripts/`
+- `.axion/scripts/` — scripts master de gate e validação nos dois adapters (**breaking em relação à v1**, onde `.cursor/scripts/` deixou de ser o path canônico; `axion update` é aditivo e não apaga `.cursor/scripts/` residual)
+- `cursor`: `.cursor/` (commands, rules, mcp, shared, `ARCHITECTURE.md`)
+- `claude-code`: `.claude/commands/`, `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/ARCHITECTURE.md`
 - `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`
-- **`.axion/trace/README.md`** — único arquivo copiado do `.axion/` do template (`KIT_AXION_FILES` em `cli/lib/constants.js`)
+- **`.axion/trace/README.md`** — copiado do `.axion/` do template (`KIT_AXION_FILES` em `cli/lib/constants.js`)
 - **`.axion/kit.manifest.json`** — gravado pelo CLI (não vem do template)
 
-O `inventory.json` e o manifesto do próprio repo do kit **não** são copiados. Inventário machine-readable (maintainers ou consumidores): `python3 .cursor/scripts/generate_inventory.py .` → `.axion/inventory.json`.
+O `inventory.json` e o manifesto do próprio repo do kit **não** são copiados. Inventário machine-readable (maintainers ou consumidores): `python3 .axion/scripts/generate_inventory.py .` → `.axion/inventory.json`.
 
 ## Merge behavior (default)
 

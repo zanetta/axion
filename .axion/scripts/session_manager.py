@@ -6,8 +6,8 @@ Analyzes project state, detects tech stack, tracks file statistics, and provides
 a summary of the current session.
 
 Usage:
-    python .cursor/scripts/session_manager.py status [path]
-    python .cursor/scripts/session_manager.py info [path]
+    python .axion/scripts/session_manager.py status [path]
+    python .axion/scripts/session_manager.py info [path]
 """
 
 import os
@@ -183,7 +183,9 @@ def last_verify(root: Path):
 
 
 def path_lint(root: Path) -> str:
-    script = root / ".cursor" / "scripts" / "lint_paths.py"
+    script = root / ".axion" / "scripts" / "lint_paths.py"
+    if not script.is_file():
+        script = root / ".cursor" / "scripts" / "lint_paths.py"
     if not script.is_file():
         return "absent"
     result = subprocess.run([sys.executable, str(script), str(root)], capture_output=True, text=True)

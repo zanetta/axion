@@ -147,6 +147,16 @@ VERIFICATION_SUITE = [
     },
 ]
 
+def resolve_skill_script(project_path: Path, rel_path: str) -> Path:
+    installed = project_path / rel_path
+    if installed.exists():
+        return installed
+    if rel_path.startswith(".agents/skills/"):
+        packed = project_path / rel_path.replace(".agents/skills/", "pack/skills/", 1)
+        if packed.exists():
+            return packed
+    return installed
+
 def run_script(name: str, script_path: Path, project_path: str, url: Optional[str] = None) -> dict:
     """Run validation script"""
     if not script_path.exists():
@@ -307,7 +317,7 @@ Examples:
         print_header(f"📋 {category.upper()}")
         
         for name, script_path, required in suite["checks"]:
-            script = project_path / script_path
+            script = resolve_skill_script(project_path, script_path)
             result = run_script(name, script, str(project_path), args.url)
             result["category"] = category
             results.append(result)

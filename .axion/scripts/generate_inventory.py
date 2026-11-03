@@ -5,7 +5,7 @@ Generate .axion/inventory.json — machine-readable component inventory (P1 K-04
 Output is deterministic (no timestamps or absolute paths) so it can be diffed in CI.
 
 Usage:
-    python3 .cursor/scripts/generate_inventory.py .
+    python3 .axion/scripts/generate_inventory.py .
 """
 
 from __future__ import annotations
@@ -34,15 +34,38 @@ def list_skills(skills_root: Path) -> list[str]:
     return sorted(d.name for d in skills_root.iterdir() if (d / "SKILL.md").is_file())
 
 
+def first_dir(*candidates: Path) -> Path:
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    return candidates[0]
+
+
 def build_inventory(root: Path) -> dict:
+    pack = root / "pack"
+    if pack.is_dir():
+        agents_dir = pack / "agents"
+        skills_dir = pack / "skills"
+        commands_dir = pack / "commands"
+        rules_dir = pack / "rules"
+        schemas_dir = pack / "schemas"
+    else:
+        agents_dir = root / ".claude" / "agents"
+        skills_dir = root / ".agents" / "skills"
+        commands_dir = first_dir(root / ".cursor" / "commands", root / ".claude" / "commands")
+        rules_dir = root / ".cursor" / "rules"
+        schemas_dir = root / ".agents" / "schemas"
+
+    scripts_dir = first_dir(root / ".axion" / "scripts", pack / "scripts", root / ".cursor" / "scripts")
+
     inventory = {
         "schema_version": "1.1.0",
-        "agents": list_files(root / ".claude" / "agents", {".md"}),
-        "skills": list_skills(root / ".agents" / "skills"),
-        "commands": list_files(root / ".cursor" / "commands", {".md"}),
-        "rules": list_files(root / ".cursor" / "rules", {".mdc"}),
-        "scripts": list_files(root / ".cursor" / "scripts", SCRIPT_SUFFIXES, stem=False),
-        "schemas": list_files(root / ".agents" / "schemas", {".json"}, stem=False),
+        "agents": list_files(agents_dir, {".md"}),
+        "skills": list_skills(skills_dir),
+        "commands": list_files(commands_dir, {".md"}),
+        "rules": list_files(rules_dir, {".mdc"}),
+        "scripts": list_files(scripts_dir, SCRIPT_SUFFIXES, stem=False),
+        "schemas": list_files(schemas_dir, {".json"}, stem=False),
     }
     counts = {key: len(value) for key, value in inventory.items() if isinstance(value, list)}
     return {"schema_version": inventory.pop("schema_version"), "counts": counts, **inventory}

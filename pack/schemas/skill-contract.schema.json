@@ -87,8 +87,11 @@
     },
     "verify_hooks": {
       "type": "array",
-      "items": { "type": "string" },
-      "description": "Canonical scripts under .cursor/scripts/ or skill scripts/"
+      "items": {
+        "type": "string",
+        "pattern": "^(\\.axion/scripts/|\\.agents/skills/.+/scripts/)"
+      },
+      "description": "Canonical scripts under .axion/scripts/ or skill scripts/"
     },
     "contract_version": {
       "type": "string",

@@ -8,10 +8,10 @@ Findings name the pattern and the line, never the secret. --redact prints a
 safe copy to stdout instead of refusing.
 
 Usage:
-    python3 .cursor/scripts/memory_secret_scan.py note.md
-    python3 .cursor/scripts/memory_secret_scan.py .agents/memory
-    python3 .cursor/scripts/memory_secret_scan.py --text "token: ..."
-    python3 .cursor/scripts/memory_secret_scan.py --redact note.md
+    python3 .axion/scripts/memory_secret_scan.py note.md
+    python3 .axion/scripts/memory_secret_scan.py .agents/memory
+    python3 .axion/scripts/memory_secret_scan.py --text "token: ..."
+    python3 .axion/scripts/memory_secret_scan.py --redact note.md
 """
 
 from __future__ import annotations

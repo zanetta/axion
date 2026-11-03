@@ -16,7 +16,7 @@ const hasPythonDeps =
     spawnSync("python3", ["-c", "import yaml, jsonschema"], { stdio: "ignore" }).status === 0;
 
 function runScript(projectRoot, script) {
-    return spawnSync("python3", [path.join(projectRoot, ".cursor", "scripts", script), projectRoot], {
+    return spawnSync("python3", [path.join(projectRoot, ".axion", "scripts", script), projectRoot], {
         encoding: "utf8",
     });
 }
@@ -63,13 +63,15 @@ for (const profile of PROFILE_NAMES) {
             for (const rel of [
                 "AGENTS.md",
                 ".cursor/commands/plan.md",
-                ".cursor/scripts/lint_paths.py",
+                ".axion/scripts/lint_paths.py",
+                ".agents/schemas/command-contract.schema.json",
                 ".agents/skills/plan-writing/templates/PLAN.template.md",
                 ".agents/skills/verify-changes/templates/ACCEPTANCE.template.md",
                 ".claude/agents/orchestrator.md",
             ]) {
                 assert.ok(await fse.pathExists(path.join(target, rel)), `missing ${rel}`);
             }
+            assert.equal(await fse.pathExists(path.join(target, ".cursor", "scripts")), false);
 
             assert.deepEqual(await danglingSkillRefs(target), []);
             assert.equal(await isKitInstalled(target, "cursor"), true);
@@ -103,11 +105,13 @@ for (const profile of ["standard", "security"]) {
                     ".claude/agents/orchestrator.md",
                     ".agents/skills/plan-writing/SKILL.md",
                     ".claude/skills/plan-writing/SKILL.md",
-                    ".cursor/scripts/lint_paths.py",
+                    ".axion/scripts/lint_paths.py",
+                    ".agents/schemas/command-contract.schema.json",
                     ".mcp.json",
                 ]) {
                     assert.ok(await fse.pathExists(path.join(target, rel)), `missing ${rel}`);
                 }
+                assert.equal(await fse.pathExists(path.join(target, ".cursor", "scripts")), false);
 
                 assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands", "plan.md")), false);
                 assert.equal(

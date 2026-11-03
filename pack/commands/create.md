@@ -15,7 +15,7 @@ required_artifacts:
 preconditions:
   - "Approved PLAN (or SPEC + Socratic evidence if planning inline)"
 scripts:
-  - ".cursor/scripts/auto_preview.py"
+  - ".axion/scripts/auto_preview.py"
 side_effects:
   - write-files
   - invoke-agents
@@ -64,7 +64,7 @@ If gate fails → `/brainstorm` then `/plan`. Do **not** skip to `app-builder`.
 
 4. **Verify + Preview**
    - Prefer `/verify` against `{slug}.acceptance.md`
-   - Start with `.cursor/scripts/auto_preview.py` when complete
+   - Start with `.axion/scripts/auto_preview.py` when complete
 
 ---
 

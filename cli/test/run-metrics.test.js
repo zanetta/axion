@@ -10,7 +10,7 @@ const sessionManager = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
     "..",
     "..",
-    ".cursor",
+    ".axion",
     "scripts",
     "session_manager.py",
 );

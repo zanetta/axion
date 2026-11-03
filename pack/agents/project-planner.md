@@ -310,13 +310,13 @@ Before assigning agents, determine project type:
 > 🔴 **DO NOT mark project complete until ALL scripts pass.**
 > 🔴 **ENFORCEMENT: You MUST execute these Python scripts!**
 
-> 💡 **Master scripts:** `.cursor/scripts/` · skill scripts: `.agents/skills/<name>/scripts/`
+> 💡 **Master scripts:** `.axion/scripts/` · skill scripts: `.agents/skills/<name>/scripts/`
 
 #### 1. Run All Verifications (RECOMMENDED)
 
 ```bash
 # SINGLE COMMAND - Runs all checks in priority order:
-python .cursor/scripts/verify_all.py . --url http://localhost:3000
+python .axion/scripts/verify_all.py . --url http://localhost:3000
 
 # Priority Order:
 # P0: Security Scan (vulnerabilities, secrets)

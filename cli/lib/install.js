@@ -1,6 +1,6 @@
 import path from "path";
 import fse from "fs-extra";
-import { INSTALL_PATHS, KIT_AXION_FILES } from "./constants.js";
+import { INSTALL_PATHS, KIT_AXION_FILES, SOURCE_PATHS } from "./constants.js";
 import { mergeMcpJson } from "./merge.js";
 import { writeKitManifest, readKitManifest } from "./manifest.js";
 import { DEFAULT_PROFILE, parseAgentSkills, resolveProfile } from "./profiles.js";
@@ -27,7 +27,10 @@ function toPosixRelative(root, filePath) {
 }
 
 async function readAgentSkills(templateRoot) {
-    const agentsDir = path.join(templateRoot, ".claude", "agents");
+    let agentsDir = path.join(templateRoot, "pack", "agents");
+    if (!(await fse.pathExists(agentsDir))) {
+        agentsDir = path.join(templateRoot, ".claude", "agents");
+    }
     const agentSkills = new Map();
     if (!(await fse.pathExists(agentsDir))) return agentSkills;
 
@@ -41,13 +44,24 @@ async function readAgentSkills(templateRoot) {
 
 /** False when the profile excludes this skill dir or agent file. */
 export function isInProfile(relativePath, isDirectory, plan) {
-    const skill = relativePath.match(/^\.agents\/skills\/([^/]+)$/);
+    const skill = relativePath.match(/^(?:pack\/|\.agents\/)?skills\/([^/]+)$/);
     if (skill && isDirectory) return plan.keepSkill(skill[1]);
 
-    const agent = relativePath.match(/^\.claude\/agents\/([^/]+)\.md$/);
+    const agent = relativePath.match(/^(?:pack\/|\.claude\/)?agents\/([^/]+)\.md$/);
     if (agent && !isDirectory) return plan.keepAgent(agent[1]);
 
     return true;
+}
+
+function isIgnoredEntry(name) {
+    return name === "__pycache__" || name.endsWith(".pyc");
+}
+
+async function resolveSourcePaths(templateRoot) {
+    if (await fse.pathExists(path.join(templateRoot, "pack"))) {
+        return SOURCE_PATHS;
+    }
+    return INSTALL_PATHS.filter((p) => p !== ".axion/scripts");
 }
 
 async function writeMappedFile(ctx, srcFile, srcRel, destRel, srcText) {
@@ -98,14 +112,16 @@ async function walkAndInstall(srcDir, ctx) {
     const entries = await fse.readdir(srcDir, { withFileTypes: true });
 
     for (const entry of entries) {
+        if (isIgnoredEntry(entry.name)) continue;
         const srcPath = path.join(srcDir, entry.name);
         const srcRel = toPosixRelative(ctx.templateRoot, srcPath);
 
         if (!isInProfile(srcRel, entry.isDirectory(), ctx.plan)) {
-            ctx.log(srcRel, "excluded");
+            const firstTarget = ctx.adapter.mapTemplateTargets(srcRel)[0] ?? srcRel;
+            ctx.log(firstTarget, "excluded");
             for (const destRel of ctx.adapter.mapTemplateTargets(srcRel)) {
                 if (await fse.pathExists(path.join(ctx.targetRoot, destRel))) {
-                    ctx.outsideProfile.push(srcRel);
+                    ctx.outsideProfile.push(destRel);
                 }
             }
             continue;
@@ -169,7 +185,8 @@ export async function installKit(templateRoot, targetRoot, options = {}) {
         },
     };
 
-    for (const item of INSTALL_PATHS) {
+    const sourceItems = await resolveSourcePaths(templateRoot);
+    for (const item of sourceItems) {
         await copyInstallItem(item, ctx);
     }
 
@@ -209,6 +226,7 @@ async function visitTemplateFiles(templateRoot, plan, visit) {
     async function walk(srcDir) {
         const entries = await fse.readdir(srcDir, { withFileTypes: true });
         for (const entry of entries) {
+            if (isIgnoredEntry(entry.name)) continue;
             const src = path.join(srcDir, entry.name);
             const rel = toPosixRelative(templateRoot, src);
             if (entry.isDirectory()) {
@@ -221,7 +239,8 @@ async function visitTemplateFiles(templateRoot, plan, visit) {
         }
     }
 
-    for (const item of [...INSTALL_PATHS, ...KIT_AXION_FILES]) {
+    const sourceItems = await resolveSourcePaths(templateRoot);
+    for (const item of [...sourceItems, ...KIT_AXION_FILES]) {
         const src = path.join(templateRoot, item);
         if (!(await fse.pathExists(src))) continue;
         if ((await fse.stat(src)).isDirectory()) await walk(src);

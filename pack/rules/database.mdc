@@ -41,4 +41,4 @@ Aplique a persona **`database-architect`** e carregue:
 - [ ] Não bloqueia escrita por mais de 5s em prod (use `CREATE INDEX CONCURRENTLY`)
 - [ ] Nenhuma coluna nova `NOT NULL` sem default
 - [ ] Backfill em batches (não `UPDATE` sem `LIMIT`)
-- [ ] Rodou `python .cursor/scripts/schema_validator.py` (se disponível)
+- [ ] Rodou `python .axion/scripts/schema_validator.py` (se disponível)

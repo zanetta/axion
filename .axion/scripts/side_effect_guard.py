@@ -6,8 +6,8 @@ Reads `## Write allowlist` from a plan file. A write is allowed only when it
 matches one of those globs, is not a secret path, and (when --effect is passed)
 the declared side_effects include the matching write kind.
 
-    python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --write src/app.ts
-    python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write src/app.ts
+    python3 .axion/scripts/side_effect_guard.py . --plan {slug}.plan.md --write src/app.ts
+    python3 .axion/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write src/app.ts
 
 Exit 0: every --write is allowed.
 Exit 1: at least one write is refused (path and reason on stdout, never file contents).

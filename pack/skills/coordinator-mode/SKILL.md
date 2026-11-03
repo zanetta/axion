@@ -26,9 +26,9 @@ forbidden_paths:
   - ".env"
   - "**/*credentials*"
 verify_hooks:
-  - ".cursor/scripts/checklist.py"
-  - ".cursor/scripts/side_effect_guard.py"
-  - ".cursor/scripts/circuit_breaker.py"
+  - ".axion/scripts/checklist.py"
+  - ".axion/scripts/side_effect_guard.py"
+  - ".axion/scripts/circuit_breaker.py"
 ---
 
 # Coordinator Mode — Multi-Agent Orchestration
@@ -99,7 +99,7 @@ Implementation workers write only paths listed under `## Write allowlist` in the
 Before the first write of a worker, check every target path:
 
 ```bash
-python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+python3 .axion/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
 ```
 
 Pass each `side_effects` value declared by the skill that will write (`write-files` for project files, `write-memory` for `.agents/memory/`). Exit 0 allows the write. Exit 1 refuses it (`outside-allowlist`, `forbidden`, `effect-denied`, or `no-allowlist`) — do not write, and do not widen the allowlist to make the write succeed. Exit 2 is a bad invocation; fix the arguments and run it again. `.env` and any path containing `credentials` are refused even when the plan lists them.
@@ -111,7 +111,7 @@ Pass each `side_effects` value declared by the skill that will write (`write-fil
 Before every dispatch or retry, ask the breaker. `--domain` is a short token (`backend`, `frontend`, `security`, `database`, `testing`, `devops`, `mobile`). `--domain-failures` counts workers that already failed in that domain. `--worker-failures` counts failed attempts of this worker.
 
 ```bash
-python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
+python3 .axion/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
 ```
 
 | Exit | `action` | What to do |
@@ -126,7 +126,7 @@ Domains are independent: an open `backend` does not block `frontend`. The report
 When the run finishes, append the counters (integers only, no narrative) to the run log:
 
 ```bash
-python3 .cursor/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 0 --artifact {slug}.plan.md
+python3 .axion/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 0 --artifact {slug}.plan.md
 ```
 
 `--workers` is how many workers launched. `--failures` is how many attempts failed. `--duration-ms` is the estimated elapsed time. `--breaker-trips` is how many times a domain opened. Omit a flag rather than invent a value. A negative count exits 2 and writes nothing. Workers, failures, and breaker trips stop at 1000. Duration stops at 86400000 (24h).

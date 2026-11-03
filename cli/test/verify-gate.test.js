@@ -7,7 +7,7 @@ import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
 
 const packRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const gate = path.join(packRoot, ".cursor", "scripts", "verify_gate.py");
+const gate = path.join(packRoot, ".axion", "scripts", "verify_gate.py");
 
 const COMPLETE = `# ACCEPTANCE
 

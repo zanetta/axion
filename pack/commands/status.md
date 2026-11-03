@@ -9,8 +9,8 @@ required_agents: []
 required_artifacts: []
 preconditions: []
 scripts:
-  - ".cursor/scripts/session_manager.py"
-  - ".cursor/scripts/auto_preview.py"
+  - ".axion/scripts/session_manager.py"
+  - ".axion/scripts/auto_preview.py"
 side_effects:
   - read-only
   - run-shell
@@ -52,7 +52,7 @@ Show current project and agent status.
 5. **Kit doctor** — run and include the JSON:
 
 ```bash
-python3 .cursor/scripts/session_manager.py doctor .
+python3 .axion/scripts/session_manager.py doctor .
 ```
 
 It reports memory index size, path-lint pass/fail, and the last `/verify` entry from `.axion/logs/runs.jsonl`.
@@ -106,5 +106,5 @@ It reports memory index size, path-lint pass/fail, and the last `/verify` entry 
 ## Technical
 
 Status uses these scripts:
-- `python3 .cursor/scripts/session_manager.py status`
-- `python3 .cursor/scripts/auto_preview.py status`
+- `python3 .axion/scripts/session_manager.py status`
+- `python3 .axion/scripts/auto_preview.py status`

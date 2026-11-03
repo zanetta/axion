@@ -34,26 +34,57 @@ function adaptCommand(text) {
 
 export function mapTemplateTargets(rel) {
     const src = posix(rel);
-    if (src === ".cursor/commands/ui-ux-pro-max.md") return [];
-    if (src.startsWith(".cursor/commands/ui-ux-pro-max/")) return [];
-    if (src === ".cursor/rules" || src.startsWith(".cursor/rules/")) return [];
-    if (src.startsWith(".cursor/shared/ui-ux-pro-max")) return [];
-    if (src === ".cursor/mcp.json") return [".mcp.json"];
-    if (src === ".cursor/commands" || src.startsWith(".cursor/commands/")) {
-        return [src.replace(".cursor/commands", ".claude/commands")];
+    const sub = src.startsWith("pack/") ? src.slice("pack/".length) : src;
+
+    if (sub === "commands/ui-ux-pro-max.md" || sub === ".cursor/commands/ui-ux-pro-max.md") return [];
+    if (sub.startsWith("commands/ui-ux-pro-max/") || sub.startsWith(".cursor/commands/ui-ux-pro-max/")) return [];
+    if (sub === "rules" || sub.startsWith("rules/") || sub === ".cursor/rules" || sub.startsWith(".cursor/rules/")) {
+        return [];
     }
-    if (src === ".agents/skills" || src.startsWith(".agents/skills/")) {
-        return [src, src.replace(".agents/skills", ".claude/skills")];
+    if (sub === "shared" || sub.startsWith("shared/") || sub.startsWith(".cursor/shared/")) {
+        return [];
+    }
+    if (sub === "mcp.json" || sub === ".cursor/mcp.json") return [".mcp.json"];
+    if (sub === "ARCHITECTURE.md" || sub === ".cursor/ARCHITECTURE.md") return [".cursor/ARCHITECTURE.md"];
+
+    if (sub === "agents" || sub.startsWith("agents/")) {
+        return [sub.replace(/^agents/, ".claude/agents")];
+    }
+    if (sub === "commands" || sub.startsWith("commands/")) {
+        return [sub.replace(/^commands/, ".claude/commands")];
+    }
+    if (sub === ".cursor/commands" || sub.startsWith(".cursor/commands/")) {
+        return [sub.replace(/^\.cursor\/commands/, ".claude/commands")];
+    }
+    if (sub === "skills" || sub.startsWith("skills/")) {
+        return [
+            sub.replace(/^skills/, ".agents/skills"),
+            sub.replace(/^skills/, ".claude/skills"),
+        ];
+    }
+    if (sub === ".agents/skills" || sub.startsWith(".agents/skills/")) {
+        return [sub, sub.replace(/^\.agents\/skills/, ".claude/skills")];
+    }
+    if (sub === "schemas" || sub.startsWith("schemas/")) {
+        return [sub.replace(/^schemas/, ".agents/schemas")];
+    }
+    if (sub === "memory" || sub.startsWith("memory/")) {
+        return [sub.replace(/^memory/, ".agents/memory")];
+    }
+    if (sub === "scripts" || sub.startsWith("scripts/") || sub === ".cursor/scripts" || sub.startsWith(".cursor/scripts/")) {
+        return [sub.replace(/^(?:\.cursor\/)?scripts/, ".axion/scripts")];
     }
     if (src === "AGENTS.md") return ["AGENTS.md", "CLAUDE.md"];
     return [src];
 }
 
-export function transformContent(srcRel, destRel, text) {
+export function transformContent(_srcRel, destRel, text) {
     const dest = posix(destRel);
     if (dest === "CLAUDE.md") return CLAUDE_STUB;
     if (dest === ".mcp.json") return sanitizeMcp(text);
-    if (dest.startsWith(".claude/commands/") && dest.endsWith(".md")) return adaptCommand(text);
+    if (dest.startsWith(".claude/commands/") && dest.endsWith(".md")) {
+        return adaptCommand(text);
+    }
     return text;
 }
 
@@ -63,7 +94,7 @@ export const claudeCodeAdapter = {
     installPaths: [
         ".claude",
         ".agents",
-        ".cursor/scripts",
+        ".axion/scripts",
         ".cursor/ARCHITECTURE.md",
         ".mcp.json",
         "AGENTS.md",
@@ -89,7 +120,7 @@ export const claudeCodeAdapter = {
     mapTemplateTargets,
     transformContent,
     postInstallHints: [
-        "Open in Claude Code. Commands live in .claude/commands/ ($ARGUMENTS).",
-        "Inventory: python3 .cursor/scripts/generate_inventory.py .",
+        "Open in Claude Code and use /plan, /debug, etc.",
+        "Inventory: python3 .axion/scripts/generate_inventory.py .",
     ],
 };

@@ -12,8 +12,8 @@ The gate does not re-run each AC command. /verify must run them and record the
 result before this script is invoked.
 
 Usage:
-    python3 .cursor/scripts/verify_gate.py . --acceptance feature.acceptance.md
-    python3 .cursor/scripts/verify_gate.py . --skip-checklist
+    python3 .axion/scripts/verify_gate.py . --acceptance feature.acceptance.md
+    python3 .axion/scripts/verify_gate.py . --skip-checklist
 """
 
 from __future__ import annotations
@@ -117,7 +117,7 @@ def main() -> int:
         help="Pass the acceptance check when no file exists (checklist still runs)",
     )
     parser.add_argument("--skip-checklist", action="store_true", help="Do not run checklist.py")
-    parser.add_argument("--checklist", default=None, help="Checklist script (default: .cursor/scripts/checklist.py)")
+    parser.add_argument("--checklist", default=None, help="Checklist script (default: .axion/scripts/checklist.py)")
     args = parser.parse_args()
 
     root = Path(args.project).resolve()
@@ -135,7 +135,12 @@ def main() -> int:
 
     checklist_note = "skipped"
     if not args.skip_checklist:
-        script = Path(args.checklist) if args.checklist else root / ".cursor" / "scripts" / "checklist.py"
+        if args.checklist:
+            script = Path(args.checklist)
+        else:
+            script = root / ".axion" / "scripts" / "checklist.py"
+            if not script.is_file() and (root / ".cursor" / "scripts" / "checklist.py").is_file():
+                script = root / ".cursor" / "scripts" / "checklist.py"
         code, summary = run_checklist(root, script)
         checklist_note = f"exit {code}"
         if code != 0:

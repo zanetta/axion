@@ -42,7 +42,7 @@ Exclude:  [files to skip, e.g., "**/*.test.tsx"]
 Every target must match `## Write allowlist` in the active PLAN. Check before applying:
 
 ```bash
-python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+python3 .axion/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
 ```
 
 Exit 1 means that path is out of scope. Do not edit it and do not expand the allowlist to fit the batch.

@@ -49,6 +49,6 @@ Aplique a persona **`security-auditor`** e carregue:
 
 ## Antes de commit em arquivo desta área
 
-- [ ] Rodou `python .cursor/scripts/security_scan.py .` ou equivalente
+- [ ] Rodou `python .axion/scripts/security_scan.py .` ou equivalente
 - [ ] Sem segredos no diff (`git diff | grep -E '(api[_-]?key|secret|token|password)'`)
 - [ ] Mudança auth/perm tem teste cobrindo o caso negativo (acesso negado)

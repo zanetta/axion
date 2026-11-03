@@ -6,7 +6,7 @@ Stateless: the caller passes counters for one domain. Defaults: a worker may
 be retried twice (3 attempts total); 3 worker failures in the same domain open
 the breaker.
 
-    python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
+    python3 .axion/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
 
 Exit 0: action is dispatch or retry. Launch the worker.
 Exit 1: do not launch.

@@ -3,15 +3,15 @@
 Doc/inventory parity — Axion (P2 Q-03)
 ======================================
 
-Fails when the component counts in .cursor/ARCHITECTURE.md or the committed
-.axion/inventory.json differ from the filesystem.
+Fails when the component counts in pack/ARCHITECTURE.md (or .cursor/ARCHITECTURE.md)
+or the committed .axion/inventory.json differ from the filesystem.
 
 The ARCHITECTURE overview table is the contract. These bold labels are parsed:
 
     Agents, Skills, Workflows, Regras por domínio, Scripts master, Schemas de contrato
 
 Usage:
-    python3 .cursor/scripts/lint_inventory.py .
+    python3 .axion/scripts/lint_inventory.py .
 """
 
 from __future__ import annotations
@@ -58,11 +58,18 @@ def documented_counts(architecture: str) -> dict[str, int]:
     return {TABLE_LABELS[label]: found[label] for label in TABLE_LABELS}
 
 
+def resolve_architecture(root: Path) -> Path:
+    pack_arch = root / "pack" / "ARCHITECTURE.md"
+    if pack_arch.is_file():
+        return pack_arch
+    return root / ".cursor" / "ARCHITECTURE.md"
+
+
 def check(root: Path) -> list[str]:
     problems = []
     actual = build_inventory(root)["counts"]
 
-    architecture_path = root / ".cursor" / "ARCHITECTURE.md"
+    architecture_path = resolve_architecture(root)
     try:
         architecture = architecture_path.read_text(encoding="utf-8")
         documented = documented_counts(architecture)
@@ -91,7 +98,7 @@ def check(root: Path) -> list[str]:
     if committed.get("counts") != actual:
         problems.append(
             f"inventory.json counts {committed.get('counts')} != filesystem {actual}"
-            " — run: python3 .cursor/scripts/generate_inventory.py ."
+            " — run: python3 .axion/scripts/generate_inventory.py ."
         )
     return problems
 

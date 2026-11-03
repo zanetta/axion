@@ -12,7 +12,7 @@ required_artifacts: []
 preconditions:
   - "For major changes: PLAN approved or ≥3 Socratic answers"
 scripts:
-  - ".cursor/scripts/session_manager.py"
+  - ".axion/scripts/session_manager.py"
 side_effects:
   - write-files
   - invoke-agents
@@ -39,7 +39,7 @@ Major / multi-file changes: require `{slug}.plan.md` (or inline `/plan` with SPE
 ### Steps:
 
 1. **Understand Current State**
-   - Load project state with `python3 .cursor/scripts/session_manager.py info`
+   - Load project state with `python3 .axion/scripts/session_manager.py info`
    - Understand existing features, tech stack
 
 2. **Plan Changes**

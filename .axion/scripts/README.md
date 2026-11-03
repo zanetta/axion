@@ -1,14 +1,14 @@
 # Master Scripts — Axion
 
-Scripts em `.cursor/scripts/` orquestram validações, sync com o repositório Axion e (via `cli/`) instalação npm.
+Scripts em `.axion/scripts/` orquestram validações, sync com o repositório Axion e (via `cli/`) instalação npm.
 
 ## checklist.py
 
 Validação core durante desenvolvimento:
 
 ```bash
-python3 .cursor/scripts/checklist.py .
-python3 .cursor/scripts/checklist.py . --url http://localhost:3000
+python3 .axion/scripts/checklist.py .
+python3 .axion/scripts/checklist.py . --url http://localhost:3000
 ```
 
 Ordem: Security → Lint → Schema → Tests → UX → SEO (+ Lighthouse se `--url`).
@@ -19,12 +19,12 @@ Usa `sys.executable` (compatível com ambientes só `python3`).
 
 Gate hard do `/verify` (P2 W-03). Checagem executável: exit code real. Ignorar um exit 1 é violação do agent. O FSM de W-01/W-02 continua só instrução.
 
-O script **não** reexecuta os comandos dos AC-*. `/verify` roda cada check, grava o resultado na coluna de evidência, marca Pass `[x]`, roda `python3 .cursor/scripts/checklist.py .` e só então chama o gate. O gate roda o checklist de novo. Exit diferente de 0 bloqueia o relatório — não reporte a tarefa como concluída.
+O script **não** reexecuta os comandos dos AC-*. `/verify` roda cada check, grava o resultado na coluna de evidência, marca Pass `[x]`, roda `python3 .axion/scripts/checklist.py .` e só então chama o gate. O gate roda o checklist de novo. Exit diferente de 0 bloqueia o relatório — não reporte a tarefa como concluída.
 
 ```bash
-python3 .cursor/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
-python3 .cursor/scripts/verify_gate.py . --allow-missing-acceptance
-python3 .cursor/scripts/verify_gate.py . --skip-checklist
+python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
+python3 .axion/scripts/verify_gate.py . --allow-missing-acceptance
+python3 .axion/scripts/verify_gate.py . --skip-checklist
 ```
 
 Falha (exit 1) quando:
@@ -41,7 +41,7 @@ Falha (exit 1) quando:
 | `--acceptance` | Arquivo ACCEPTANCE (repetível). Sem ele, procura `*.acceptance.md` na raiz do projeto |
 | `--allow-missing-acceptance` | Passa a checagem de ACCEPTANCE quando não há arquivo; o checklist ainda roda |
 | `--skip-checklist` | Não executa `checklist.py` |
-| `--checklist` | Caminho alternativo do checklist (padrão: `.cursor/scripts/checklist.py`) |
+| `--checklist` | Caminho alternativo do checklist (padrão: `.axion/scripts/checklist.py`) |
 
 Testes: `cli/test/verify-gate.test.js` (10 casos; suíte CLI 50).
 
@@ -52,7 +52,7 @@ Relatório de rastreabilidade (P2 O-02). Imprime a cobertura SPEC → PLAN → A
 Procura na raiz do projeto `{slug}.spec.md`, `{slug}.plan.md` (fallback `{slug}.md`), `{slug}.acceptance.md` e, se existir, `.axion/trace/{slug}.json`.
 
 ```bash
-python3 .cursor/scripts/trace_report.py . {slug}
+python3 .axion/scripts/trace_report.py . {slug}
 ```
 
 A tabela é `SPEC / PLAN / AC / check`, com `check` em `pass`, `open` ou `no-evidence`.
@@ -83,10 +83,10 @@ Scanner de segredos antes de gravar em `.agents/memory/` (P2 X-02). `/remember` 
 Varre um texto (`--text`), um arquivo, stdin (sem argumento) ou um diretório. A `.agents/memory/` deste repositório passa limpa.
 
 ```bash
-python3 .cursor/scripts/memory_secret_scan.py --text "<texto>"
-python3 .cursor/scripts/memory_secret_scan.py nota.md
-python3 .cursor/scripts/memory_secret_scan.py .agents/memory
-python3 .cursor/scripts/memory_secret_scan.py --redact nota.md
+python3 .axion/scripts/memory_secret_scan.py --text "<texto>"
+python3 .axion/scripts/memory_secret_scan.py nota.md
+python3 .axion/scripts/memory_secret_scan.py .agents/memory
+python3 .axion/scripts/memory_secret_scan.py --redact nota.md
 ```
 
 | Exit | Significado |
@@ -108,7 +108,7 @@ Allowlist de escrita do PLAN (P2 X-03). Antes de criar ou modificar um arquivo, 
 Lê a seção exata `## Write allowlist`: bullet `- path` ou a primeira coluna da tabela. O `PLAN.template.md` já traz a seção. Sem seção, ou com ela vazia, todo write sai `no-allowlist`.
 
 ```bash
-python3 .cursor/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
+python3 .axion/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write path/to/file
 ```
 
 | Exit | Significado |
@@ -132,7 +132,7 @@ Testes: `cli/test/side-effect-guard.test.js` (3 casos; `cd cli && npm test` = 56
 Circuit breaker da orquestração (P3 W-04). Stateless: uma chamada, um domínio. Antes de cada dispatch ou retry, `coordinator-mode`, `parallel-agents`, `/coordinate` e `/orchestrate` mandam rodar o script. O agente honra o exit; o IDE não bloqueia sozinho.
 
 ```bash
-python3 .cursor/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
+python3 .axion/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
 ```
 
 `--domain` é token `^[a-z0-9-]{1,40}$`. Defaults: `--max-retries 2`, `--trip-after 3`. Stdout é um único JSON (`domain`, `action`, `reason`, `fallback`, `domain_failures`, `worker_failures`). Sem texto livre de workers. Domínios são independentes: um `backend` aberto não bloqueia `frontend`.
@@ -152,10 +152,10 @@ Testes: `cli/test/circuit-breaker.test.js` (3 casos; `cd cli && npm test` = 59 p
 Golden cases de roteamento (P3 E-01) e eval de gates FSM (P3 E-02). Checagem estática: o script não chama modelo. Não há script novo. Os 16 cases ficam em `.axion/eval/routing.cases.json`. Sem `--gates` e sem `--plan`, o modo E-01 permanece.
 
 ```bash
-python3 .cursor/scripts/eval_routing.py .
-python3 .cursor/scripts/eval_routing.py . --cases .axion/eval/routing.cases.json
-python3 .cursor/scripts/eval_routing.py . --gates
-python3 .cursor/scripts/eval_routing.py . --plan {slug}.plan.md
+python3 .axion/scripts/eval_routing.py .
+python3 .axion/scripts/eval_routing.py . --cases .axion/eval/routing.cases.json
+python3 .axion/scripts/eval_routing.py . --gates
+python3 .axion/scripts/eval_routing.py . --plan {slug}.plan.md
 ```
 
 O argumento posicional é a raiz do projeto (padrão: `.`). `--cases` troca o JSON.
@@ -185,7 +185,7 @@ Sem `--gates` e sem `--plan` (E-01):
 | `1` | Divergência de tabela ou de arquivo: `eval_routing: FAIL` e um problema por linha |
 | `2` | Arquivo de cases ausente, `AGENTS.md` ou a skill de routing ausente, ou JSON inválido |
 
-`--gates` cria projetos temporários e não lê os plans do repo. São 7 checagens: plano sem SPEC e sem 3 respostas não está pronto; plano com `{slug}.spec.md` não vazio está pronto; plano com 3 respostas reais está pronto; `verify_gate.py` sem ACCEPTANCE sai 1; com ACCEPTANCE completa e `--skip-checklist` sai 0; `lint_paths.py` falha se um command cita `.agents/scripts/`; passa se cita só `.cursor/scripts/`.
+`--gates` cria projetos temporários e não lê os plans do repo. São 7 checagens: plano sem SPEC e sem 3 respostas não está pronto; plano com `{slug}.spec.md` não vazio está pronto; plano com 3 respostas reais está pronto; `verify_gate.py` sem ACCEPTANCE sai 1; com ACCEPTANCE completa e `--skip-checklist` sai 0; `lint_paths.py` falha se um command cita `.agents/scripts/`; passa se cita só `.axion/scripts/`.
 
 | Exit | Saída |
 | --- | --- |
@@ -210,17 +210,17 @@ Testes: `cli/test/eval-routing.test.js` (3 casos) e `cli/test/eval-gates.test.js
 Suite completa pre-deploy (checklist + Lighthouse, Playwright, bundle, mobile, i18n):
 
 ```bash
-python3 .cursor/scripts/verify_all.py .
-python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
+python3 .axion/scripts/verify_all.py .
+python3 .axion/scripts/verify_all.py . --url http://localhost:3000
 ```
 
 ## lint_paths.py
 
-Detecta referências legadas a `.agents/scripts/` (canônico: `.cursor/scripts/`):
+Detecta referências legadas a `.agents/scripts/` (canônico: `.axion/scripts/`):
 
 ```bash
-python3 .cursor/scripts/lint_paths.py .
-python3 .cursor/scripts/lint_paths.py . --fix   # reescreve .cursor/commands/
+python3 .axion/scripts/lint_paths.py .
+python3 .axion/scripts/lint_paths.py . --fix   # reescreve .cursor/commands/
 ```
 
 Rodado no CI (`.github/workflows/ci.yml`).
@@ -238,7 +238,7 @@ Regra extra: `name` da skill deve ser igual ao nome da pasta. Validador Draft 7.
 
 ```bash
 pip install pyyaml jsonschema
-python3 .cursor/scripts/lint_contracts.py .
+python3 .axion/scripts/lint_contracts.py .
 ```
 
 | Exit | Significado |
@@ -254,8 +254,8 @@ Rodado no CI (`.github/workflows/ci.yml`) e no gate `pre-publish` de `publish-np
 Gera inventário machine-readable dos componentes do kit (P1 K-04):
 
 ```bash
-python3 .cursor/scripts/generate_inventory.py .
-python3 .cursor/scripts/generate_inventory.py . -o /tmp/inventory.json
+python3 .axion/scripts/generate_inventory.py .
+python3 .axion/scripts/generate_inventory.py . -o /tmp/inventory.json
 ```
 
 Saída padrão: **`.axion/inventory.json`** — listas e contagens de `agents`, `skills`, `commands`, `rules`, `scripts` e `schemas` (`schema_version` 1.1.0). Saída **determinística**: sem `root` nem `generated_at`, então rodar de novo sem mudanças não gera diff. `-o` aceita caminho fora do projeto. Fonte única de counts para sync/`status`. A paridade com o filesystem e com `.cursor/ARCHITECTURE.md` é checada por `lint_inventory.py` (seção seguinte).
@@ -284,7 +284,7 @@ Contrato dos rótulos em negrito da overview — o script lê esse texto; não r
 Comentários da árvore, conferidos só se o texto aparecer: `# N personas` → agents, `# N skills top-level` → skills, `# N slash commands` → commands, `# N regras` → rules.
 
 ```bash
-python3 .cursor/scripts/lint_inventory.py .
+python3 .axion/scripts/lint_inventory.py .
 ```
 
 | Exit | Significado |
@@ -295,7 +295,7 @@ python3 .cursor/scripts/lint_inventory.py .
 Como corrigir:
 
 - Overview ou comentário da árvore desatualizado: edite a **contagem** em `.cursor/ARCHITECTURE.md` para o valor do filesystem. Mantenha os rótulos em negrito.
-- Só `.axion/inventory.json` desatualizado: `python3 .cursor/scripts/generate_inventory.py .`
+- Só `.axion/inventory.json` desatualizado: `python3 .axion/scripts/generate_inventory.py .`
 
 Não crie nem apague arquivos para fazer um número antigo do doc “fechar”.
 
@@ -306,14 +306,14 @@ Rodado no CI (`.github/workflows/ci.yml`), passo **Lint doc/inventory parity (Q-
 Compare ou sincronize com [zanetta/axion](https://github.com/zanetta/axion):
 
 ```bash
-python3 .cursor/scripts/sync_upstream.py              # dry-run
-python3 .cursor/scripts/sync_upstream.py --apply      # aplicar
-python3 .cursor/scripts/sync_upstream.py --apply --clone
+python3 .axion/scripts/sync_upstream.py              # dry-run
+python3 .axion/scripts/sync_upstream.py --apply      # aplicar
+python3 .axion/scripts/sync_upstream.py --apply --clone
 ```
 
 Adaptações automáticas ao aplicar:
 
-- Agents → `.claude/agents/` com paths `.cursor/scripts/`
+- Agents → `.claude/agents/` com paths `.axion/scripts/`
 - Workflows → `.cursor/commands/` sem `$ARGUMENTS`
 - Preserva `/ui-ux-pro-max`
 
@@ -336,10 +336,10 @@ Profiles: `minimal` \| `standard` (fallback) \| `security` \| `fullstack` \| `mo
 Gestão de sessão. Os subcomandos `status` e `info` resumem o projeto. `log` (O-01) e `doctor` (D-04) observam o kit instalado. Não é um script novo.
 
 ```bash
-python3 .cursor/scripts/session_manager.py status .
-python3 .cursor/scripts/session_manager.py info .
-python3 .cursor/scripts/session_manager.py doctor .
-python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
+python3 .axion/scripts/session_manager.py status .
+python3 .axion/scripts/session_manager.py info .
+python3 .axion/scripts/session_manager.py doctor .
+python3 .axion/scripts/session_manager.py log . --command-name verify --slug {slug} --exit 0 --artifact {slug}.acceptance.md
 ```
 
 ### `log`
@@ -347,7 +347,7 @@ python3 .cursor/scripts/session_manager.py log . --command-name verify --slug {s
 Append-only em `.axion/logs/runs.jsonl`. Cada linha é um JSON. Não há campo de texto livre nem PII. As quatro flags de orquestração são opcionais: a chave só entra se a flag foi passada.
 
 ```bash
-python3 .cursor/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 1 --artifact {slug}.plan.md
+python3 .axion/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 1 --artifact {slug}.plan.md
 ```
 
 | Campo | Origem | Regra |
@@ -376,7 +376,7 @@ Imprime um JSON (sem indentação):
 | `last_verify` | `{ts, slug, exit, artifacts}` do último registro com `command` `verify`, ou `null` |
 | `path_lint` | `pass`, `fail` ou `absent` quando `lint_paths.py` não está no projeto |
 
-`path_lint` executa `lint_paths.py`. Não reexecuta o verify. O `axion status` lê esse JSON quando `.cursor/scripts/session_manager.py` existe e imprime Memory index, Path lint e Last verify.
+`path_lint` executa `lint_paths.py`. Não reexecuta o verify. O `axion status` lê esse JSON quando `.axion/scripts/session_manager.py` existe e imprime Memory index, Path lint e Last verify.
 
 ## Outros
 
