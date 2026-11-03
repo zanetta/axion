@@ -1,0 +1,54 @@
+---
+description: Regras de segurança auto-anexadas em arquivos sensíveis (auth, env, secrets)
+globs: **/auth/**,**/security/**,**/*.env*,**/secrets/**,**/middleware/**,**/middlewares/**,**/jwt/**,**/oauth/**,**/passport/**,**/crypto/**,**/payment/**,**/payments/**,**/stripe/**
+alwaysApply: false
+---
+
+# Security Rules (Auto-Attached)
+
+Aplique a persona **`security-auditor`** e carregue:
+
+- `.agents/skills/vulnerability-scanner/SKILL.md`
+- `.agents/skills/clean-code/SKILL.md`
+
+> **Offensive opt-in (X-01):** `red-team-tactics` e o agent `penetration-tester` só vêm no install com `--profile security` ou `--enable-offensive`. Se `.axion/OFFENSIVE_DISABLED.md` existir, **não** carregue red-team; use só auditoria defensiva (`vulnerability-scanner`).
+
+## OWASP Top 10 — checklist por mudança
+
+| # | Vetor | O que verificar |
+| --- | --- | --- |
+| A01 | Broken Access Control | Toda rota autenticada verifica permissão? IDs no body não permitem IDOR? |
+| A02 | Cryptographic Failures | Sem MD5/SHA1 para senhas (use bcrypt/argon2). TLS em tudo. |
+| A03 | Injection | Queries parametrizadas. Nenhuma string-concat em SQL/shell. |
+| A04 | Insecure Design | Threat modeling: STRIDE no fluxo novo. |
+| A05 | Misconfiguration | Headers (`CSP`, `HSTS`, `X-Frame-Options`). Sem stack-trace em prod. |
+| A06 | Vulnerable Components | `npm audit` / `pip-audit` no CI. |
+| A07 | Auth Failures | MFA opcional, rate-limit no login, lockout temporário. |
+| A08 | Data Integrity | Verificar assinaturas de webhooks (Stripe, GitHub, etc.). |
+| A09 | Logging | Eventos de auth/perm-deny logados. Nunca logar segredos. |
+| A10 | SSRF | Whitelist de URLs externas; nunca fetch direto de input do usuário. |
+
+## Regras hard
+
+| Proibido | Permitido |
+| --- | --- |
+| `eval()`, `new Function()` com input externo | Parser próprio com whitelist |
+| Senhas em texto puro em log/db | bcrypt cost ≥ 12 ou argon2id |
+| API key em `git` (incluindo histórico) | `.env` + `.gitignore` + secret manager |
+| `cors({ origin: '*' })` em endpoint autenticado | Lista explícita de origins |
+| JWT no `localStorage` para sessão crítica | Cookie `httpOnly`+`Secure`+`SameSite=Lax`+`__Host-` prefix |
+| Permitir `redirect_uri` arbitrário em OAuth | Whitelist exato (string match) |
+| Comparar segredos com `===` | `crypto.timingSafeEqual()` |
+
+## Pagamentos (Stripe e similares)
+
+- **Sempre** validar assinatura de webhook (`Stripe-Signature`).
+- Usar `Idempotency-Key` em criação de PaymentIntent.
+- Nunca confiar em valor vindo do front — recalcule no backend.
+- Tokenize: nunca toque em PAN bruto (cartão completo).
+
+## Antes de commit em arquivo desta área
+
+- [ ] Rodou `python .axion/scripts/security_scan.py .` ou equivalente
+- [ ] Sem segredos no diff (`git diff | grep -E '(api[_-]?key|secret|token|password)'`)
+- [ ] Mudança auth/perm tem teste cobrindo o caso negativo (acesso negado)

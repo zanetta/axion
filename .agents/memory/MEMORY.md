@@ -6,6 +6,11 @@
 ## Project
 - [project] Always create a new dedicated branch for major code changes → project-conventions.md
 - [project] GitHub issues may use branch {issue}-{slug} → project-conventions.md
-- [project] Keep dual PLAN names: hyphenated file plus .plan.md for trace_report → project-conventions.md
-- [project] Axion is tool-agnostic SDD; --tool cursor (default) or claude-code; pack extract is v2 → tech-decisions.md
+- [project] Dual PLAN names (.plan.md + hyphenated); slugs upgrade-to-adnostic and axion-agnostico-fase-2 → project-conventions.md
+- [project] After pack cutover, Cursor needs root symlinks to pack/ or skills will not load → project-conventions.md
+- [project] pack/ is canonical kit source; .axion/scripts/ is real; --tool cursor or claude-code only → tech-decisions.md
 - [project] diffKit compares post-transform content; profiles/protect orthogonal; update --tool is additive → tech-decisions.md
+- [project] Kit repo dogfoods via root symlinks to pack/; memory stays live at repo root → tech-decisions.md
+
+## Feedback
+- [feedback] Issue 11: Option B single cutover, then Option A pack symlinks when skills vanished → feedback-history.md

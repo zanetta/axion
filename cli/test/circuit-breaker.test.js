@@ -8,7 +8,7 @@ const breaker = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
     "..",
     "..",
-    ".cursor",
+    ".axion",
     "scripts",
     "circuit_breaker.py",
 );

@@ -24,4 +24,4 @@ Create/update when `/plan` finishes; `/verify` and `/orchestrate` should refuse 
 
 ## Leitor
 
-`python3 .cursor/scripts/trace_report.py . {slug}` lê `{slug}.json` quando o arquivo existe e confere cada item de `links` (`spec_id`, `plan_task`, `acceptance_id`) com SPEC, PLAN e ACCEPTANCE. O script não reexecuta os checks. Exit 0 = cadeia coberta; exit 1 = gap (inclusive JSON que discorda dos links markdown); exit 2 = slug inválido. Linhas de rastreabilidade que ainda são `{placeholders}` são ignoradas. Detalhe dos gaps: `.cursor/scripts/README.md`.
+`python3 .axion/scripts/trace_report.py . {slug}` lê `{slug}.json` quando o arquivo existe e confere cada item de `links` (`spec_id`, `plan_task`, `acceptance_id`) com SPEC, PLAN e ACCEPTANCE. O script não reexecuta os checks. Exit 0 = cadeia coberta; exit 1 = gap (inclusive JSON que discorda dos links markdown); exit 2 = slug inválido. Linhas de rastreabilidade que ainda são `{placeholders}` são ignoradas. Detalhe dos gaps: `.axion/scripts/README.md`.

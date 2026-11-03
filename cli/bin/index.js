@@ -331,7 +331,10 @@ function printDrift(drift, force) {
 }
 
 async function readDoctor(targetDir) {
-    const script = path.join(targetDir, ".cursor", "scripts", "session_manager.py");
+    let script = path.join(targetDir, ".axion", "scripts", "session_manager.py");
+    if (!(await fse.pathExists(script))) {
+        script = path.join(targetDir, ".cursor", "scripts", "session_manager.py");
+    }
     if (!(await fse.pathExists(script))) return null;
     const result = spawnSync("python3", [script, "doctor", targetDir], { encoding: "utf8" });
     if (result.status !== 0) return null;

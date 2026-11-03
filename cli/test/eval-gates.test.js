@@ -7,7 +7,7 @@ import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const runner = path.join(repo, ".cursor/scripts/eval_routing.py");
+const runner = path.join(repo, ".axion/scripts/eval_routing.py");
 
 function run(args) {
     return spawnSync("python3", [runner, ...args], { encoding: "utf8" });

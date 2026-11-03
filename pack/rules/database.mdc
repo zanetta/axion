@@ -1,0 +1,44 @@
+---
+description: Regras de banco de dados auto-anexadas em arquivos de schema/migration/SQL
+globs: **/prisma/**,**/migrations/**,**/*.sql,**/schema.prisma,**/db/**,**/database/**,**/models/**
+alwaysApply: false
+---
+
+# Database Rules (Auto-Attached)
+
+Aplique a persona **`database-architect`** e carregue:
+
+- `.agents/skills/database-design/SKILL.md`
+- `.agents/skills/clean-code/SKILL.md`
+
+## Princípios obrigatórios
+
+| Tema | Regra |
+| --- | --- |
+| **Migrations** | Sempre reversíveis (`up` + `down`). Nunca editar migration commitada — crie uma nova. |
+| **In-place alters** | Proibido em colunas com dados em produção. Use **expand/contract**: nova coluna → dual-write → backfill → swap → drop old. |
+| **PK** | `id BIGINT GENERATED ALWAYS AS IDENTITY` ou UUID v7. Nunca `INT` autoincrement em tabela que pode crescer. |
+| **FK** | Sempre com `ON DELETE` explícito (`CASCADE`, `SET NULL`, `RESTRICT`). |
+| **Índices** | Em toda FK + em colunas usadas em `WHERE`/`JOIN`/`ORDER BY` frequente. Verifique `EXPLAIN` antes de criar. |
+| **Soft delete** | `deleted_at TIMESTAMPTZ NULL` se necessário; nunca usar `is_deleted BOOLEAN` (não permite undo seletivo). |
+| **Timestamps** | `created_at`, `updated_at` em toda tabela (com trigger ou ORM hook). `TIMESTAMPTZ`, nunca `TIMESTAMP`. |
+| **JSON** | `JSONB` no Postgres; valide schema na app antes de inserir. |
+| **Enums** | Em Postgres prefira `text + CHECK constraint` (mais fácil de evoluir que `CREATE TYPE`). |
+
+## Naming
+
+| Elemento | Convenção |
+| --- | --- |
+| Tabelas | `snake_case`, plural (`users`, `order_items`) |
+| Colunas | `snake_case` (`created_at`, `user_id`) |
+| Índices | `idx_<tabela>_<colunas>` |
+| FKs | `fk_<tabela>_<coluna>_<tabela_ref>` |
+| Triggers | `trg_<tabela>_<evento>` |
+
+## Checklist pré-commit de migration
+
+- [ ] Tem `down` testado em base populada
+- [ ] Não bloqueia escrita por mais de 5s em prod (use `CREATE INDEX CONCURRENTLY`)
+- [ ] Nenhuma coluna nova `NOT NULL` sem default
+- [ ] Backfill em batches (não `UPDATE` sem `LIMIT`)
+- [ ] Rodou `python .axion/scripts/schema_validator.py` (se disponível)

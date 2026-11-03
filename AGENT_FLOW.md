@@ -49,9 +49,9 @@ Exigir **um** dos seguintes:
 1. Arquivo **SPEC** preenchido a partir do template, **ou**
 2. ≥ **3** perguntas socráticas **respondidas** registradas no SPEC ou no PLAN.
 
-Sem gate → **não** avançar para plan/implement/orquestração (instrução aos agents/commands; o IDE não bloqueia a transição). O eval E-02 (`python3 .cursor/scripts/eval_routing.py . --gates`) regressa essa regra. Detalhes: skill `brainstorming`, `AGENTS.md` § Socratic Gate.
+Sem gate → **não** avançar para plan/implement/orquestração (instrução aos agents/commands; o IDE não bloqueia a transição). O eval E-02 (`python3 .axion/scripts/eval_routing.py . --gates`) regressa essa regra. Detalhes: skill `brainstorming`, `AGENTS.md` § Socratic Gate.
 
-Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Trace opcional: `.axion/trace/{slug}.json` — leitor `python3 .cursor/scripts/trace_report.py . {slug}` (não reexecuta os checks).
+Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Trace opcional: `.axion/trace/{slug}.json` — leitor `python3 .axion/scripts/trace_report.py . {slug}` (não reexecuta os checks).
 
 ---
 
@@ -102,7 +102,7 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
                         │
                         ▼
          ┌─────────────────────────────────────┐
-         │      VALIDATION (.cursor/scripts/)  │
+         │      VALIDATION (.axion/scripts/)  │
          │  checklist.py  |  verify_all.py      │
          └──────────────┬──────────────────────┘
                         │
@@ -122,7 +122,7 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 | `/plan` | plan | `plan-writing`, `architecture` | PLAN estruturado (**gate**) |
 | `/create` | implement | `app-builder` | Nova feature/app (**gate**) |
 | `/enhance` | implement | domain agents | Melhorar código existente |
-| `/verify` | verify | `verify-changes` | Roda os AC-*, grava evidência, marca `[x]`; roda `python3 .cursor/scripts/checklist.py .` antes do gate; o gate roda o checklist de novo; exit 0 fecha a tarefa |
+| `/verify` | verify | `verify-changes` | Roda os AC-*, grava evidência, marca `[x]`; roda `python3 .axion/scripts/checklist.py .` antes do gate; o gate roda o checklist de novo; exit 0 fecha a tarefa |
 | `/remember` | remember | `memory-system` | Persistir em `.agents/memory/` |
 | `/orchestrate` | — (multi) | `parallel-agents` + `orchestrator` | Multi-agente (mín. 3) (**gate**) |
 | `/coordinate` | — (multi) | `coordinator-mode` + `orchestrator` | Orquestração avançada paralela |
@@ -181,13 +181,13 @@ Ativar com `/remember <informação>` — ver skill `memory-system`.
 **Durante desenvolvimento:**
 
 ```bash
-python3 .cursor/scripts/checklist.py .
+python3 .axion/scripts/checklist.py .
 ```
 
 **Pre-deploy:**
 
 ```bash
-python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
+python3 .axion/scripts/verify_all.py . --url http://localhost:3000
 ```
 
 | Checklist | verify_all (extra) |
@@ -219,7 +219,7 @@ python3 .cursor/scripts/verify_all.py . --url http://localhost:3000
 - Arquitetura: `.cursor/ARCHITECTURE.md`
 - Regras globais: `AGENTS.md`
 - CLI npm: `cli/README.md`
-- Sync: `python3 .cursor/scripts/sync_upstream.py`
+- Sync: `python3 .axion/scripts/sync_upstream.py`
 - Repositório: https://github.com/zanetta/axion
 
 **Last Updated:** 2026-10-30 · **npm:** `@zanetta/axion@1.1.0` · FSM SDD P1

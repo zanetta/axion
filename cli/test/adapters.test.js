@@ -8,13 +8,36 @@ import {
     TOOL_NAMES,
 } from "../lib/adapters/index.js";
 
-test("resolveAdapter defaults to cursor with INSTALL_PATHS parity", () => {
+test("resolveAdapter defaults to cursor and maps pack/ to Cursor paths + .axion/scripts", () => {
     const adapter = resolveAdapter();
     assert.equal(adapter.id, "cursor");
     assert.equal(DEFAULT_TOOL, "cursor");
     assert.deepEqual(adapter.installPaths, INSTALL_PATHS);
-    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/plan.md"), [
+    assert.ok(adapter.installPaths.includes(".axion/scripts"));
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
         ".cursor/commands/plan.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), [
+        ".cursor/rules/frontend.mdc",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/skills/clean-code/SKILL.md"), [
+        ".agents/skills/clean-code/SKILL.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/schemas/skill-contract.schema.json"), [
+        ".agents/schemas/skill-contract.schema.json",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/memory/MEMORY.md"), [
+        ".agents/memory/MEMORY.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/agents/orchestrator.md"), [
+        ".claude/agents/orchestrator.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/mcp.json"), [".cursor/mcp.json"]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/ARCHITECTURE.md"), [
+        ".cursor/ARCHITECTURE.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets(".axion/scripts/checklist.py"), [
+        ".axion/scripts/checklist.py",
     ]);
     assert.equal(adapter.transformContent("a", "a", "hello"), "hello");
 });
@@ -23,26 +46,32 @@ test("isValidTool rejects unknown ids", () => {
     assert.equal(isValidTool("cursor"), true);
     assert.equal(isValidTool("claude-code"), true);
     assert.equal(isValidTool("foo"), false);
+    assert.equal(isValidTool("codex"), false);
     assert.throws(() => resolveAdapter("foo"), /cursor, claude-code/);
     assert.deepEqual(TOOL_NAMES, ["cursor", "claude-code"]);
 });
 
-test("claude-code maps commands, skills, MCP, and omits cursor-only files", () => {
+test("claude-code maps pack/ commands, skills, MCP, .axion/scripts and omits cursor-only files", () => {
     const adapter = resolveAdapter("claude-code");
-    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/plan.md"), [
+    assert.ok(adapter.installPaths.includes(".axion/scripts"));
+    assert.equal(adapter.installPaths.includes(".cursor/scripts"), false);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
         ".claude/commands/plan.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/ui-ux-pro-max.md"), []);
-    assert.deepEqual(adapter.mapTemplateTargets(".cursor/rules/frontend.mdc"), []);
-    assert.deepEqual(adapter.mapTemplateTargets(".cursor/shared/ui-ux-pro-max/SKILL.md"), []);
-    assert.deepEqual(adapter.mapTemplateTargets(".cursor/mcp.json"), [".mcp.json"]);
-    assert.deepEqual(adapter.mapTemplateTargets(".agents/skills/clean-code/SKILL.md"), [
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ui-ux-pro-max.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/SKILL.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/mcp.json"), [".mcp.json"]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/skills/clean-code/SKILL.md"), [
         ".agents/skills/clean-code/SKILL.md",
         ".claude/skills/clean-code/SKILL.md",
     ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/schemas/command-contract.schema.json"), [
+        ".agents/schemas/command-contract.schema.json",
+    ]);
     assert.deepEqual(adapter.mapTemplateTargets("AGENTS.md"), ["AGENTS.md", "CLAUDE.md"]);
-    assert.deepEqual(adapter.mapTemplateTargets(".cursor/scripts/checklist.py"), [
-        ".cursor/scripts/checklist.py",
+    assert.deepEqual(adapter.mapTemplateTargets(".axion/scripts/checklist.py"), [
+        ".axion/scripts/checklist.py",
     ]);
 });
 
@@ -55,7 +84,7 @@ test("claude-code transformContent restores $ARGUMENTS and sanitizes MCP", () =>
         "",
     ].join("\n");
     const adapted = adapter.transformContent(
-        ".cursor/commands/plan.md",
+        "pack/commands/plan.md",
         ".claude/commands/plan.md",
         command,
     );
@@ -73,7 +102,7 @@ test("claude-code transformContent restores $ARGUMENTS and sanitizes MCP", () =>
         },
     });
     const sanitized = JSON.parse(
-        adapter.transformContent(".cursor/mcp.json", ".mcp.json", mcp),
+        adapter.transformContent("pack/mcp.json", ".mcp.json", mcp),
     );
     assert.equal(sanitized.mcpServers.context7.envFile, undefined);
     assert.equal(sanitized.mcpServers.context7.args[1], "${CONTEXT7_API_KEY}");

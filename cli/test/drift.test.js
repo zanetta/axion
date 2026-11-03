@@ -10,7 +10,7 @@ import { isProtected } from "../lib/protect.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fixtureRoot = path.join(__dirname, "fixtures", "template");
-const sessionManager = path.resolve(__dirname, "..", "..", ".cursor", "scripts", "session_manager.py");
+const sessionManager = path.resolve(__dirname, "..", "..", ".axion", "scripts", "session_manager.py");
 
 test("isProtected covers user spec, memory, logs, and trace json", () => {
     assert.equal(isProtected("cart.spec.md"), true);
@@ -27,8 +27,8 @@ test("force update keeps memory and spec, and reports drifted kit files", async 
         const template = path.join(tmp, "template");
         const target = path.join(tmp, "project");
         await fse.copy(fixtureRoot, template);
-        await fse.copy(fixtureRoot, target);
-        await fse.outputFile(path.join(template, ".agents/memory/MEMORY.md"), "# kit example\n");
+        await fse.outputFile(path.join(template, "pack/memory/MEMORY.md"), "# kit example\n");
+        await installKit(template, target, { force: false, profile: "standard", writeManifest: false });
         await fse.writeFile(path.join(target, ".cursor/commands/plan.md"), "# local edit\n");
         await fse.outputFile(path.join(target, ".agents/memory/MEMORY.md"), "# user memory\n");
         await fse.writeFile(path.join(target, "cart.spec.md"), "# user spec\n");

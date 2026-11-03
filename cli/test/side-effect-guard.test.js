@@ -7,7 +7,7 @@ import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const guard = path.resolve(__dirname, "..", "..", ".cursor", "scripts", "side_effect_guard.py");
+const guard = path.resolve(__dirname, "..", "..", ".axion", "scripts", "side_effect_guard.py");
 
 const PLAN = `# PLAN
 

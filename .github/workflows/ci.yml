@@ -30,19 +30,19 @@ jobs:
         run: pip install pyyaml jsonschema
 
       - name: Lint path drift (Q-01)
-        run: python3 .cursor/scripts/lint_paths.py .
+        run: python3 .axion/scripts/lint_paths.py .
 
       - name: Lint skill/command contracts (Q-02)
-        run: python3 .cursor/scripts/lint_contracts.py .
+        run: python3 .axion/scripts/lint_contracts.py .
 
       - name: Lint doc/inventory parity (Q-03)
-        run: python3 .cursor/scripts/lint_inventory.py .
+        run: python3 .axion/scripts/lint_inventory.py .
 
       - name: Eval routing golden cases (E-01)
-        run: python3 .cursor/scripts/eval_routing.py .
+        run: python3 .axion/scripts/eval_routing.py .
 
       - name: Eval FSM gates (E-02)
-        run: python3 .cursor/scripts/eval_routing.py . --gates
+        run: python3 .axion/scripts/eval_routing.py . --gates
 
       - name: Install dependencies
         run: npm ci
