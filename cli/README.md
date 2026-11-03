@@ -1,14 +1,15 @@
 # @zanetta/axion CLI
 
-Install the Axion kit — spec-driven development for Cursor — into any project.
+Install the Axion kit — spec-driven development with adapters per tool — into any project.
 
-**npm:** [`@zanetta/axion@1.1.0`](https://www.npmjs.com/package/@zanetta/axion).
+**npm:** [`@zanetta/axion@1.1.2`](https://www.npmjs.com/package/@zanetta/axion). Default tool: **Cursor** (`--tool cursor`). Claude Code: `--tool claude-code`.
 
 ## Usage
 
 ```bash
 npx @zanetta/axion init
 npx @zanetta/axion init --profile standard
+npx @zanetta/axion init --tool claude-code
 npx @zanetta/axion init --profile security
 npx @zanetta/axion init --profile minimal --enable-offensive
 npx @zanetta/axion init --force
@@ -18,6 +19,17 @@ npx @zanetta/axion status
 ```
 
 `init` instala no **diretório atual** (`cwd`). Para outro path: `init --path ~/dev/meu-app`.
+
+## Tools (`--tool`)
+
+`--tool` escolhe o **adapter de instalação** (onde o pack é projetado). É ortogonal a `--profile` (o profile filtra *o quê*; o tool decide *onde*).
+
+| Tool | Destino principal | Default |
+| --- | --- | --- |
+| `cursor` | `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` | sim (omitir a flag) |
+| `claude-code` | `.claude/commands/` (`$ARGUMENTS`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` | não |
+
+`update` sem `--tool` herda `manifest.tool`. ID desconhecido sai com código ≠ 0 e lista `cursor, claude-code`.
 
 ## Profiles (`--profile`)
 
@@ -64,6 +76,7 @@ Caso contrário **não são copiados** e o CLI grava **`.axion/OFFENSIVE_DISABLE
 | --- | --- |
 | `version` | SemVer do pacote `@zanetta/axion` usado no install/update |
 | `profile` | Profile aplicado (`minimal` \| `standard` \| `security` \| `fullstack` \| `mobile`); herdado no próximo `update`/`init` sem `--profile` |
+| `tool` | Adapter (`cursor` \| `claude-code`); herdado no próximo `update`/`init` sem `--tool`; manifesto antigo sem o campo vale `cursor` |
 | `enable_offensive` | `true` se `--profile security` ou `--enable-offensive` (ou herdado); herdado sem `--profile` explícito |
 | `installed_at` / `updated_at` | Timestamps ISO |
 | `components` | Contagem de agents, skills, commands, rules |
@@ -71,7 +84,7 @@ Caso contrário **não são copiados** e o CLI grava **`.axion/OFFENSIVE_DISABLE
 
 `npx @zanetta/axion status` lê o manifesto e mostra:
 
-- versão do **CLI** e versão **instalada** no projeto (`version`, `profile`, `enable_offensive`)
+- versão do **CLI** e versão **instalada** no projeto (`version`, `profile`, `tool`, `enable_offensive`)
 - comparação com a versão **latest** no registry npm (quando a rede responde)
 - se `.cursor/scripts/session_manager.py` existir, três campos do `doctor`: **Memory index** (linhas de `MEMORY.md`), **Path lint** (`pass`, `fail` ou `absent`) e **Last verify** (`ts`, slug e exit, ou `none`)
 
@@ -79,11 +92,12 @@ Se o manifesto não existir (install antigo), rode `init`/`update` de novo para 
 
 ## Install scope
 
-Cópia base (filtrada pelo profile durante a cópia):
+Cópia base (filtrada pelo profile, projetada pelo `--tool`):
 
 - `.claude/agents/`
 - `.agents/` (skills + memory + `schemas/` + templates SDD)
-- `.cursor/` (commands, rules, scripts, mcp, shared)
+- `cursor`: `.cursor/` (commands, rules, scripts, mcp, shared)
+- `claude-code`: `.claude/commands/`, `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/scripts/`
 - `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`
 - **`.axion/trace/README.md`** — único arquivo copiado do `.axion/` do template (`KIT_AXION_FILES` em `cli/lib/constants.js`)
 - **`.axion/kit.manifest.json`** — gravado pelo CLI (não vem do template)

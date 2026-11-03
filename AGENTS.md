@@ -56,11 +56,11 @@ Antes de modificar QUALQUER arquivo:
 | **Templates SDD** | SPEC/PLAN: `.agents/skills/plan-writing/templates/`; ACCEPTANCE: `.agents/skills/verify-changes/templates/` |
 | **Traceability** | `.axion/trace/` — opcional `{slug}.json`; leitor `python3 .cursor/scripts/trace_report.py . {slug}` |
 | **Contratos (schemas)** | `.agents/schemas/` — `skill-contract.schema.json`, `command-contract.schema.json` |
-| **CLI npm (instalar kit)** | `npx @zanetta/axion init [--profile …] [--enable-offensive]` · código em `cli/` |
+| **CLI npm (instalar kit)** | `npx @zanetta/axion init [--profile …] [--tool cursor\|claude-code] [--enable-offensive]` · código em `cli/` |
 | **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md` |
 | **MCP env vars**    | `.env` (no `.gitignore`); template em `.env.example` |
 
-> O Cursor lê `.agents/skills/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md` nativamente.
+> Cursor (default `--tool cursor`) lê `.agents/skills/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md`. Claude Code (`--tool claude-code`) lê `.claude/agents/`, `.claude/commands/`, `.claude/skills/`, `CLAUDE.md` / `AGENTS.md` e `.mcp.json`.
 
 ---
 

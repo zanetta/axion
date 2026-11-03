@@ -1,7 +1,7 @@
 import path from "path";
 import fse from "fs-extra";
 import { createHash } from "crypto";
-import { INSTALL_PATHS } from "./constants.js";
+import { DEFAULT_TOOL, resolveAdapter } from "./adapters/index.js";
 
 export const MANIFEST_DIR = ".axion";
 export const MANIFEST_FILE = "kit.manifest.json";
@@ -15,39 +15,32 @@ async function hashPath(filePath) {
     return createHash("sha256").update(data).digest("hex").slice(0, 16);
 }
 
-async function collectComponentSummary(targetRoot) {
-    const summary = {
-        agents: 0,
-        skills: 0,
-        commands: 0,
-        rules: 0,
-    };
+async function countMarkdown(dir, ext) {
+    if (!(await fse.pathExists(dir))) return 0;
+    return (await fse.readdir(dir)).filter((f) => f.endsWith(ext)).length;
+}
 
-    const agentsDir = path.join(targetRoot, ".claude", "agents");
-    if (await fse.pathExists(agentsDir)) {
-        summary.agents = (await fse.readdir(agentsDir)).filter((f) => f.endsWith(".md")).length;
-    }
-
-    const skillsDir = path.join(targetRoot, ".agents", "skills");
-    if (await fse.pathExists(skillsDir)) {
-        for (const entry of await fse.readdir(skillsDir, { withFileTypes: true })) {
-            if (entry.isDirectory() && (await fse.pathExists(path.join(skillsDir, entry.name, "SKILL.md")))) {
-                summary.skills += 1;
-            }
+async function countSkills(dir) {
+    if (!(await fse.pathExists(dir))) return 0;
+    let count = 0;
+    for (const entry of await fse.readdir(dir, { withFileTypes: true })) {
+        if (entry.isDirectory() && (await fse.pathExists(path.join(dir, entry.name, "SKILL.md")))) {
+            count += 1;
         }
     }
+    return count;
+}
 
-    const commandsDir = path.join(targetRoot, ".cursor", "commands");
-    if (await fse.pathExists(commandsDir)) {
-        summary.commands = (await fse.readdir(commandsDir)).filter((f) => f.endsWith(".md")).length;
-    }
-
-    const rulesDir = path.join(targetRoot, ".cursor", "rules");
-    if (await fse.pathExists(rulesDir)) {
-        summary.rules = (await fse.readdir(rulesDir)).filter((f) => f.endsWith(".mdc")).length;
-    }
-
-    return summary;
+async function collectComponentSummary(targetRoot, adapter) {
+    const dirs = adapter.componentDirs;
+    return {
+        agents: await countMarkdown(path.join(targetRoot, dirs.agents), ".md"),
+        skills: await countSkills(path.join(targetRoot, dirs.skills)),
+        commands: dirs.commands
+            ? await countMarkdown(path.join(targetRoot, dirs.commands), ".md")
+            : 0,
+        rules: dirs.rules ? await countMarkdown(path.join(targetRoot, dirs.rules), ".mdc") : 0,
+    };
 }
 
 /**
@@ -61,10 +54,12 @@ export async function writeKitManifest(targetRoot, options = {}) {
         packageName,
         templateSource = null,
         action = "init",
+        tool = DEFAULT_TOOL,
     } = options;
 
+    const adapter = resolveAdapter(tool);
     const now = new Date().toISOString();
-    const components = await collectComponentSummary(targetRoot);
+    const components = await collectComponentSummary(targetRoot, adapter);
 
     let agentsHash = null;
     const agentsMd = path.join(targetRoot, "AGENTS.md");
@@ -80,13 +75,14 @@ export async function writeKitManifest(targetRoot, options = {}) {
         package: packageName,
         version,
         profile,
+        tool: adapter.id,
         enable_offensive: Boolean(enableOffensive),
         installed_at: installedAt,
         updated_at: now,
         last_action: action,
         template_source: templateSource,
         components,
-        install_paths: INSTALL_PATHS,
+        install_paths: adapter.installPaths,
         checksums: {
             "AGENTS.md": agentsHash,
         },

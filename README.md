@@ -1,6 +1,6 @@
 # Axion
 
-Framework de Spec-Driven Development (SDD) para o Cursor IDE. A especificação é a fonte da verdade; o código deriva dela.
+Framework de Spec-Driven Development (SDD). A especificação é a fonte da verdade; o código deriva dela. O Cursor é o adapter **default** (`--tool cursor`); Claude Code entra com `--tool claude-code`.
 
 Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.1.0`](https://www.npmjs.com/package/@zanetta/axion)
 
@@ -51,6 +51,7 @@ Na raiz do repositório da aplicação:
 ```bash
 npx @zanetta/axion init
 npx @zanetta/axion init --profile standard
+npx @zanetta/axion init --tool claude-code
 npx @zanetta/axion init --profile security   # inclui red-team / penetration-tester
 ```
 
@@ -61,7 +62,7 @@ npm install -g @zanetta/axion
 axion init --profile standard
 ```
 
-**O que o** `init` **copia:**
+**O que o** `init` **copia** (`--tool cursor`, default):
 
 | Item | Destino |
 | --- | --- |
@@ -70,6 +71,8 @@ axion init --profile standard
 | 14 slash commands (13 + `/ui-ux-pro-max`), 7 regras por domínio, scripts, MCP | `.cursor/` |
 | Regras globais e fluxo | `AGENTS.md`, `AGENT_FLOW.md` |
 | Template de env | `.env.example` |
+
+`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, sem `/ui-ux-pro-max`), `.claude/skills/`, `CLAUDE.md` e `.mcp.json`. Detalhes: [`cli/README.md`](cli/README.md).
 
 O `init` (e o `update`) também grava `.axion/kit.manifest.json` — estado local do kit (SemVer, profile). Não faz parte do template do pack. `npx @zanetta/axion status` lê esse manifesto e mostra a versão instalada (e compara com o latest no npm, se a rede responder).
 
@@ -108,7 +111,7 @@ Detalhes, publish e desenvolvimento local: [`cli/README.md`](cli/README.md). Tag
 | --- | --- |
 | `npx` não acha o pacote recém-publicado | `NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init`. Confira com `npm view @zanetta/axion version`. |
 | O kit caiu na pasta errada | `init` grava no diretório atual. Entre na raiz do app e rode de novo. |
-| `/comando` não aparece no chat | Os commands estão em `.cursor/commands/`. Abra a raiz do projeto no Cursor e digite `/` no Agent. |
+| `/comando` não aparece no chat | Cursor: `.cursor/commands/`. Claude Code: `.claude/commands/` (`init --tool claude-code`). |
 | Troquei para `minimal` e os agents antigos continuam | O CLI não apaga arquivo do projeto. O que ficou de fora do profile aparece como *outside profile* e sai só se você remover. |
 | `--force` e o SPEC/PLAN sumiu | Não deve sumir. `*.spec.md`, `*.plan.md`, `*.acceptance.md`, `.agents/memory/`, `.axion/logs/` e `.axion/trace/` (exceto o `README.md`) não são sobrescritos se já existem. |
 | `update` diz que há drift | A lista é informativa. Sem `--force`, o arquivo local fica. Com `--force`, só arquivo do kit que não é protegido é substituído. |

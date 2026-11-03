@@ -1,6 +1,6 @@
 # Axion — Architecture
 
-> Framework de Spec-Driven Development para o Cursor IDE — **npm `@zanetta/axion@1.1.0`**
+> Framework de Spec-Driven Development — Cursor default (`--tool cursor`), Claude Code via `--tool claude-code` — **npm `@zanetta/axion@1.1.2`**
 
 ---
 
@@ -67,8 +67,8 @@ axion/
 | Pacote | `@zanetta/axion@1.1.0` |
 | Binário | `axion` |
 | Comandos CLI | `init`, `update`, `status` |
-| Install default | Profile do manifesto (senão `standard`) + merge (`mcp.json`, rules); ver `--profile` |
-| Manifesto | `.axion/kit.manifest.json` (SemVer, profile, components) |
+| Install default | Profile do manifesto (senão `standard`) + `--tool cursor` + merge (`mcp.json`, rules); ver `--profile` e `--tool` |
+| Manifesto | `.axion/kit.manifest.json` (SemVer, profile, tool, components) |
 | Profiles | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (`cli/lib/profiles.js`; filtro na cópia em `cli/lib/install.js`, nunca apaga no alvo) |
 | Offensive | Só com `--profile security` ou `--enable-offensive` |
 | Contratos | `.agents/schemas/skill-contract.schema.json`, `command-contract.schema.json` |

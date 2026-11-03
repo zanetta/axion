@@ -23,6 +23,7 @@ import {
     PROFILE_NAMES,
     resolveInstallSettings,
 } from "../lib/profiles.js";
+import { DEFAULT_TOOL, isValidTool, resolveAdapter, TOOL_NAMES } from "../lib/adapters/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -58,7 +59,7 @@ const showBanner = (quiet = false) => {
     console.log(
         chalk.blueBright(`
     ╔════════════════════════════╗
-    ║    AXION CLI (Cursor)      ║
+    ║    AXION SDD CLI           ║
     ╚════════════════════════════╝
     `),
     );
@@ -139,6 +140,7 @@ process.on("SIGINT", async () => {
 });
 
 const printDryRun = async (targetDir, options) => {
+    const adapter = resolveAdapter(options.tool ?? DEFAULT_TOOL);
     console.log(chalk.blueBright("\n[Dry Run] No changes will be made\n"));
     console.log(chalk.white("Would perform the following actions:"));
     console.log(chalk.gray("────────────────────────────────────────"));
@@ -147,20 +149,21 @@ const printDryRun = async (targetDir, options) => {
     );
     console.log(`  2. Install to: ${chalk.cyan(targetDir)}`);
     console.log(`  3. Profile: ${chalk.cyan(options.profile)}`);
+    console.log(`  4. Tool: ${chalk.cyan(adapter.id)}`);
     console.log(
-        `  4. Offensive skills: ${
+        `  5. Offensive skills: ${
             isOffensiveEnabled(options.profile, options.enableOffensive)
                 ? chalk.yellow("ON")
                 : chalk.gray("OFF")
         }`,
     );
-    console.log("  5. Copy: .claude/, .agents/, .cursor/, AGENTS.md, AGENT_FLOW.md, .env.example");
+    console.log(`  6. Copy: ${adapter.installPaths.map((p) => (p.endsWith("/") ? p : `${p}`)).join(", ")}`);
     console.log(
-        `  6. Merge mode: ${options.force ? chalk.red("OFF (--force overwrite)") : chalk.green("ON (mcp.json merge, rules skip if exist)")}`,
+        `  7. Merge mode: ${options.force ? chalk.red("OFF (--force overwrite)") : chalk.green("ON (mcp.json merge, existing files skipped)")}`,
     );
 
-    if (await isKitInstalled(targetDir)) {
-        console.log(`  7. ${chalk.yellow("Kit partially or fully present — merge/skip unless --force")}`);
+    if (await isKitInstalled(targetDir, adapter.id)) {
+        console.log(`  8. ${chalk.yellow("Kit partially or fully present — merge/skip unless --force")}`);
     }
 
     console.log(chalk.gray("────────────────────────────────────────\n"));
@@ -171,7 +174,7 @@ const runInstall = async (options) => {
     const dryRun = options.dryRun ?? false;
     const force = options.force ?? false;
     const targetDir = path.resolve(options.path || process.cwd());
-    const { profile, enableOffensive } = resolveInstallSettings(
+    const { profile, enableOffensive, tool } = resolveInstallSettings(
         options,
         await readKitManifest(targetDir),
     );
@@ -183,6 +186,13 @@ const runInstall = async (options) => {
         );
         process.exit(1);
     }
+
+    if (!isValidTool(tool)) {
+        console.error(chalk.red(`Invalid tool "${tool}". Allowed: ${TOOL_NAMES.join(", ")}`));
+        process.exit(1);
+    }
+
+    const adapter = resolveAdapter(tool);
 
     showBanner(quiet);
     const updatePromise = checkUpdate(quiet);
@@ -198,11 +208,12 @@ const runInstall = async (options) => {
             branch: options.branch,
             profile,
             enableOffensive,
+            tool,
         });
         return;
     }
 
-    const installed = await isKitInstalled(targetDir);
+    const installed = await isKitInstalled(targetDir, tool);
     if (installed && !force) {
         log(
             chalk.yellow(
@@ -224,7 +235,7 @@ const runInstall = async (options) => {
 
         if (spinner) spinner.text = `Installing (profile: ${profile})...`;
 
-        const drift = await diffKit(tempDir, targetDir, { profile, enableOffensive });
+        const drift = await diffKit(tempDir, targetDir, { profile, enableOffensive, tool });
         if (!quiet) printDrift(drift, force);
 
         const summary = { installed: 0, merged: 0, skipped: 0, overwritten: 0, excluded: 0, protected: 0 };
@@ -235,6 +246,7 @@ const runInstall = async (options) => {
             packageName: PACKAGE_NAME,
             profile,
             enableOffensive,
+            tool,
             templateSource: source,
             action: installed ? "update" : "init",
             onAction: (_file, action) => {
@@ -258,6 +270,7 @@ const runInstall = async (options) => {
             console.log(`   Excluded:    ${chalk.gray(summary.excluded)} (outside profile)`);
             console.log(`   Protected:   ${chalk.green(summary.protected)} (user SPEC/PLAN/memory)`);
             console.log(`   Profile:     ${chalk.cyan(profile)}`);
+            console.log(`   Tool:        ${chalk.cyan(adapter.id)}`);
             console.log(
                 `   Offensive:   ${
                     result.includeOffensive ? chalk.yellow("enabled") : chalk.gray("disabled")
@@ -277,12 +290,9 @@ const runInstall = async (options) => {
             console.log(chalk.gray("────────────────────────────────────────"));
             console.log(chalk.white("\nNext steps:"));
             console.log(`   1. ${chalk.cyan("cp .env.example .env")} and set CONTEXT7_API_KEY (optional)`);
-            console.log(`   2. Open in Cursor and use ${chalk.cyan("/plan")}, ${chalk.cyan("/debug")}, etc.`);
-            console.log(
-                chalk.gray(
-                    `   3. Inventory: ${chalk.cyan("python3 .cursor/scripts/generate_inventory.py .")}`,
-                ),
-            );
+            adapter.postInstallHints.forEach((hint, index) => {
+                console.log(`   ${index + 2}. ${hint}`);
+            });
             console.log(chalk.green("\nHappy coding!\n"));
         }
 
@@ -340,7 +350,10 @@ const statusCommand = async (options) => {
     console.log(`CLI version: ${chalk.cyan(pkg.version)}`);
     console.log(`Target:      ${chalk.gray(targetDir)}`);
 
-    const installed = await isKitInstalled(targetDir);
+    const manifest = await readKitManifest(targetDir);
+    const tool = manifest?.tool ?? DEFAULT_TOOL;
+    const adapter = isValidTool(tool) ? resolveAdapter(tool) : resolveAdapter(DEFAULT_TOOL);
+    const installed = await isKitInstalled(targetDir, adapter.id);
 
     if (!installed) {
         console.log(chalk.red("\n[X] Kit not installed (or incomplete)"));
@@ -354,22 +367,16 @@ const statusCommand = async (options) => {
 
     console.log(chalk.green("\n[OK] Kit installed"));
     console.log(chalk.gray("────────────────────────────────────────"));
-    for (const p of [
-        ".claude/agents",
-        ".agents/skills",
-        ".cursor/commands",
-        "AGENTS.md",
-        ".axion/kit.manifest.json",
-    ]) {
+    for (const p of [...adapter.markers, ".axion/kit.manifest.json"]) {
         const full = path.join(targetDir, p);
         const ok = await fse.pathExists(full);
         console.log(`  ${ok ? chalk.green("✓") : chalk.red("✗")} ${p}`);
     }
 
-    const manifest = await readKitManifest(targetDir);
     if (manifest) {
         console.log(chalk.gray("────────────────────────────────────────"));
         console.log(`Installed kit: ${chalk.cyan(manifest.version)} (profile: ${manifest.profile})`);
+        console.log(`Tool:          ${chalk.cyan(manifest.tool ?? DEFAULT_TOOL)}`);
         console.log(
             `Offensive:     ${
                 manifest.enable_offensive ? chalk.yellow("enabled") : chalk.gray("disabled")
@@ -419,7 +426,7 @@ const program = new Command();
 
 program
     .name(BIN_NAME)
-    .description("Install Axion, a spec-driven development kit for Cursor IDE")
+    .description("Install Axion, a spec-driven development kit")
     .version(pkg.version, "-v, --version", "Display version number");
 
 const profileOption = [
@@ -427,15 +434,21 @@ const profileOption = [
     `Install profile: ${PROFILE_NAMES.join("|")} (default: installed profile, else standard)`,
 ];
 
+const toolOption = [
+    "--tool <name>",
+    `Target tool: ${TOOL_NAMES.join("|")} (default: installed tool, else ${DEFAULT_TOOL})`,
+];
+
 program
     .command("init")
-    .description("Full install: .claude, .agents, .cursor, AGENTS.md (merge by default)")
+    .description("Full install: project kit files for --tool (default cursor)")
     .option("-f, --force", "Overwrite existing kit files", false)
     .option("-p, --path <dir>", "Target project directory", process.cwd())
     .option("-b, --branch <name>", "Git branch of the template repository")
     .option("-q, --quiet", "Minimal output (CI/CD)", false)
     .option("--dry-run", "Preview actions without writing files", false)
     .option(...profileOption)
+    .option(...toolOption)
     .option(
         "--enable-offensive",
         "Install red-team-tactics + penetration-tester (implied by --profile security)",
@@ -451,6 +464,7 @@ program
     .option("-q, --quiet", "Minimal output", false)
     .option("--dry-run", "Preview only", false)
     .option(...profileOption)
+    .option(...toolOption)
     .option(
         "--enable-offensive",
         "Install red-team-tactics + penetration-tester (implied by --profile security)",

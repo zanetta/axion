@@ -5,11 +5,12 @@ import fse from "fs-extra";
 import os from "os";
 import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
-import { installKit } from "../lib/install.js";
+import { installKit, isKitInstalled } from "../lib/install.js";
 import { PROFILE_NAMES, parseAgentSkills } from "../lib/profiles.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packRoot = path.resolve(__dirname, "..", "..");
+const cliBin = path.join(__dirname, "..", "bin", "index.js");
 
 const hasPythonDeps =
     spawnSync("python3", ["-c", "import yaml, jsonschema"], { stdio: "ignore" }).status === 0;
@@ -20,25 +21,26 @@ function runScript(projectRoot, script) {
     });
 }
 
-async function danglingSkillRefs(projectRoot) {
+async function danglingSkillRefs(projectRoot, skillsRel = ".agents/skills") {
     const agentsDir = path.join(projectRoot, ".claude", "agents");
     const dangling = [];
     for (const file of await fse.readdir(agentsDir)) {
         const skills = parseAgentSkills(await fse.readFile(path.join(agentsDir, file), "utf8"));
         for (const skill of skills) {
-            if (!(await fse.pathExists(path.join(projectRoot, ".agents", "skills", skill)))) {
-                dangling.push(`${file}: ${skill}`);
+            if (!(await fse.pathExists(path.join(projectRoot, skillsRel, skill)))) {
+                dangling.push(`${file}: ${skill} (${skillsRel})`);
             }
         }
     }
     return dangling;
 }
 
-async function withInstall(profile, fn) {
+async function withInstall(profile, fn, tool = "cursor") {
     const target = await fse.mkdtemp(path.join(os.tmpdir(), `axion-smoke-${profile}-`));
     try {
         await installKit(packRoot, target, {
             profile,
+            tool,
             version: "0.0.0-smoke",
             packageName: "@zanetta/axion",
         });
@@ -54,7 +56,9 @@ for (const profile of PROFILE_NAMES) {
             const manifest = await fse.readJson(path.join(target, ".axion", "kit.manifest.json"));
             assert.equal(manifest.profile, profile);
             assert.equal(manifest.version, "0.0.0-smoke");
+            assert.equal(manifest.tool, "cursor");
             assert.ok(manifest.components.agents > 0 && manifest.components.skills > 0);
+            assert.ok(manifest.components.commands > 0);
 
             for (const rel of [
                 "AGENTS.md",
@@ -68,6 +72,7 @@ for (const profile of PROFILE_NAMES) {
             }
 
             assert.deepEqual(await danglingSkillRefs(target), []);
+            assert.equal(await isKitInstalled(target, "cursor"), true);
 
             const offensive = profile === "security";
             assert.equal(
@@ -78,6 +83,60 @@ for (const profile of PROFILE_NAMES) {
             const lintPaths = runScript(target, "lint_paths.py");
             assert.equal(lintPaths.status, 0, lintPaths.stdout + lintPaths.stderr);
         });
+    });
+}
+
+for (const profile of ["standard", "security"]) {
+    test(`smoke: claude-code ${profile} install projects native paths`, async () => {
+        await withInstall(
+            profile,
+            async (target) => {
+                const manifest = await fse.readJson(path.join(target, ".axion", "kit.manifest.json"));
+                assert.equal(manifest.tool, "claude-code");
+                assert.ok(manifest.components.commands > 0);
+                assert.equal(manifest.components.rules, 0);
+
+                for (const rel of [
+                    "AGENTS.md",
+                    "CLAUDE.md",
+                    ".claude/commands/plan.md",
+                    ".claude/agents/orchestrator.md",
+                    ".agents/skills/plan-writing/SKILL.md",
+                    ".claude/skills/plan-writing/SKILL.md",
+                    ".cursor/scripts/lint_paths.py",
+                    ".mcp.json",
+                ]) {
+                    assert.ok(await fse.pathExists(path.join(target, rel)), `missing ${rel}`);
+                }
+
+                assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands", "plan.md")), false);
+                assert.equal(
+                    await fse.pathExists(path.join(target, ".claude", "commands", "ui-ux-pro-max.md")),
+                    false,
+                );
+
+                const plan = await fse.readFile(path.join(target, ".claude", "commands", "plan.md"), "utf8");
+                assert.match(plan, /\$ARGUMENTS/);
+
+                const mcp = await fse.readJson(path.join(target, ".mcp.json"));
+                assert.equal(mcp.mcpServers.context7.envFile, undefined);
+                assert.ok(mcp.mcpServers.context7.args.includes("${CONTEXT7_API_KEY}"));
+
+                assert.deepEqual(await danglingSkillRefs(target), []);
+                assert.deepEqual(await danglingSkillRefs(target, ".claude/skills"), []);
+                assert.equal(await isKitInstalled(target, "claude-code"), true);
+
+                const offensive = profile === "security";
+                assert.equal(
+                    await fse.pathExists(path.join(target, ".claude", "skills", "red-team-tactics", "SKILL.md")),
+                    offensive,
+                );
+
+                const lintPaths = runScript(target, "lint_paths.py");
+                assert.equal(lintPaths.status, 0, lintPaths.stdout + lintPaths.stderr);
+            },
+            "claude-code",
+        );
     });
 }
 
@@ -98,7 +157,15 @@ test("lint_contracts fails on a broken skill frontmatter", { skip: !hasPythonDep
         const result = runScript(target, "lint_contracts.py");
 
         assert.equal(result.status, 1);
-        assert.match(result.stdout, /broken-skill\/SKILL\.md: name: 'other-name' must match folder/);
+        assert.match(result.stdout, /broken-skill\/SKILL.md: name: 'other-name' must match folder/);
         assert.match(result.stdout, /description: 'too short' is too short/);
     });
+});
+
+test("CLI --tool foo exits non-zero and lists allowed tools", () => {
+    const result = spawnSync(process.execPath, [cliBin, "init", "--tool", "foo", "--dry-run"], {
+        encoding: "utf8",
+    });
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stdout}\n${result.stderr}`, /cursor, claude-code/);
 });
