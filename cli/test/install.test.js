@@ -4,7 +4,7 @@ import path from "path";
 import fse from "fs-extra";
 import os from "os";
 import { fileURLToPath } from "url";
-import { installKit } from "../lib/install.js";
+import { diffKit, installKit, isKitInstalled } from "../lib/install.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fixtureRoot = path.join(__dirname, "fixtures", "template");
@@ -44,6 +44,46 @@ test("installKit merges mcp.json and skips existing rules", async () => {
 
         assert.ok(await fse.pathExists(path.join(target, ".cursor", "commands", "plan.md")));
         assert.ok(await fse.pathExists(path.join(target, "AGENTS.md")));
+
+        assert.equal(await isKitInstalled(target, "cursor"), true);
+    } finally {
+        await fse.remove(tmp);
+    }
+});
+
+test("installKit projects claude-code paths and leaves no false drift", async () => {
+    const tmp = await fse.mkdtemp(path.join(os.tmpdir(), "ag4c-claude-"));
+
+    try {
+        const target = path.join(tmp, "project");
+        await fse.ensureDir(target);
+
+        await installKit(fixtureRoot, target, {
+            force: false,
+            tool: "claude-code",
+            version: "0.0.0-test",
+            packageName: "@zanetta/axion",
+        });
+
+        assert.ok(await fse.pathExists(path.join(target, ".claude", "commands", "plan.md")));
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands", "plan.md")), false);
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "shared")), false);
+        assert.ok(await fse.pathExists(path.join(target, ".agents", "skills", "test-skill", "SKILL.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".claude", "skills", "test-skill", "SKILL.md")));
+        assert.ok(await fse.pathExists(path.join(target, "CLAUDE.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".mcp.json")));
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "rules", "backend.mdc")), false);
+
+        const mcp = await fse.readJson(path.join(target, ".mcp.json"));
+        assert.equal(mcp.mcpServers.context7?.envFile, undefined);
+
+        const drift = await diffKit(fixtureRoot, target, { tool: "claude-code" });
+        assert.deepEqual(drift.drifted, []);
+        assert.equal(await isKitInstalled(target, "claude-code"), true);
+
+        const manifest = await fse.readJson(path.join(target, ".axion", "kit.manifest.json"));
+        assert.equal(manifest.tool, "claude-code");
+        assert.ok(manifest.components.commands > 0);
     } finally {
         await fse.remove(tmp);
     }

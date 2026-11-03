@@ -1,10 +1,11 @@
 import path from "path";
 import fse from "fs-extra";
-import { INSTALL_PATHS, KIT_AXION_FILES, MERGE_JSON_FILES } from "./constants.js";
+import { INSTALL_PATHS, KIT_AXION_FILES } from "./constants.js";
 import { mergeMcpJson } from "./merge.js";
-import { writeKitManifest } from "./manifest.js";
+import { writeKitManifest, readKitManifest } from "./manifest.js";
 import { DEFAULT_PROFILE, parseAgentSkills, resolveProfile } from "./profiles.js";
 import { isProtected } from "./protect.js";
+import { DEFAULT_TOOL, resolveAdapter } from "./adapters/index.js";
 
 export const OFFENSIVE_NOTE = ".axion/OFFENSIVE_DISABLED.md";
 
@@ -39,7 +40,7 @@ async function readAgentSkills(templateRoot) {
 }
 
 /** False when the profile excludes this skill dir or agent file. */
-function isInProfile(relativePath, isDirectory, plan) {
+export function isInProfile(relativePath, isDirectory, plan) {
     const skill = relativePath.match(/^\.agents\/skills\/([^/]+)$/);
     if (skill && isDirectory) return plan.keepSkill(skill[1]);
 
@@ -49,73 +50,89 @@ function isInProfile(relativePath, isDirectory, plan) {
     return true;
 }
 
-async function copyFileWithMerge(srcFile, destFile, relativePath, force, log) {
-    if (MERGE_JSON_FILES.has(relativePath)) {
-        const incoming = await fse.readJson(srcFile).catch(() => ({}));
+async function writeMappedFile(ctx, srcFile, srcRel, destRel, srcText) {
+    const destFile = path.join(ctx.targetRoot, destRel);
+    const transformed = ctx.adapter.transformContent(srcRel, destRel, srcText);
+
+    if (ctx.adapter.mergeJsonFiles.has(destRel)) {
+        const incoming = JSON.parse(transformed);
         const existing = (await fse.pathExists(destFile))
             ? await fse.readJson(destFile).catch(() => ({}))
             : {};
         const merged = mergeMcpJson(existing, incoming);
         await fse.ensureDir(path.dirname(destFile));
         await fse.writeJson(destFile, merged, { spaces: 4 });
-        log(relativePath, "merged");
+        ctx.log(destRel, "merged");
         return;
     }
 
-    if (isProtected(relativePath) && (await fse.pathExists(destFile))) {
-        log(relativePath, "protected");
+    if (isProtected(destRel) && (await fse.pathExists(destFile))) {
+        ctx.log(destRel, "protected");
         return;
     }
 
-    if (!force && (await fse.pathExists(destFile))) {
-        log(relativePath, "skipped");
+    if (!ctx.force && (await fse.pathExists(destFile))) {
+        ctx.log(destRel, "skipped");
         return;
     }
 
     await fse.ensureDir(path.dirname(destFile));
-    await fse.copy(srcFile, destFile, { overwrite: force });
-    log(relativePath, force ? "overwritten" : "installed");
+    if (destRel === srcRel && transformed === srcText) {
+        await fse.copy(srcFile, destFile, { overwrite: ctx.force });
+    } else {
+        await fse.writeFile(destFile, transformed, "utf8");
+    }
+    ctx.log(destRel, ctx.force ? "overwritten" : "installed");
 }
 
-async function copyDirRecursive(srcDir, destDir, ctx) {
+async function installMapped(srcFile, srcRel, ctx) {
+    const targets = ctx.adapter.mapTemplateTargets(srcRel);
+    if (targets.length === 0) return;
+    const srcText = await fse.readFile(srcFile, "utf8");
+    for (const destRel of targets) {
+        await writeMappedFile(ctx, srcFile, srcRel, destRel, srcText);
+    }
+}
+
+async function walkAndInstall(srcDir, ctx) {
     const entries = await fse.readdir(srcDir, { withFileTypes: true });
 
     for (const entry of entries) {
         const srcPath = path.join(srcDir, entry.name);
-        const destPath = path.join(destDir, entry.name);
-        const relativePath = toPosixRelative(ctx.targetRoot, destPath);
+        const srcRel = toPosixRelative(ctx.templateRoot, srcPath);
 
-        if (!isInProfile(relativePath, entry.isDirectory(), ctx.plan)) {
-            ctx.log(relativePath, "excluded");
-            if (await fse.pathExists(destPath)) ctx.outsideProfile.push(relativePath);
+        if (!isInProfile(srcRel, entry.isDirectory(), ctx.plan)) {
+            ctx.log(srcRel, "excluded");
+            for (const destRel of ctx.adapter.mapTemplateTargets(srcRel)) {
+                if (await fse.pathExists(path.join(ctx.targetRoot, destRel))) {
+                    ctx.outsideProfile.push(srcRel);
+                }
+            }
             continue;
         }
 
         if (entry.isDirectory()) {
-            await fse.ensureDir(destPath);
-            await copyDirRecursive(srcPath, destPath, ctx);
+            await walkAndInstall(srcPath, ctx);
             continue;
         }
 
-        await copyFileWithMerge(srcPath, destPath, relativePath, ctx.force, ctx.log);
+        await installMapped(srcPath, srcRel, ctx);
     }
 }
 
 async function copyInstallItem(itemName, ctx) {
     const srcPath = path.join(ctx.templateRoot, itemName);
-    const destPath = path.join(ctx.targetRoot, itemName);
 
     if (!(await fse.pathExists(srcPath))) {
         throw new Error(`Template missing required path: ${itemName}`);
     }
 
     if ((await fse.stat(srcPath)).isDirectory()) {
-        await fse.ensureDir(destPath);
-        await copyDirRecursive(srcPath, destPath, ctx);
+        await walkAndInstall(srcPath, ctx);
         return;
     }
 
-    await copyFileWithMerge(srcPath, destPath, itemName, ctx.force, ctx.log);
+    await installMapped(srcPath, itemName, ctx);
 }
 
 async function syncOffensiveNote(targetRoot, includeOffensive) {
@@ -134,11 +151,13 @@ async function syncOffensiveNote(targetRoot, includeOffensive) {
  */
 export async function installKit(templateRoot, targetRoot, options = {}) {
     const profile = options.profile ?? DEFAULT_PROFILE;
+    const adapter = resolveAdapter(options.tool ?? DEFAULT_TOOL);
     const actions = [];
     const ctx = {
         templateRoot,
         targetRoot,
         force: options.force ?? false,
+        adapter,
         plan: resolveProfile(profile, {
             enableOffensive: options.enableOffensive === true,
             agentSkills: await readAgentSkills(templateRoot),
@@ -157,7 +176,7 @@ export async function installKit(templateRoot, targetRoot, options = {}) {
     for (const relativePath of KIT_AXION_FILES) {
         const src = path.join(templateRoot, relativePath);
         if (await fse.pathExists(src)) {
-            await copyFileWithMerge(src, path.join(targetRoot, relativePath), relativePath, ctx.force, ctx.log);
+            await installMapped(src, relativePath, ctx);
         }
     }
 
@@ -171,6 +190,7 @@ export async function installKit(templateRoot, targetRoot, options = {}) {
             packageName: options.packageName,
             templateSource: options.templateSource ?? null,
             action: options.action ?? "init",
+            tool: adapter.id,
         });
         actions.push({ file: ".axion/kit.manifest.json", action: "installed" });
         options.onManifest?.(manifest);
@@ -179,12 +199,13 @@ export async function installKit(templateRoot, targetRoot, options = {}) {
     return {
         actions,
         profile,
+        tool: adapter.id,
         includeOffensive: ctx.plan.includeOffensive,
         outsideProfile: ctx.outsideProfile,
     };
 }
 
-async function visitTemplateFiles(templateRoot, targetRoot, plan, visit) {
+async function visitTemplateFiles(templateRoot, plan, visit) {
     async function walk(srcDir) {
         const entries = await fse.readdir(srcDir, { withFileTypes: true });
         for (const entry of entries) {
@@ -208,40 +229,57 @@ async function visitTemplateFiles(templateRoot, targetRoot, plan, visit) {
     }
 }
 
+function payloadsEqual(expected, actual, asJson) {
+    if (!asJson) return expected === actual;
+    try {
+        return JSON.stringify(JSON.parse(expected)) === JSON.stringify(JSON.parse(actual));
+    } catch {
+        return expected === actual;
+    }
+}
+
 /** Files the next update would add, overwrite, or leave because they differ. */
 export async function diffKit(templateRoot, targetRoot, options = {}) {
+    const adapter = resolveAdapter(options.tool ?? DEFAULT_TOOL);
     const plan = resolveProfile(options.profile ?? DEFAULT_PROFILE, {
         enableOffensive: options.enableOffensive === true,
         agentSkills: await readAgentSkills(templateRoot),
     });
     const report = { missing: [], drifted: [], protected: [] };
 
-    await visitTemplateFiles(templateRoot, targetRoot, plan, async (src, rel) => {
-        const dest = path.join(targetRoot, rel);
-        if (!(await fse.pathExists(dest))) {
-            report.missing.push(rel);
-            return;
+    await visitTemplateFiles(templateRoot, plan, async (src, rel) => {
+        const srcText = await fse.readFile(src, "utf8");
+        for (const destRel of adapter.mapTemplateTargets(rel)) {
+            const dest = path.join(targetRoot, destRel);
+            if (!(await fse.pathExists(dest))) {
+                report.missing.push(destRel);
+                continue;
+            }
+            if (isProtected(destRel)) {
+                report.protected.push(destRel);
+                continue;
+            }
+            const expected = adapter.transformContent(rel, destRel, srcText);
+            const actual = await fse.readFile(dest, "utf8");
+            if (!payloadsEqual(expected, actual, adapter.mergeJsonFiles.has(destRel))) {
+                report.drifted.push(destRel);
+            }
         }
-        if (isProtected(rel)) {
-            report.protected.push(rel);
-            return;
-        }
-        const [left, right] = await Promise.all([fse.readFile(src), fse.readFile(dest)]);
-        if (!left.equals(right)) report.drifted.push(rel);
     });
 
     for (const key of Object.keys(report)) report[key].sort();
     return report;
 }
 
-export async function isKitInstalled(targetRoot) {
-    const markers = [
-        path.join(targetRoot, "AGENTS.md"),
-        path.join(targetRoot, ".cursor", "commands"),
-        path.join(targetRoot, ".claude", "agents"),
-        path.join(targetRoot, ".agents", "skills"),
-    ];
-
-    const checks = await Promise.all(markers.map((p) => fse.pathExists(p)));
+export async function isKitInstalled(targetRoot, tool) {
+    let resolved = tool;
+    if (resolved === undefined) {
+        const manifest = await readKitManifest(targetRoot);
+        resolved = manifest?.tool ?? DEFAULT_TOOL;
+    }
+    const adapter = resolveAdapter(resolved);
+    const checks = await Promise.all(
+        adapter.markers.map((rel) => fse.pathExists(path.join(targetRoot, rel))),
+    );
     return checks.every(Boolean);
 }

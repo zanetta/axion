@@ -1,6 +1,6 @@
-# 🔄 Agent Flow Architecture (Cursor)
+# 🔄 Agent Flow Architecture
 
-> Fluxo de agentes, skills e validação do Axion no Cursor IDE.
+> Fluxo de agentes, skills e validação do Axion. Cursor é o adapter default (`--tool cursor`).
 
 ---
 
@@ -14,12 +14,13 @@ cp .env.example .env   # opcional — MCP Context7
 
 | Modo | Comportamento |
 | --- | --- |
-| `init` (padrão) | Profile do manifesto (senão **`standard`**) + **merge** (`mcp.json`, rules existentes preservados) |
+| `init` (padrão) | Profile do manifesto (senão **`standard`**) + **`--tool cursor`** + **merge** (`mcp.json`, rules existentes preservados) |
+| `init --tool <id>` | `cursor` (default) \| `claude-code` — projeta o pack nos paths nativos da ferramenta |
 | `init --profile <name>` | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (filtra na cópia; nunca apaga arquivos já instalados) |
 | `init --enable-offensive` | Inclui `red-team-tactics` + `penetration-tester` (ou use `--profile security`) |
 | `init --force` | Sobrescreve todos os arquivos do kit |
-| `update` | Baixa template atual e faz merge; herda `profile`/`enable_offensive` do manifesto |
-| `status` | Lê `.axion/kit.manifest.json` + verifica `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md` |
+| `update` | Baixa template atual e faz merge; herda `profile`/`enable_offensive`/`tool` do manifesto |
+| `status` | Lê `.axion/kit.manifest.json` + verifica os markers do adapter (`tool`) |
 
 Pacote: [`@zanetta/axion`](https://www.npmjs.com/package/@zanetta/axion) · troubleshooting: [`cli/README.md`](cli/README.md)
 

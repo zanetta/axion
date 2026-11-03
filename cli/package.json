@@ -1,7 +1,7 @@
 {
     "name": "@zanetta/axion",
     "version": "1.1.2",
-    "description": "CLI to install Axion, a spec-driven development kit for Cursor IDE",
+    "description": "CLI to install Axion, a spec-driven development kit",
     "type": "module",
     "main": "bin/index.js",
     "engines": {
@@ -29,6 +29,7 @@
     "keywords": [
         "axion",
         "cursor",
+        "claude-code",
         "sdd",
         "ai",
         "agent",

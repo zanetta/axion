@@ -87,11 +87,12 @@ test("resolveProfile mobile keeps an excluded skill still required by a kept age
     assert.equal(resolveProfile("mobile", { agentSkills }).keepSkill("nextjs-react-expert"), true);
 });
 
-test("resolveInstallSettings inherits profile and offensive flag from manifest", () => {
-    const manifest = { profile: "minimal", enable_offensive: true };
+test("resolveInstallSettings inherits profile, offensive flag, and tool from manifest", () => {
+    const manifest = { profile: "minimal", enable_offensive: true, tool: "claude-code" };
     assert.deepEqual(resolveInstallSettings({}, manifest), {
         profile: "minimal",
         enableOffensive: true,
+        tool: "claude-code",
     });
 });
 
@@ -100,18 +101,25 @@ test("resolveInstallSettings resets offensive when --profile is explicit", () =>
     assert.deepEqual(resolveInstallSettings({ profile: "standard" }, manifest), {
         profile: "standard",
         enableOffensive: false,
+        tool: "cursor",
     });
     assert.deepEqual(
         resolveInstallSettings({ profile: "standard", enableOffensive: true }, manifest),
-        { profile: "standard", enableOffensive: true },
+        { profile: "standard", enableOffensive: true, tool: "cursor" },
     );
 });
 
-test("resolveInstallSettings defaults to standard without manifest", () => {
+test("resolveInstallSettings defaults to standard and cursor without manifest", () => {
     assert.deepEqual(resolveInstallSettings({}, null), {
         profile: "standard",
         enableOffensive: false,
+        tool: "cursor",
     });
+});
+
+test("resolveInstallSettings prefers explicit --tool over the manifest", () => {
+    const manifest = { tool: "claude-code" };
+    assert.deepEqual(resolveInstallSettings({ tool: "cursor" }, manifest).tool, "cursor");
 });
 
 test("installKit never deletes user skills or agents outside the profile", async () => {

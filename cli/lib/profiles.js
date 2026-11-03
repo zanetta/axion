@@ -1,3 +1,5 @@
+import { DEFAULT_TOOL } from "./adapters/index.js";
+
 export const PROFILE_NAMES = ["minimal", "standard", "security", "fullstack", "mobile"];
 export const DEFAULT_PROFILE = "standard";
 
@@ -70,10 +72,11 @@ export function isOffensiveEnabled(profile, enableOffensive) {
  */
 export function resolveInstallSettings(options = {}, manifest = null) {
     const profile = options.profile ?? manifest?.profile ?? DEFAULT_PROFILE;
+    const tool = options.tool ?? manifest?.tool ?? DEFAULT_TOOL;
     let enableOffensive = manifest?.enable_offensive === true;
     if (options.profile !== undefined) enableOffensive = false;
     if (options.enableOffensive === true) enableOffensive = true;
-    return { profile, enableOffensive };
+    return { profile, enableOffensive, tool };
 }
 
 /** Reads `skills: a, b, c` from agent frontmatter. */
