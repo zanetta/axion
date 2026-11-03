@@ -1,7 +1,7 @@
 import path from "path";
 import fse from "fs-extra";
 import { INSTALL_PATHS, KIT_AXION_FILES, SOURCE_PATHS } from "./constants.js";
-import { mergeMcpJson } from "./merge.js";
+import { mergeCodexToml, mergeMcpJson } from "./merge.js";
 import { writeKitManifest, readKitManifest } from "./manifest.js";
 import { DEFAULT_PROFILE, parseAgentSkills, resolveProfile } from "./profiles.js";
 import { isProtected } from "./protect.js";
@@ -80,6 +80,17 @@ async function writeMappedFile(ctx, srcFile, srcRel, destRel, srcText) {
         return;
     }
 
+    if (ctx.adapter.mergeTomlFiles?.has(destRel)) {
+        const existing = (await fse.pathExists(destFile))
+            ? await fse.readFile(destFile, "utf8").catch(() => "")
+            : "";
+        const merged = mergeCodexToml(existing, transformed);
+        await fse.ensureDir(path.dirname(destFile));
+        await fse.writeFile(destFile, merged, "utf8");
+        ctx.log(destRel, "merged");
+        return;
+    }
+
     if (isProtected(destRel) && (await fse.pathExists(destFile))) {
         ctx.log(destRel, "protected");
         return;
@@ -117,9 +128,12 @@ async function walkAndInstall(srcDir, ctx) {
         const srcRel = toPosixRelative(ctx.templateRoot, srcPath);
 
         if (!isInProfile(srcRel, entry.isDirectory(), ctx.plan)) {
-            const firstTarget = ctx.adapter.mapTemplateTargets(srcRel)[0] ?? srcRel;
-            ctx.log(firstTarget, "excluded");
-            for (const destRel of ctx.adapter.mapTemplateTargets(srcRel)) {
+            const mappedTargets = ctx.adapter.mapTemplateTargets(srcRel);
+            if (mappedTargets.length === 0) {
+                continue;
+            }
+            ctx.log(mappedTargets[0], "excluded");
+            for (const destRel of mappedTargets) {
                 if (await fse.pathExists(path.join(ctx.targetRoot, destRel))) {
                     ctx.outsideProfile.push(destRel);
                 }
@@ -248,7 +262,10 @@ async function visitTemplateFiles(templateRoot, plan, visit) {
     }
 }
 
-function payloadsEqual(expected, actual, asJson) {
+function payloadsEqual(expected, actual, { asJson = false, asToml = false } = {}) {
+    if (asToml) {
+        return mergeCodexToml(actual, expected) === actual;
+    }
     if (!asJson) return expected === actual;
     try {
         return JSON.stringify(JSON.parse(expected)) === JSON.stringify(JSON.parse(actual));
@@ -280,7 +297,12 @@ export async function diffKit(templateRoot, targetRoot, options = {}) {
             }
             const expected = adapter.transformContent(rel, destRel, srcText);
             const actual = await fse.readFile(dest, "utf8");
-            if (!payloadsEqual(expected, actual, adapter.mergeJsonFiles.has(destRel))) {
+            if (
+                !payloadsEqual(expected, actual, {
+                    asJson: adapter.mergeJsonFiles.has(destRel),
+                    asToml: Boolean(adapter.mergeTomlFiles?.has(destRel)),
+                })
+            ) {
                 report.drifted.push(destRel);
             }
         }

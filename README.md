@@ -1,6 +1,6 @@
 # Axion
 
-Framework de Spec-Driven Development (SDD). A especificação é a fonte da verdade; o código deriva dela. O Cursor é o adapter **default** (`--tool cursor`); Claude Code entra com `--tool claude-code`.
+Framework de Spec-Driven Development (SDD). A especificação é a fonte da verdade; o código deriva dela. O Cursor é o adapter **default** (`--tool cursor`); Claude Code entra com `--tool claude-code` e OpenAI Codex com `--tool codex`.
 
 Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.1.0`](https://www.npmjs.com/package/@zanetta/axion)
 
@@ -52,6 +52,7 @@ Na raiz do repositório da aplicação:
 npx @zanetta/axion init
 npx @zanetta/axion init --profile standard
 npx @zanetta/axion init --tool claude-code
+npx @zanetta/axion init --tool codex
 npx @zanetta/axion init --profile security   # inclui red-team / penetration-tester
 ```
 
@@ -72,7 +73,7 @@ axion init --profile standard
 | Regras globais e fluxo | `AGENTS.md`, `AGENT_FLOW.md` |
 | Template de env | `.env.example` |
 
-`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, sem `/ui-ux-pro-max`), `.claude/skills/`, `CLAUDE.md` e `.mcp.json`. Detalhes: [`cli/README.md`](cli/README.md).
+`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, sem `/ui-ux-pro-max`), `.claude/skills/`, `CLAUDE.md` e `.mcp.json`. `--tool codex` projeta `.agents/skills/`, `.axion/scripts/`, `AGENTS.md` e `.codex/config.toml` (`[mcp_servers.<id>]` com merge aditivo; omite agents, commands, rules e shared). Detalhes: [`cli/README.md`](cli/README.md).
 
 O `init` (e o `update`) também grava `.axion/kit.manifest.json` — estado local do kit (SemVer, profile). Não faz parte do template do pack. `npx @zanetta/axion status` lê esse manifesto e mostra a versão instalada (e compara com o latest no npm, se a rede responder).
 

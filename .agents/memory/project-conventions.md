@@ -15,6 +15,8 @@ updated: 2026-11-03
 - Keep both a user-requested hyphenated PLAN file and the `{slug}.plan.md` mirror required by `trace_report.py`.
 - Slug for the tool-agnostic v1 work: `upgrade-to-adnostic` (intentional spelling kept).
 - Slug for pack extract v2: `axion-agnostico-fase-2`.
+- Slug for Codex adapter v3: `axion-agnostico-fase-3`.
+- `trace_report.py` PLAN-task cells must be a single `P#-#` or `PV-#`. A comma list fails the chain.
 
 ## Kit-repo dogfooding after pack/
 - After the pack cutover, Cursor in this repo only loads skills/commands/rules/agents if root paths are symlinks into `pack/`.

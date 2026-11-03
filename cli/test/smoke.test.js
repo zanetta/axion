@@ -144,6 +144,66 @@ for (const profile of ["standard", "security"]) {
     });
 }
 
+for (const profile of ["standard", "security"]) {
+    test(`smoke: codex ${profile} install projects hybrid paths`, async () => {
+        await withInstall(
+            profile,
+            async (target) => {
+                const manifest = await fse.readJson(path.join(target, ".axion", "kit.manifest.json"));
+                assert.equal(manifest.tool, "codex");
+                assert.equal(manifest.components.agents, 0);
+                assert.equal(manifest.components.commands, 0);
+                assert.equal(manifest.components.rules, 0);
+                assert.ok(manifest.components.skills > 0);
+
+                for (const rel of [
+                    "AGENTS.md",
+                    ".agents/skills/plan-writing/SKILL.md",
+                    ".axion/scripts/lint_paths.py",
+                    ".agents/schemas/command-contract.schema.json",
+                    ".codex/config.toml",
+                ]) {
+                    assert.ok(await fse.pathExists(path.join(target, rel)), `missing ${rel}`);
+                }
+
+                for (const absent of [
+                    ".claude/agents",
+                    ".claude/commands",
+                    ".claude/skills",
+                    ".cursor/commands",
+                    ".cursor/rules",
+                    ".cursor/scripts",
+                    "CLAUDE.md",
+                ]) {
+                    assert.equal(await fse.pathExists(path.join(target, absent)), false, `unexpected ${absent}`);
+                }
+
+                const toml = await fse.readFile(path.join(target, ".codex", "config.toml"), "utf8");
+                assert.match(toml, /\[mcp_servers\.context7\]/);
+                assert.match(toml, /\$\{CONTEXT7_API_KEY\}/);
+                assert.equal(toml.includes("envFile"), false);
+
+                assert.equal(await isKitInstalled(target, "codex"), true);
+
+                const offensive = profile === "security";
+                assert.equal(
+                    await fse.pathExists(path.join(target, ".agents", "skills", "red-team-tactics", "SKILL.md")),
+                    offensive,
+                );
+
+                const lintPaths = runScript(target, "lint_paths.py");
+                assert.equal(lintPaths.status, 0, lintPaths.stdout + lintPaths.stderr);
+
+                if (hasPythonDeps) {
+                    const lintContracts = runScript(target, "lint_contracts.py");
+                    assert.equal(lintContracts.status, 0, lintContracts.stdout + lintContracts.stderr);
+                }
+            },
+            "codex",
+        );
+    });
+}
+
 test("smoke: installed contracts pass lint_contracts", { skip: !hasPythonDeps }, async () => {
     await withInstall("standard", async (target) => {
         const result = runScript(target, "lint_contracts.py");
@@ -167,9 +227,13 @@ test("lint_contracts fails on a broken skill frontmatter", { skip: !hasPythonDep
 });
 
 test("CLI --tool foo exits non-zero and lists allowed tools", () => {
-    const result = spawnSync(process.execPath, [cliBin, "init", "--tool", "foo", "--dry-run"], {
-        encoding: "utf8",
-    });
-    assert.notEqual(result.status, 0);
-    assert.match(`${result.stdout}\n${result.stderr}`, /cursor, claude-code/);
+    for (const invalidTool of ["foo", "windsurf", "openai-codex"]) {
+        const result = spawnSync(
+            process.execPath,
+            [cliBin, "init", "--tool", invalidTool, "--dry-run"],
+            { encoding: "utf8" },
+        );
+        assert.notEqual(result.status, 0);
+        assert.match(`${result.stdout}\n${result.stderr}`, /cursor, claude-code, codex/);
+    }
 });
