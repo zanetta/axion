@@ -16,6 +16,7 @@ jobs:
   pre-publish:
     name: Pre-publish gate (Q-04)
     uses: ./.github/workflows/ci.yml
+    secrets: inherit
 
   publish:
     name: Publish @zanetta/axion
@@ -41,6 +42,15 @@ jobs:
             exit 1
           fi
           echo "Publishing version: $PKG_VERSION"
+
+      - name: Require NPM_TOKEN
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "${NODE_AUTH_TOKEN}" ]; then
+            echo "::error::GitHub Actions secret NPM_TOKEN is not set. Actions cannot read .env; add the token in Settings > Secrets and variables > Actions."
+            exit 1
+          fi
 
       - name: Install dependencies
         run: npm ci

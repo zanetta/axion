@@ -161,9 +161,13 @@ Workflow: [`.github/workflows/publish-npm.yml`](../.github/workflows/publish-npm
 
 ### Secret GitHub
 
+O workflow **não lê** `.env`. O token precisa existir em **Settings → Secrets and variables → Actions**:
+
 | Secret | Valor |
 | --- | --- |
-| `NPM_TOKEN` | Token granular com **publish** + **bypass 2FA** |
+| `NPM_TOKEN` | Token granular com **publish** + **bypass 2FA** (mesmo nome da chave local em `.env`) |
+
+Sem esse secret, o job `publish` falha no passo `Require NPM_TOKEN`.
 
 ### Publish manual (local)
 
