@@ -2,7 +2,7 @@
 
 Install the Axion kit — spec-driven development with adapters per tool — into any project.
 
-**npm:** [`@zanetta/axion@1.1.2`](https://www.npmjs.com/package/@zanetta/axion). Default tool: **Cursor** (`--tool cursor`). Claude Code: `--tool claude-code`. OpenAI Codex: `--tool codex`.
+**npm:** [`@zanetta/axion@1.1.2`](https://www.npmjs.com/package/@zanetta/axion). Default tool: **Cursor** (`--tool cursor`). Claude Code: `--tool claude-code`. OpenAI Codex: `--tool codex`. Windsurf: `--tool windsurf`.
 
 ## Usage
 
@@ -11,6 +11,7 @@ npx @zanetta/axion init
 npx @zanetta/axion init --profile standard
 npx @zanetta/axion init --tool claude-code
 npx @zanetta/axion init --tool codex
+npx @zanetta/axion init --tool windsurf
 npx @zanetta/axion init --profile security
 npx @zanetta/axion init --profile minimal --enable-offensive
 npx @zanetta/axion init --force
@@ -30,8 +31,9 @@ npx @zanetta/axion status
 | `cursor` | `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` | sim (omitir a flag) |
 | `claude-code` | `.claude/commands/` (`$ARGUMENTS`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` | não |
 | `codex` | `.agents/skills/`, `.codex/config.toml` (`[mcp_servers.<id>]`), `AGENTS.md` (`/ui-ux-pro-max`: `não`) | não |
+| `windsurf` | `.agents/skills/`, `.windsurf/mcp_config.json` (`mcpServers` JSON), `AGENTS.md` (`/ui-ux-pro-max`: `não`) | não |
 
-`update` sem `--tool` herda `manifest.tool`. ID desconhecido sai com código ≠ 0 e lista `cursor, claude-code, codex`.
+`update` sem `--tool` herda `manifest.tool`. ID desconhecido sai com código ≠ 0 e lista `cursor, claude-code, codex, windsurf`.
 
 ## Profiles (`--profile`)
 
@@ -78,7 +80,7 @@ Caso contrário **não são copiados** e o CLI grava **`.axion/OFFENSIVE_DISABLE
 | --- | --- |
 | `version` | SemVer do pacote `@zanetta/axion` usado no install/update |
 | `profile` | Profile aplicado (`minimal` \| `standard` \| `security` \| `fullstack` \| `mobile`); herdado no próximo `update`/`init` sem `--profile` |
-| `tool` | Adapter (`cursor` \| `claude-code` \| `codex`); herdado no próximo `update`/`init` sem `--tool`; manifesto antigo sem o campo vale `cursor` |
+| `tool` | Adapter (`cursor` \| `claude-code` \| `codex` \| `windsurf`); herdado no próximo `update`/`init` sem `--tool`; manifesto antigo sem o campo vale `cursor` |
 | `enable_offensive` | `true` se `--profile security` ou `--enable-offensive` (ou herdado); herdado sem `--profile` explícito |
 | `installed_at` / `updated_at` | Timestamps ISO |
 | `components` | Contagem de agents, skills, commands, rules |
@@ -102,6 +104,7 @@ A fonte do kit vive em `pack/` + `.axion/scripts/`. Cópia no destino (filtrada 
 - `cursor`: `.cursor/` (commands, rules, mcp, shared, `ARCHITECTURE.md`)
 - `claude-code`: `.claude/commands/`, `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/ARCHITECTURE.md`
 - `codex`: `.codex/config.toml` (merge aditivo de `[mcp_servers.<id>]`; omite agents, commands, rules e shared)
+- `windsurf`: `.windsurf/mcp_config.json` (merge aditivo de `mcpServers`; omite agents, commands, rules e shared)
 - `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`
 - **`.axion/trace/README.md`** — copiado do `.axion/` do template (`KIT_AXION_FILES` em `cli/lib/constants.js`)
 - **`.axion/kit.manifest.json`** — gravado pelo CLI (não vem do template)
@@ -113,6 +116,7 @@ O `inventory.json` e o manifesto do próprio repo do kit **não** são copiados.
 | Path | Behavior |
 | --- | --- |
 | `.cursor/mcp.json` | Merge `mcpServers` (project wins on key conflict) |
+| `.windsurf/mcp_config.json` | Merge `mcpServers` (project wins on key conflict) |
 | `.cursor/rules/*.mdc` | Skip if file already exists |
 | Other files | Skip if exists; `--force` overwrites kit files that are not protected |
 | Protected | Se o destino já existe, ação `protected` e não sobrescreve, mesmo com `--force`. Destino ausente: a primeira instalação ainda copia |

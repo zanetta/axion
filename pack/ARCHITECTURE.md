@@ -1,6 +1,6 @@
 # Axion — Architecture
 
-> Framework de Spec-Driven Development — Cursor default (`--tool cursor`), Claude Code via `--tool claude-code`, OpenAI Codex via `--tool codex` (`AGENTS.md` + `.agents/skills/` + `.codex/config.toml`) — **npm `@zanetta/axion@1.1.2`**
+> Framework de Spec-Driven Development — Cursor default (`--tool cursor`), Claude Code via `--tool claude-code`, OpenAI Codex via `--tool codex` (`AGENTS.md` + `.agents/skills/` + `.codex/config.toml`), Windsurf via `--tool windsurf` (`AGENTS.md` + `.agents/skills/` + `.windsurf/mcp_config.json`) — **npm `@zanetta/axion@1.1.2`**
 
 ---
 
@@ -67,7 +67,7 @@ axion/
 | Pacote | `@zanetta/axion@1.1.0` |
 | Binário | `axion` |
 | Comandos CLI | `init`, `update`, `status` |
-| Install default | Profile do manifesto (senão `standard`) + `--tool cursor` (`cursor` \| `claude-code` \| `codex`) + merge (`mcp.json` / `.codex/config.toml`, rules); ver `--profile` e `--tool` |
+| Install default | Profile do manifesto (senão `standard`) + `--tool cursor` (`cursor` \| `claude-code` \| `codex` \| `windsurf`) + merge (`mcp.json` / `.codex/config.toml` / `.windsurf/mcp_config.json`, rules); ver `--profile` e `--tool` |
 | Manifesto | `.axion/kit.manifest.json` (SemVer, profile, tool, components) |
 | Profiles | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (`cli/lib/profiles.js`; filtro na cópia em `cli/lib/install.js`, nunca apaga no alvo) |
 | Offensive | Só com `--profile security` ou `--enable-offensive` |

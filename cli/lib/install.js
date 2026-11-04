@@ -268,7 +268,9 @@ function payloadsEqual(expected, actual, { asJson = false, asToml = false } = {}
     }
     if (!asJson) return expected === actual;
     try {
-        return JSON.stringify(JSON.parse(expected)) === JSON.stringify(JSON.parse(actual));
+        const expectedObj = JSON.parse(expected);
+        const actualObj = JSON.parse(actual);
+        return JSON.stringify(mergeMcpJson(actualObj, expectedObj)) === JSON.stringify(actualObj);
     } catch {
         return expected === actual;
     }

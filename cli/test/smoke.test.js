@@ -5,7 +5,7 @@ import fse from "fs-extra";
 import os from "os";
 import { spawnSync } from "child_process";
 import { fileURLToPath } from "url";
-import { installKit, isKitInstalled } from "../lib/install.js";
+import { diffKit, installKit, isKitInstalled } from "../lib/install.js";
 import { PROFILE_NAMES, parseAgentSkills } from "../lib/profiles.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -226,14 +226,78 @@ test("lint_contracts fails on a broken skill frontmatter", { skip: !hasPythonDep
     });
 });
 
+for (const profile of ["standard", "security"]) {
+    test(`smoke: windsurf ${profile} install projects hybrid paths`, async () => {
+        await withInstall(
+            profile,
+            async (target) => {
+                const manifest = await fse.readJson(path.join(target, ".axion", "kit.manifest.json"));
+                assert.equal(manifest.tool, "windsurf");
+                assert.equal(manifest.components.agents, 0);
+                assert.equal(manifest.components.commands, 0);
+                assert.equal(manifest.components.rules, 0);
+                assert.ok(manifest.components.skills > 0);
+
+                for (const rel of [
+                    "AGENTS.md",
+                    ".agents/skills/plan-writing/SKILL.md",
+                    ".axion/scripts/lint_paths.py",
+                    ".agents/schemas/command-contract.schema.json",
+                    ".windsurf/mcp_config.json",
+                ]) {
+                    assert.ok(await fse.pathExists(path.join(target, rel)), `missing ${rel}`);
+                }
+
+                for (const absent of [
+                    ".claude/agents",
+                    ".claude/commands",
+                    ".claude/skills",
+                    ".cursor/commands",
+                    ".cursor/rules",
+                    ".cursor/scripts",
+                    "CLAUDE.md",
+                    ".devin",
+                ]) {
+                    assert.equal(await fse.pathExists(path.join(target, absent)), false, `unexpected ${absent}`);
+                }
+
+                const mcp = await fse.readJson(path.join(target, ".windsurf", "mcp_config.json"));
+                assert.equal(mcp.mcpServers.context7.envFile, undefined);
+                assert.ok(mcp.mcpServers.context7.args.includes("${CONTEXT7_API_KEY}"));
+                assert.equal(JSON.stringify(mcp).includes("envFile"), false);
+
+                assert.equal(await isKitInstalled(target, "windsurf"), true);
+
+                const drift = await diffKit(packRoot, target, { tool: "windsurf" });
+                assert.deepEqual(drift.drifted, []);
+
+                const offensive = profile === "security";
+                assert.equal(
+                    await fse.pathExists(path.join(target, ".agents", "skills", "red-team-tactics", "SKILL.md")),
+                    offensive,
+                );
+
+                const lintPaths = runScript(target, "lint_paths.py");
+                assert.equal(lintPaths.status, 0, lintPaths.stdout + lintPaths.stderr);
+
+                if (hasPythonDeps) {
+                    const lintContracts = runScript(target, "lint_contracts.py");
+                    assert.equal(lintContracts.status, 0, lintContracts.stdout + lintContracts.stderr);
+                }
+            },
+            "windsurf",
+        );
+    });
+}
+
 test("CLI --tool foo exits non-zero and lists allowed tools", () => {
-    for (const invalidTool of ["foo", "windsurf", "openai-codex"]) {
+    for (const invalidTool of ["foo", "devin", "openai-codex"]) {
         const result = spawnSync(
             process.execPath,
             [cliBin, "init", "--tool", invalidTool, "--dry-run"],
             { encoding: "utf8" },
         );
         assert.notEqual(result.status, 0);
-        assert.match(`${result.stdout}\n${result.stderr}`, /cursor, claude-code, codex/);
+        assert.match(`${result.stdout}\n${result.stderr}`, /cursor, claude-code, codex, windsurf/);
     }
 });

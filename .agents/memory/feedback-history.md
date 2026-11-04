@@ -1,7 +1,7 @@
 ---
 type: feedback
 created: 2026-11-03
-updated: 2026-11-03
+updated: 2026-11-04
 ---
 
 # Feedback History
@@ -15,3 +15,8 @@ updated: 2026-11-03
 
 - Codex first, Windsurf later on the same issue. Hybrid projection. No Codex dogfood in the kit repo.
 - Include MCP as `.codex/config.toml`. Tool id is `codex` (not `openai-codex`).
+
+## Issue 11 (axion agnostico fase 4)
+
+- Dest only `.windsurf/` (not `.devin/`, not dual-write). Omit commands and rules (Codex-thin). Id `windsurf`; skills only `.agents/skills/`.
+- MCP path `.windsurf/mcp_config.json` (not `mcp.json`). Close issue 11 after this cut; Copilot/Aider/Gemini get new issues.
