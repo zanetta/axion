@@ -96,3 +96,29 @@ test("writeKitManifest handles codex null componentDirs (agents/commands/rules =
         await fse.remove(tmp);
     }
 });
+
+test("writeKitManifest handles windsurf null componentDirs (agents/commands/rules = 0)", async () => {
+    const tmp = await fse.mkdtemp(path.join(os.tmpdir(), "axion-manifest-windsurf-"));
+    try {
+        await fse.writeFile(path.join(tmp, "AGENTS.md"), "# test\n");
+        await fse.ensureDir(path.join(tmp, ".agents", "skills", "foo"));
+        await fse.writeFile(path.join(tmp, ".agents", "skills", "foo", "SKILL.md"), "x");
+
+        const written = await writeKitManifest(tmp, {
+            version: "1.1.2",
+            packageName: "@zanetta/axion",
+            profile: "standard",
+            action: "init",
+            tool: "windsurf",
+        });
+
+        assert.strictEqual(written.tool, "windsurf");
+        assert.strictEqual(written.components.agents, 0);
+        assert.strictEqual(written.components.commands, 0);
+        assert.strictEqual(written.components.rules, 0);
+        assert.strictEqual(written.components.skills, 1);
+        assert.ok(written.install_paths.includes(".windsurf/mcp_config.json"));
+    } finally {
+        await fse.remove(tmp);
+    }
+});

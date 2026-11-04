@@ -46,11 +46,12 @@ test("isValidTool rejects unknown ids", () => {
     assert.equal(isValidTool("cursor"), true);
     assert.equal(isValidTool("claude-code"), true);
     assert.equal(isValidTool("codex"), true);
+    assert.equal(isValidTool("windsurf"), true);
     assert.equal(isValidTool("foo"), false);
-    assert.equal(isValidTool("windsurf"), false);
+    assert.equal(isValidTool("devin"), false);
     assert.equal(isValidTool("openai-codex"), false);
-    assert.throws(() => resolveAdapter("foo"), /cursor, claude-code, codex/);
-    assert.deepEqual(TOOL_NAMES, ["cursor", "claude-code", "codex"]);
+    assert.throws(() => resolveAdapter("foo"), /cursor, claude-code, codex, windsurf/);
+    assert.deepEqual(TOOL_NAMES, ["cursor", "claude-code", "codex", "windsurf"]);
 });
 
 test("claude-code maps pack/ commands, skills, MCP, .axion/scripts and omits cursor-only files", () => {
@@ -167,4 +168,65 @@ test("codex transformContent serializes MCP JSON into sanitized .codex/config.to
     assert.match(toml, /command = "npx"/);
     assert.match(toml, /args = \["--api-key", "\$\{CONTEXT7_API_KEY\}"\]/);
     assert.equal(toml.includes("envFile"), false);
+});
+
+test("windsurf maps pack/ skills, schemas, memory, MCP JSON, .axion/scripts and omits agents/commands/rules/shared", () => {
+    const adapter = resolveAdapter("windsurf");
+    assert.equal(adapter.id, "windsurf");
+    assert.ok(adapter.installPaths.includes(".agents"));
+    assert.ok(adapter.installPaths.includes(".axion/scripts"));
+    assert.ok(adapter.installPaths.includes(".windsurf/mcp_config.json"));
+    assert.equal(
+        adapter.installPaths.some((p) => p.startsWith(".claude")),
+        false,
+    );
+    assert.equal(
+        adapter.installPaths.some((p) => p.startsWith(".cursor")),
+        false,
+    );
+    assert.equal(
+        adapter.installPaths.some((p) => p.startsWith(".devin")),
+        false,
+    );
+
+    assert.deepEqual(adapter.mapTemplateTargets("pack/skills/clean-code/SKILL.md"), [
+        ".agents/skills/clean-code/SKILL.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/schemas/command-contract.schema.json"), [
+        ".agents/schemas/command-contract.schema.json",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/memory/MEMORY.md"), [
+        ".agents/memory/MEMORY.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/mcp.json"), [".windsurf/mcp_config.json"]);
+    assert.deepEqual(adapter.mapTemplateTargets(".axion/scripts/checklist.py"), [
+        ".axion/scripts/checklist.py",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("AGENTS.md"), ["AGENTS.md"]);
+
+    assert.deepEqual(adapter.mapTemplateTargets("pack/agents/orchestrator.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/SKILL.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/ARCHITECTURE.md"), []);
+});
+
+test("windsurf transformContent sanitizes MCP JSON without envFile or TOML", () => {
+    const adapter = resolveAdapter("windsurf");
+    const mcp = JSON.stringify({
+        mcpServers: {
+            context7: {
+                command: "npx",
+                args: ["--api-key", "${env:CONTEXT7_API_KEY}"],
+                envFile: "${workspaceFolder}/.env",
+            },
+        },
+    });
+    const raw = adapter.transformContent("pack/mcp.json", ".windsurf/mcp_config.json", mcp);
+    const sanitized = JSON.parse(raw);
+    assert.equal(sanitized.mcpServers.context7.envFile, undefined);
+    assert.equal(sanitized.mcpServers.context7.args[1], "${CONTEXT7_API_KEY}");
+    assert.ok(Object.hasOwn(sanitized, "mcpServers"));
+    assert.equal(raw.includes("envFile"), false);
+    assert.equal(raw.includes("[mcp_servers"), false);
 });

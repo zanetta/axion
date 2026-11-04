@@ -1,7 +1,7 @@
 ---
 type: project
 created: 2026-05-25
-updated: 2026-11-03
+updated: 2026-11-04
 ---
 
 # Project Conventions
@@ -16,6 +16,7 @@ updated: 2026-11-03
 - Slug for the tool-agnostic v1 work: `upgrade-to-adnostic` (intentional spelling kept).
 - Slug for pack extract v2: `axion-agnostico-fase-2`.
 - Slug for Codex adapter v3: `axion-agnostico-fase-3`.
+- Slug for Windsurf adapter v4: `axion-agnostico-fase-4`.
 - `trace_report.py` PLAN-task cells must be a single `P#-#` or `PV-#`. A comma list fails the chain.
 
 ## Kit-repo dogfooding after pack/

@@ -132,3 +132,49 @@ test("installKit projects codex hybrid paths, merges .codex/config.toml, and lea
         await fse.remove(tmp);
     }
 });
+
+test("installKit projects windsurf hybrid paths, merges .windsurf/mcp_config.json, and leaves no false drift", async () => {
+    const tmp = await fse.mkdtemp(path.join(os.tmpdir(), "ag4c-windsurf-"));
+
+    try {
+        const target = path.join(tmp, "project");
+        await fse.ensureDir(path.join(target, ".windsurf"));
+        await fse.writeJson(
+            path.join(target, ".windsurf", "mcp_config.json"),
+            { mcpServers: { custom: { command: "node" } } },
+            { spaces: 4 },
+        );
+
+        await installKit(fixtureRoot, target, {
+            force: false,
+            tool: "windsurf",
+            version: "0.0.0-test",
+            packageName: "@zanetta/axion",
+        });
+
+        assert.ok(await fse.pathExists(path.join(target, ".agents", "skills", "test-skill", "SKILL.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".axion", "scripts", "checklist.py")));
+        assert.ok(await fse.pathExists(path.join(target, ".windsurf", "mcp_config.json")));
+        assert.ok(await fse.pathExists(path.join(target, "AGENTS.md")));
+
+        assert.equal(await fse.pathExists(path.join(target, ".claude", "agents")), false);
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands")), false);
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "rules")), false);
+        assert.equal(await fse.pathExists(path.join(target, "CLAUDE.md")), false);
+        assert.equal(await fse.pathExists(path.join(target, ".devin")), false);
+
+        const mcp = await fse.readJson(path.join(target, ".windsurf", "mcp_config.json"));
+        assert.strictEqual(mcp.mcpServers.custom.command, "node");
+        assert.ok(mcp.mcpServers.shadcn);
+        for (const server of Object.values(mcp.mcpServers)) {
+            assert.equal(server.envFile, undefined);
+        }
+
+        const drift = await diffKit(fixtureRoot, target, { tool: "windsurf" });
+        assert.deepEqual(drift.drifted, []);
+        assert.deepEqual(drift.missing, []);
+        assert.equal(await isKitInstalled(target, "windsurf"), true);
+    } finally {
+        await fse.remove(tmp);
+    }
+});
