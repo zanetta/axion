@@ -67,7 +67,7 @@ for (const profile of PROFILE_NAMES) {
                 ".cursor/commands/plan.md",
                 ".cursor/commands/implement.md",
                 ".cursor/commands/design.md",
-                ".agents/skills/design/SKILL.md",
+                ".agents/skills/design-guide/SKILL.md",
                 ".agents/shared/ui-ux-pro-max/scripts/search.py",
                 ".axion/scripts/lint_paths.py",
                 ".agents/schemas/command-contract.schema.json",
@@ -119,8 +119,8 @@ for (const profile of ["standard", "security"]) {
                     ".agents/schemas/command-contract.schema.json",
                     ".mcp.json",
                     ".claude/commands/design.md",
-                    ".agents/skills/design/SKILL.md",
-                    ".claude/skills/design/SKILL.md",
+                    ".agents/skills/design-guide/SKILL.md",
+                    ".claude/skills/design-guide/SKILL.md",
                     ".agents/shared/ui-ux-pro-max/scripts/search.py",
                 ]) {
                     assert.ok(await fse.pathExists(path.join(target, rel)), `missing ${rel}`);
@@ -180,7 +180,7 @@ for (const profile of ["standard", "security"]) {
                 for (const rel of [
                     "AGENTS.md",
                     ".agents/skills/plan-writing/SKILL.md",
-                    ".agents/skills/design/SKILL.md",
+                    ".agents/skills/design-guide/SKILL.md",
                     ".agents/shared/ui-ux-pro-max/scripts/search.py",
                     ".axion/scripts/lint_paths.py",
                     ".agents/schemas/command-contract.schema.json",
@@ -265,7 +265,7 @@ for (const profile of ["standard", "security"]) {
                 for (const rel of [
                     "AGENTS.md",
                     ".agents/skills/plan-writing/SKILL.md",
-                    ".agents/skills/design/SKILL.md",
+                    ".agents/skills/design-guide/SKILL.md",
                     ".agents/shared/ui-ux-pro-max/scripts/search.py",
                     ".axion/scripts/lint_paths.py",
                     ".agents/schemas/command-contract.schema.json",
@@ -337,7 +337,7 @@ for (const profile of ["standard", "security"]) {
                     ".agents/workflows/design.md",
                     ".agents/rules/frontend.md",
                     ".agents/skills/plan-writing/SKILL.md",
-                    ".agents/skills/design/SKILL.md",
+                    ".agents/skills/design-guide/SKILL.md",
                     ".agents/shared/ui-ux-pro-max/scripts/search.py",
                     ".axion/scripts/lint_paths.py",
                     ".agents/schemas/command-contract.schema.json",

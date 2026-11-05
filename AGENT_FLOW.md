@@ -131,7 +131,7 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 | `/preview` | — | `auto_preview.py` | Preview local |
 | `/status` | — | — | Relatório de progresso |
 | `/test` | — (apoio verify) | `testing-patterns`, `webapp-testing` | Testes |
-| `/design` | — | `.agents/shared/ui-ux-pro-max` | Design system (slash no Cursor e no Claude Code; skill nas quatro IDEs) |
+| `/design` | — | `.agents/shared/ui-ux-pro-max` | Design system (slash no Cursor, Claude Code e workflows Antigravity; skill `design-guide` nos cinco tools) |
 
 > **Cursor:** argumentos são texto livre após o comando (ex.: `/plan auth JWT`), não `$ARGUMENTS`.
 > **Gate:** `/plan`, `/implement`, `/orchestrate` exigem SPEC **ou** ≥3 respostas socráticas no SPEC/PLAN.
@@ -142,7 +142,7 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 
 | Domínio | Agent | Skills típicas |
 | --- | --- | --- |
-| UI/UX Web | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `tailwind-patterns`, `design` |
+| UI/UX Web | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `tailwind-patterns`, `design-guide` |
 | API | `backend-specialist` | `api-patterns`, `nodejs-best-practices` |
 | Database | `database-architect` | `database-design` |
 | Mobile | `mobile-developer` | `mobile-design` |

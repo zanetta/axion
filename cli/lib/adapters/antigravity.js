@@ -177,7 +177,7 @@ export const antigravityAdapter = {
     transformContent,
     postInstallHints: [
         "Open in Antigravity IDE or CLI; instructions load from AGENTS.md and skills from .agents/skills/.",
-        "Slash workflows: .agents/workflows/. The /design slash may collide with the design skill; both are installed.",
+        "Slash workflows: .agents/workflows/. /design is the SDD workflow; the searchable guide is skill design-guide.",
         "MCP servers: .agents/mcp_config.json. This install does not write ~/.gemini/.",
         "Inventory: python3 .axion/scripts/generate_inventory.py .",
     ],

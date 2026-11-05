@@ -62,8 +62,9 @@ updated: "2026-11-05"
 
 ## Design on all tools
 
-- Direction (discover 1A / 2A / 3B): the agent runs the design workflow and `search.py` on all four IDEs. Slash `/design` exists on Cursor and Claude Code only.
-- One data path: `.agents/shared/ui-ux-pro-max/`, projected from `pack/shared/` by all four adapters. Cursor no longer maps that tree to `.cursor/shared/`. `update` is additive, so an old `.cursor/shared/` tree may remain on disk unused.
-- Skill `design` is in `MINIMAL_CORE_SKILLS` so profile `minimal` also gets it. CSVs stay in shared data, not inside the skill.
+- Direction (discover 1A / 2A / 3B): the agent runs the design workflow and `search.py` on all install tools. Slash `/design` is the command/workflow on Cursor, Claude Code, and Antigravity. Codex and Windsurf get the skill only.
+- One data path: `.agents/shared/ui-ux-pro-max/`, projected from `pack/shared/` by all adapters. Cursor no longer maps that tree to `.cursor/shared/`. `update` is additive, so an old `.cursor/shared/` tree may remain on disk unused.
+- Skill id is `design-guide` (`MINIMAL_CORE_SKILLS`). CSVs stay in shared data, not inside the skill. Command `/design` is a different id.
+- Verify of slug `rename-design-skill` passed 2026-11-05 (Option A global): pack `design` → `design-guide` on all five adapters, no per-adapter transform, no leftover stub. Additive `update` may leave unused `skills/design/`. E-01 WEB row stays without `design`/`design-guide`. Accept = smokes paths, not IDE slash probe.
 - Kit dogfood: `.agents/shared` → `pack/shared`.
-- Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills = 46. Fifth tool (`antigravity`) also gets the skill and `.agents/shared/`; slash `/design` is a workflow there (see Antigravity adapter).
+- Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills = 46. Antigravity hint: `/design` is the SDD workflow; the searchable guide is skill `design-guide`.

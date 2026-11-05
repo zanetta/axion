@@ -1,0 +1,13 @@
+{
+  "slug": "rename-design-skill",
+  "spec": "rename-design-skill.spec.md",
+  "plan": "rename-design-skill.plan.md",
+  "acceptance": "rename-design-skill.acceptance.md",
+  "links": [
+    { "spec_id": "SPEC-rename-design-skill-1", "plan_task": "P1-1", "acceptance_id": "AC-1" },
+    { "spec_id": "SPEC-rename-design-skill-2", "plan_task": "P1-2", "acceptance_id": "AC-2" },
+    { "spec_id": "SPEC-rename-design-skill-3", "plan_task": "P1-3", "acceptance_id": "AC-3" },
+    { "spec_id": "SPEC-rename-design-skill-4", "plan_task": "P1-4", "acceptance_id": "AC-4" },
+    { "spec_id": "SPEC-rename-design-skill-5", "plan_task": "P1-5", "acceptance_id": "AC-5" }
+  ]
+}

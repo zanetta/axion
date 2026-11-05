@@ -1,5 +1,5 @@
 ---
-name: design
+name: design-guide
 description: Searchable UI/UX design guide (styles, palettes, font pairings, UX guidelines, charts) for web and mobile stacks.
 when_to_use: "When the user asks for UI/UX work (design, visual direction, palettes, typography, design systems, or screen implementation). Use with /design on Cursor and Claude Code. NOT for backend-only or API-only work."
 allowed-tools: Read, Bash

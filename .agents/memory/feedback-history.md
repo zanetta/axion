@@ -24,4 +24,9 @@ updated: 2026-11-05
 ## Issue 17 (Antigravity adapter)
 
 - Discover: Option B native, id `antigravity`, map workflows, no kit dogfood. Specify locked those plus MCP `.agents/mcp_config.json`, rules transform, GEMINI stub, omit personas.
-- Verified 2026-11-05: no `gemini` alias, no `~/.gemini/`, no kit dogfood, no version bump. `/design` collision is hint-only.
+- Verified 2026-11-05: no `gemini` alias, no `~/.gemini/`, no kit dogfood, no version bump. `/design` collision was hint-only until the skill rename.
+
+## Rename design skill (all adapters)
+
+- Rediscover: Option A global, not an Antigravity-only transform. Command `/design` stays. No leftover stub. Accept = smokes on five tools, not IDE slash probe.
+- Verified 2026-11-05 as slug `rename-design-skill`.

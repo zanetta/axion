@@ -315,7 +315,7 @@ O frontmatter de cada arquivo em `.cursor/commands/` declara as skills que o age
 | `/test` | — |
 | `/deploy` | — |
 | `/preview` | — (usa `.axion/scripts/auto_preview.py`) |
-| `/design` | `design` (usa `.agents/shared/ui-ux-pro-max/scripts/search.py`) |
+| `/design` | `design-guide` (usa `.agents/shared/ui-ux-pro-max/scripts/search.py`) |
 
 ## Cada comando
 
@@ -369,7 +369,7 @@ Estado `remember`. Grava preferência ou decisão em `.agents/memory/`. Antes de
 
 ### `/design`
 
-Consulta o guia visual em `.agents/shared/ui-ux-pro-max/` (estilos, paletas, tipos, UX). A busca é `python3 .agents/shared/ui-ux-pro-max/scripts/search.py`. Em seguida sintetiza o design system e implementa a tela. Slash `/design` no Cursor e no Claude Code; nas quatro IDEs o agente usa a skill `design`.
+Consulta o guia visual em `.agents/shared/ui-ux-pro-max/` (estilos, paletas, tipos, UX). A busca é `python3 .agents/shared/ui-ux-pro-max/scripts/search.py`. Em seguida sintetiza o design system e implementa a tela. Slash `/design` no Cursor, Claude Code e nos workflows Antigravity; nos cinco tools o agente usa a skill `design-guide`. `update` é aditivo: leftover `.agents/skills/design/` (e `.claude/skills/design/` no Claude Code) pode ficar no disco, unused.
 
 ## Configuração
 

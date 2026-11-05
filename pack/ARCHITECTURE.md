@@ -204,7 +204,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | `web-design-guidelines` | Auditoria UI (100+ regras a11y/UX) |
 | `tailwind-patterns` | Tailwind CSS v4 |
 | `frontend-design` | UI/UX, design systems |
-| `design` | Guia UI/UX pesquisável (estilos, paletas, tipos; `.agents/shared/`) |
+| `design-guide` | Guia UI/UX pesquisável (estilos, paletas, tipos; `.agents/shared/`) |
 
 ### Backend & API
 
@@ -432,7 +432,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 
 | Necessidade | Agent | Skills |
 | --- | --- | --- |
-| Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `design` |
+| Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `design-guide` |
 | API | `backend-specialist` | `api-patterns`, `nodejs-best-practices` |
 | Mobile | `mobile-developer` | `mobile-design` |
 | Database | `database-architect` | `database-design` |

@@ -190,7 +190,7 @@ Esses agents contêm:
 `orchestrator`, `project-planner`, `security-auditor`, `backend-specialist`, `frontend-specialist`, `mobile-developer`, `debugger`, `game-developer`.
 
 **Skills-chave** (em `.agents/skills/`):
-`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
+`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design-guide`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
 
 **CLI npm:** `@zanetta/axion` — `init [--profile minimal|standard|security|fullstack|mobile] [--enable-offensive]`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 
