@@ -27,7 +27,7 @@ export function mapTemplateTargets(rel) {
         return [sub.replace(/^rules/, ".cursor/rules")];
     }
     if (sub === "shared" || sub.startsWith("shared/")) {
-        return [sub.replace(/^shared/, ".cursor/shared")];
+        return [sub.replace(/^shared/, ".agents/shared")];
     }
     if (sub === "scripts" || sub.startsWith("scripts/")) {
         return [sub.replace(/^scripts/, ".axion/scripts")];

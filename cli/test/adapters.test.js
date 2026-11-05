@@ -17,6 +17,16 @@ test("resolveAdapter defaults to cursor and maps pack/ to Cursor paths + .axion/
     assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
         ".cursor/commands/plan.md",
     ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/discover.md"), [
+        ".cursor/commands/discover.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/design.md"), [
+        ".cursor/commands/design.md",
+    ]);
+    assert.deepEqual(
+        adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/scripts/search.py"),
+        [".agents/shared/ui-ux-pro-max/scripts/search.py"],
+    );
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), [
         ".cursor/rules/frontend.mdc",
     ]);
@@ -61,9 +71,24 @@ test("claude-code maps pack/ commands, skills, MCP, .axion/scripts and omits cur
     assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
         ".claude/commands/plan.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ui-ux-pro-max.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/discover.md"), [
+        ".claude/commands/discover.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/design.md"), [
+        ".claude/commands/design.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/design.md"), [
+        ".claude/commands/design.md",
+    ]);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/SKILL.md"), []);
+    assert.deepEqual(
+        adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/scripts/search.py"),
+        [".agents/shared/ui-ux-pro-max/scripts/search.py"],
+    );
+    assert.deepEqual(
+        adapter.mapTemplateTargets(".cursor/shared/ui-ux-pro-max/scripts/search.py"),
+        [],
+    );
     assert.deepEqual(adapter.mapTemplateTargets("pack/mcp.json"), [".mcp.json"]);
     assert.deepEqual(adapter.mapTemplateTargets("pack/skills/clean-code/SKILL.md"), [
         ".agents/skills/clean-code/SKILL.md",
@@ -115,7 +140,7 @@ test("claude-code transformContent restores $ARGUMENTS and sanitizes MCP", () =>
     assert.match(stub, /AGENT_FLOW\.md/);
 });
 
-test("codex maps pack/ skills, schemas, memory, MCP TOML, .axion/scripts and omits agents/commands/rules/shared", () => {
+test("codex maps pack/ skills, schemas, memory, shared data, MCP TOML, .axion/scripts and omits agents/commands/rules", () => {
     const adapter = resolveAdapter("codex");
     assert.equal(adapter.id, "codex");
     assert.ok(adapter.installPaths.includes(".agents"));
@@ -148,7 +173,14 @@ test("codex maps pack/ skills, schemas, memory, MCP TOML, .axion/scripts and omi
     assert.deepEqual(adapter.mapTemplateTargets("pack/agents/orchestrator.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/SKILL.md"), []);
+    assert.deepEqual(
+        adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/scripts/search.py"),
+        [".agents/shared/ui-ux-pro-max/scripts/search.py"],
+    );
+    assert.deepEqual(
+        adapter.mapTemplateTargets(".cursor/shared/ui-ux-pro-max/scripts/search.py"),
+        [],
+    );
     assert.deepEqual(adapter.mapTemplateTargets("pack/ARCHITECTURE.md"), []);
 });
 
@@ -170,7 +202,7 @@ test("codex transformContent serializes MCP JSON into sanitized .codex/config.to
     assert.equal(toml.includes("envFile"), false);
 });
 
-test("windsurf maps pack/ skills, schemas, memory, MCP JSON, .axion/scripts and omits agents/commands/rules/shared", () => {
+test("windsurf maps pack/ skills, schemas, memory, shared data, MCP JSON, .axion/scripts and omits agents/commands/rules", () => {
     const adapter = resolveAdapter("windsurf");
     assert.equal(adapter.id, "windsurf");
     assert.ok(adapter.installPaths.includes(".agents"));
@@ -207,7 +239,14 @@ test("windsurf maps pack/ skills, schemas, memory, MCP JSON, .axion/scripts and 
     assert.deepEqual(adapter.mapTemplateTargets("pack/agents/orchestrator.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/SKILL.md"), []);
+    assert.deepEqual(
+        adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/scripts/search.py"),
+        [".agents/shared/ui-ux-pro-max/scripts/search.py"],
+    );
+    assert.deepEqual(
+        adapter.mapTemplateTargets(".cursor/shared/ui-ux-pro-max/scripts/search.py"),
+        [],
+    );
     assert.deepEqual(adapter.mapTemplateTargets("pack/ARCHITECTURE.md"), []);
 });
 

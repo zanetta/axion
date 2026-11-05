@@ -2,7 +2,7 @@
 
 Framework de Spec-Driven Development (SDD). A especificação é a fonte da verdade; o código deriva dela. O Cursor é o adapter **default** (`--tool cursor`); Claude Code entra com `--tool claude-code`, OpenAI Codex com `--tool codex` e Windsurf com `--tool windsurf`.
 
-Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.1.0`](https://www.npmjs.com/package/@zanetta/axion)
+Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.2.0`](https://www.npmjs.com/package/@zanetta/axion)
 
 | | |
 | --- | --- |
@@ -22,9 +22,10 @@ O trabalho segue a FSM: `discover → specify → plan → implement → verify 
 
 | Estado | Artefato / decisão | Command |
 | --- | --- | --- |
-| `discover` / `specify` | SPEC (problema, actors, constraints, non-goals) | `/brainstorm` |
-| `plan` | PLAN + links para SPEC/ACCEPTANCE | `/plan` |
-| `implement` | código que segue o PLAN | `/create` ou `/enhance` |
+| `discover` | Notas de exploração, opções e trade-offs (sem fechar SPEC) | `/discover` |
+| `specify` | SPEC (`{slug}.spec.md`: problema, actors, constraints, non-goals) | `/specify` |
+| `plan` | PLAN (`{slug}.plan.md`) + links para SPEC/ACCEPTANCE | `/plan` |
+| `implement` | código que segue o PLAN (app novo ou código existente) | `/implement` |
 | `verify` | ACCEPTANCE + evidência de execução | `/verify` (e `/test`, `checklist.py`) |
 | `remember` | decisões cross-session | `/remember` |
 
@@ -32,13 +33,14 @@ O que cada estado exige:
 
 | Estado | Pode avançar quando |
 | --- | --- |
-| `discover` / `specify` | Existe `{slug}.spec.md` **ou** três perguntas respondidas no SPEC/PLAN. Célula com `{placeholder}` não conta. |
+| `discover` | ≥3 perguntas socráticas exploradas e o usuário escolheu uma direção para `/specify`. |
+| `specify` | Existe `{slug}.spec.md` com ≥3 perguntas respondidas (ou registradas no PLAN). Célula com `{placeholder}` não conta. |
 | `plan` | O usuário aprovou `{slug}.plan.md` (ou o legado `{slug}.md`) e o `{slug}.acceptance.md`. |
-| `implement` | O plano está aprovado. App novo usa `/create`. Código que já existe usa `/enhance`. Correção pequena pode seguir depois de confirmar o impacto. |
+| `implement` | O plano está aprovado. `/implement` cobre tanto app novo quanto código que já existe. Correção pequena pode seguir depois de confirmar o impacto. |
 | `verify` | Os critérios AC-* têm evidência e `[x]`, o checklist sai 0 e o `verify_gate.py` sai 0. |
 | `remember` | A nota passou no `memory_secret_scan.py`. Segredo não entra em `.agents/memory/`. |
 
-Commands de apoio: `/debug`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
+Commands de apoio: `/debug`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/test`, `/design`.
 
 ---
 
@@ -70,11 +72,11 @@ axion init --profile standard
 | --- | --- |
 | Agents do profile | `.claude/agents/` |
 | Skills do profile (+ sub-skills de game-dev), memória e schemas | `.agents/` |
-| 14 slash commands (13 + `/ui-ux-pro-max`), 7 regras por domínio, scripts, MCP | `.cursor/` |
+| 13 slash commands, 7 regras por domínio, scripts, MCP | `.cursor/` |
 | Regras globais e fluxo | `AGENTS.md`, `AGENT_FLOW.md` |
 | Template de env | `.env.example` |
 
-`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, sem `/ui-ux-pro-max`), `.claude/skills/`, `CLAUDE.md` e `.mcp.json`. `--tool codex` projeta `.agents/skills/`, `.axion/scripts/`, `AGENTS.md` e `.codex/config.toml` (`[mcp_servers.<id>]` com merge aditivo; omite agents, commands, rules e shared). `--tool windsurf` projeta `.agents/skills/`, `.axion/scripts/`, `AGENTS.md` e `.windsurf/mcp_config.json` (JSON `mcpServers`, merge aditivo; omite agents, commands, rules e shared). Detalhes: [`cli/README.md`](cli/README.md).
+`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, com `/design`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` e `.agents/shared/`. `--tool codex` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.codex/config.toml` (`[mcp_servers.<id>]` com merge aditivo; omite agents, commands e rules). `--tool windsurf` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.windsurf/mcp_config.json` (JSON `mcpServers`, merge aditivo; omite agents, commands e rules). Detalhes: [`cli/README.md`](cli/README.md).
 
 O `init` (e o `update`) também grava `.axion/kit.manifest.json` — estado local do kit (SemVer, profile). Não faz parte do template do pack. `npx @zanetta/axion status` lê esse manifesto e mostra a versão instalada (e compara com o latest no npm, se a rede responder).
 
@@ -144,20 +146,19 @@ Um command por mensagem, no chat do Agent: `/<comando>` e o pedido em texto livr
 
 | Command | Quando | Exemplo |
 | --- | --- | --- |
-| `/brainstorm` | Opções e arquitetura antes de codar | `/brainstorm qual stack usar para um SaaS multi-tenant?` |
+| `/discover` | Explorar opções e arquitetura antes da SPEC | `/discover qual stack usar para um SaaS multi-tenant?` |
+| `/specify` | Formalizar e fechar `{slug}.spec.md` | `/specify saas-multitenant` |
 | `/plan` | Plano e checklist a partir do que foi especificado | `/plan implementar autenticação JWT com refresh token` |
-| `/create` | Feature ou app novo, seguindo o plano | `/create landing page Next.js com formulário de waitlist` |
-| `/enhance` | Mudança em código que já existe | `/enhance adicionar paginação na listagem de usuários` |
+| `/implement` | Construir app novo ou evoluir código existente seguindo o plano | `/implement landing page Next.js` ou `/implement adicionar paginação em usuários` |
 | `/debug` | Bug com método sistemático | `/debug login retorna 401 após deploy` |
 | `/test` | Gerar ou executar testes | `/test cobrir fluxo de checkout com Playwright` |
 | `/verify` | Executar e provar que funciona | `/verify build passa após o refactor do módulo auth` |
 | `/deploy` | Pré-flight e deploy | `/deploy preparar release para Vercel` |
 | `/preview` | Servidor local | `/preview iniciar dev server na porta 3000` |
 | `/status` | Progresso da tarefa atual | `/status` |
-| `/orchestrate` | Vários specialists (mínimo 3) | `/orchestrate painel admin com CRUD e testes E2E` |
-| `/coordinate` | Pesquisa em paralelo e síntese | `/coordinate revisar segurança e performance da API em paralelo` |
+| `/orchestrate` | Vários specialists (mínimo 3) e coordenação em paralelo | `/orchestrate painel admin com CRUD e testes E2E` |
 | `/remember` | Convenção entre sessões | `/remember prefiro bun em vez de npm neste projeto` |
-| `/ui-ux-pro-max` | Direção visual | `/ui-ux-pro-max dashboard fintech dark mode minimalista` |
+| `/design` | Direção visual (slash no Cursor e no Claude Code; skill nas quatro IDEs) | `/design dashboard fintech dark mode minimalista` |
 
 Definição de cada workflow: [`.cursor/commands/`](.cursor/commands/). A lista com as skills e o texto de cada command estão em [Comandos e skills](#comandos-e-skills) e [Cada comando](#cada-comando).
 
@@ -173,19 +174,21 @@ git add . && git commit -m "chore: add axion kit"
 Descobrir, fixar o acordo e planejar:
 
 ```text
-/brainstorm MVP de gestão de tarefas: web, auth, equipes, mobile depois. Restrição: deploy na Vercel.
+/discover MVP de gestão de tarefas: web, auth, equipes, mobile depois. Restrição: deploy na Vercel.
+
+/specify mvp-tarefas
 
 /remember Stack: Next.js App Router, Prisma, PostgreSQL, Tailwind v4, bun. Sem tons roxo/violeta na UI.
 
 /plan MVP com auth email/senha, CRUD de projetos e tarefas, dashboard. Incluir testes e schema DB.
 ```
 
-Implementar em blocos. Um bloco do plano, `/verify`, o próximo. Escopo full-stack pode ir para `/coordinate` ou `/orchestrate` depois do `/plan`.
+Implementar em blocos. Um bloco do plano, `/verify`, o próximo. Escopo full-stack pode ir para `/orchestrate` depois do `/plan`.
 
 ```text
-/create seguir o plano em [nome-do-plano].md — monorepo não, app Next.js na raiz.
+/implement seguir o plano em [nome-do-plano].plan.md — monorepo não, app Next.js na raiz.
 
-/ui-ux-pro-max dashboard produtividade, estilo clean, paleta neutra com acento verde.
+/design dashboard produtividade, estilo clean, paleta neutra com acento verde.
 
 /preview iniciar dev server e confirmar que a home carrega.
 ```
@@ -199,7 +202,7 @@ Verificar e, quando o plano estiver cumprido, preparar o release:
 
 /status
 
-/coordinate revisão final: segurança (auth), performance (LCP), testes E2E dos fluxos críticos
+/orchestrate revisão final: segurança (auth), performance (LCP), testes E2E dos fluxos críticos
 
 /deploy preparar release produção Vercel — variáveis de ambiente e migrations
 ```
@@ -211,8 +214,9 @@ python3 .axion/scripts/verify_all.py . --url http://localhost:3000
 
 ```mermaid
 flowchart LR
-  A["discover/specify\n/brainstorm → SPEC"] --> C["plan\n/plan → PLAN"]
-  C --> D["implement\n/create|/enhance"]
+  A["discover\n/discover"] --> B["specify\n/specify → SPEC"]
+  B --> C["plan\n/plan → PLAN"]
+  C --> D["implement\n/implement"]
   D --> E["verify\n/verify + ACCEPTANCE"]
   E --> F{Cumpre ACCEPTANCE?}
   F -->|Não| D
@@ -240,17 +244,17 @@ Explorar a estrutura do repo e resumir: stack, pastas principais, como rodar tes
 
 | Situação | Sequência |
 | --- | --- |
-| Feature no código existente | `/plan` → `/enhance` |
-| Refatoração | `/brainstorm` → `/plan` → `/enhance` |
+| Feature no código existente | `/plan` → `/implement` |
+| Refatoração | `/discover` → `/specify` → `/plan` → `/implement` |
 | Bug | `/debug` → `/verify` |
-| Várias camadas | `/coordinate` ou `/orchestrate` |
+| Várias camadas | `/orchestrate` |
 
 Feature:
 
 ```text
 /plan adicionar exportação CSV na listagem de pedidos — respeitar padrões em src/features/orders/
 
-/enhance implementar export CSV async, limite 10k linhas, testes unitários no service
+/implement implementar export CSV async, limite 10k linhas, testes unitários no service
 
 /test cobrir service de export e rota GET /api/orders/export
 
@@ -265,11 +269,11 @@ Bug:
 /verify reproduzir fix no fluxo guest checkout e logged-in
 ```
 
-No dia a dia: leia `.agents/memory/MEMORY.md` no início da sessão; tarefa pequena vai de `/enhance`; tarefa média passa por `/plan` e `/verify`; antes do PR, `/test` e `python3 .axion/scripts/checklist.py .`.
+No dia a dia: leia `.agents/memory/MEMORY.md` no início da sessão; tarefa pequena vai de `/implement`; tarefa média passa por `/plan` e `/verify`; antes do PR, `/test` e `python3 .axion/scripts/checklist.py .`.
 
 | Prefira | Evite |
 | --- | --- |
-| `/enhance` com plano incremental | `/create` para reescrever a aplicação |
+| `/implement` com plano incremental | Reescrever a aplicação sem PLAN |
 | Convenções já presentes no código, gravadas com `/remember` | Inventar um estilo paralelo |
 | `/verify` antes de `/deploy` | Release sem build e testes na sessão |
 | Segredos em `.env` | Segredos no `/remember` |
@@ -278,9 +282,9 @@ No dia a dia: leia `.agents/memory/MEMORY.md` no início da sessão; tarefa pequ
 flowchart TD
   A[Axion na raiz do repo] --> B["/remember convenções"]
   B --> C{Tipo de trabalho?}
-  C -->|Feature| D["/plan → /enhance"]
+  C -->|Feature| D["/plan → /implement"]
   C -->|Bug| E["/debug → /verify"]
-  C -->|Várias camadas| F["/coordinate"]
+  C -->|Várias camadas| F["/orchestrate"]
   D --> G["/test + /verify"]
   E --> G
   F --> G
@@ -298,38 +302,37 @@ O frontmatter de cada arquivo em `.cursor/commands/` declara as skills que o age
 
 | Command | Skills |
 | --- | --- |
-| `/brainstorm` | `brainstorming` |
+| `/discover` | `brainstorming` |
+| `/specify` | `brainstorming`, `plan-writing` |
 | `/plan` | `plan-writing`, `brainstorming` |
-| `/create` | `app-builder`, `brainstorming`, `plan-writing` |
-| `/enhance` | `plan-writing`, `brainstorming` |
+| `/implement` | `app-builder`, `plan-writing`, `brainstorming` |
 | `/verify` | `verify-changes` |
 | `/remember` | `memory-system` |
 | `/orchestrate` | `parallel-agents`, `coordinator-mode`, `plan-writing` |
-| `/coordinate` | `coordinator-mode` (pedido no corpo do command; o frontmatter não lista `required_skills`) |
 | `/status` | — |
 | `/debug` | — |
 | `/test` | — |
 | `/deploy` | — |
 | `/preview` | — (usa `.axion/scripts/auto_preview.py`) |
-| `/ui-ux-pro-max` | — (usa `.cursor/shared/ui-ux-pro-max/scripts/search.py`) |
+| `/design` | `design` (usa `.agents/shared/ui-ux-pro-max/scripts/search.py`) |
 
 ## Cada comando
 
-### `/brainstorm`
+### `/discover`
 
-Estado `discover` / `specify`. Explora opções e grava `{slug}.spec.md`. Não escreve código da aplicação. Sem `{slug}.spec.md`, três respostas reais registradas no PLAN também abrem o `/plan`.
+Estado `discover`. Explora o problema, aplica o Socratic Gate (≥3 perguntas sobre propósito, usuários e escopo) e apresenta ao menos 3 opções com prós, contras e esforço. **Não fecha `{slug}.spec.md` nem escreve código** — quando você escolhe a direção, entrega para `/specify {slug}`.
+
+### `/specify`
+
+Estado `specify`. Exige que as ≥3 perguntas socráticas tenham sido respondidas e grava `{slug}.spec.md` a partir de `.agents/skills/plan-writing/templates/SPEC.template.md` com rastreabilidade (`SPEC-{slug}-1..N`). Não escreve código da aplicação e entrega para `/plan {slug}`.
 
 ### `/plan`
 
 Estado `plan`. O `project-planner` produz `{slug}.plan.md` e `{slug}.acceptance.md` a partir dos templates. Exige SPEC ou três respostas reais, e para antes de codar até você aprovar. A seção `## Write allowlist` lista os paths que a implementação pode alterar.
 
-### `/create`
+### `/implement`
 
-Estado `implement` para aplicação nova. Sem PLAN aprovado, volta para `/brainstorm` e `/plan`. Com o plano aprovado, a skill `app-builder` coordena schema, API e UI. No fim, prefira `/verify` e, se couber, `.axion/scripts/auto_preview.py`.
-
-### `/enhance`
-
-Estado `implement` em código que já existe. Mudança grande pede PLAN ou três respostas e o seu OK. Correção pequena segue depois de confirmar o impacto. O primeiro passo lê o projeto com `python3 .axion/scripts/session_manager.py info`.
+Estado `implement`. Unifica criação de aplicação nova (Modo A — Greenfield, coordenando `app-builder` + schema/API/UI) e evolução de código existente (Modo B — Existing codebase, lendo `session_manager.py info` e aplicando mudanças incrementais). Exige PLAN aprovado para escopo não trivial e valida cada escrita com `side_effect_guard.py`.
 
 ### `/verify`
 
@@ -357,19 +360,15 @@ Pré-flight e release. O command cobre checagem, preview, produção e rollback.
 
 ### `/orchestrate`
 
-Vários specialists no mesmo pedido, no mínimo três. Não despacha workers sem SPEC ou três respostas e sem PLAN. Antes de cada escrita, o path tem de estar na allowlist. Antes de cada dispatch ou retry, `circuit_breaker.py` decide se ainda dá para lançar. No fim, o log pode receber os contadores `--workers`, `--failures`, `--duration-ms` e `--breaker-trips`.
-
-### `/coordinate`
-
-Pesquisa em paralelo e síntese. O corpo do command manda ler `coordinator-mode`. Leituras em paralelo; escritas em sequência, só nos paths da allowlist, com `circuit_breaker.py` antes de cada dispatch.
+Vários specialists no mesmo pedido (mínimo três) e coordenação paralela (`coordinator-mode`). Não despacha workers sem SPEC ou três respostas e sem PLAN. Antes de cada escrita, o path tem de estar na allowlist. Antes de cada dispatch ou retry, `circuit_breaker.py` decide se ainda dá para lançar. No fim, o log pode receber os contadores `--workers`, `--failures`, `--duration-ms` e `--breaker-trips`.
 
 ### `/remember`
 
 Estado `remember`. Grava preferência ou decisão em `.agents/memory/`. Antes de escrever, `python3 .axion/scripts/memory_secret_scan.py` precisa sair 0. Exit 1 recusa o texto e não mostra o segredo.
 
-### `/ui-ux-pro-max`
+### `/design`
 
-Consulta o guia visual em `.cursor/shared/ui-ux-pro-max/` (estilos, paletas, tipos, UX). A busca é `python3 .cursor/shared/ui-ux-pro-max/scripts/search.py`. Em seguida sintetiza o design system e implementa a tela.
+Consulta o guia visual em `.agents/shared/ui-ux-pro-max/` (estilos, paletas, tipos, UX). A busca é `python3 .agents/shared/ui-ux-pro-max/scripts/search.py`. Em seguida sintetiza o design system e implementa a tela. Slash `/design` no Cursor e no Claude Code; nas quatro IDEs o agente usa a skill `design`.
 
 ## Configuração
 
@@ -404,14 +403,14 @@ echo ".agents/" >> .git/info/exclude
 ├── .claude/agents/           # 20 agents
 ├── .agents/
 │   ├── schemas/              # Contratos skill/command
-│   ├── skills/               # 45 skills (+ templates SPEC/PLAN/ACCEPTANCE)
+│   ├── skills/               # 46 skills (+ templates SPEC/PLAN/ACCEPTANCE)
+│   ├── shared/ui-ux-pro-max/ # Dados e search.py do fluxo /design
 │   └── memory/
 └── .cursor/
     ├── ARCHITECTURE.md
-    ├── commands/             # 14 slash commands
+    ├── commands/             # 13 slash commands
     ├── rules/                # 7 regras por domínio
-    ├── scripts/              # checklist, verify_all, lint_paths, generate_inventory, …
-    ├── shared/ui-ux-pro-max/
+    ├── scripts/              # leftover v1; masters are `.axion/scripts/`
     └── mcp.json
 ```
 
@@ -427,7 +426,7 @@ echo ".agents/" >> .git/info/exclude
 
 ## Manutenção do kit
 
-O script compara agents, skills, memória e commands com [zanetta/axion](https://github.com/zanetta/axion). Não altera `/ui-ux-pro-max`, `AGENTS.md`, `.cursor/rules/` nem este README.
+O script compara agents, skills, memória e commands com [zanetta/axion](https://github.com/zanetta/axion). Sincroniza `/design`; preserva `AGENTS.md`, `.cursor/rules/` e este README.
 
 ```bash
 python3 .axion/scripts/lint_paths.py .                  # drift de paths (legado .agents/scripts/)

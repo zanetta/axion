@@ -1,7 +1,7 @@
 ---
 name: coordinator-mode
 description: Advanced multi-agent orchestration with parallel workers, synthesis protocols, and coordinator lifecycle. Use when complex tasks require multiple agents working in parallel with intelligent result synthesis.
-when_to_use: "When the user needs multi-agent coordination, parallel task execution, complex multi-domain work, or when /coordinate or /orchestrate is invoked. NOT for single-domain tasks."
+when_to_use: "When the user needs multi-agent coordination, parallel task execution, complex multi-domain work, or when /orchestrate is invoked. NOT for single-domain tasks."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent
 effort: high
 contract_version: "1.0.0"
@@ -126,7 +126,7 @@ Domains are independent: an open `backend` does not block `frontend`. The report
 When the run finishes, append the counters (integers only, no narrative) to the run log:
 
 ```bash
-python3 .axion/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 0 --artifact {slug}.plan.md
+python3 .axion/scripts/session_manager.py log . --command-name orchestrate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 0 --artifact {slug}.plan.md
 ```
 
 `--workers` is how many workers launched. `--failures` is how many attempts failed. `--duration-ms` is the estimated elapsed time. `--breaker-trips` is how many times a domain opened. Omit a flag rather than invent a value. A negative count exits 2 and writes nothing. Workers, failures, and breaker trips stop at 1000. Duration stops at 86400000 (24h).

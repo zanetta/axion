@@ -62,7 +62,13 @@ for (const profile of PROFILE_NAMES) {
 
             for (const rel of [
                 "AGENTS.md",
+                ".cursor/commands/discover.md",
+                ".cursor/commands/specify.md",
                 ".cursor/commands/plan.md",
+                ".cursor/commands/implement.md",
+                ".cursor/commands/design.md",
+                ".agents/skills/design/SKILL.md",
+                ".agents/shared/ui-ux-pro-max/scripts/search.py",
                 ".axion/scripts/lint_paths.py",
                 ".agents/schemas/command-contract.schema.json",
                 ".agents/skills/plan-writing/templates/PLAN.template.md",
@@ -72,6 +78,7 @@ for (const profile of PROFILE_NAMES) {
                 assert.ok(await fse.pathExists(path.join(target, rel)), `missing ${rel}`);
             }
             assert.equal(await fse.pathExists(path.join(target, ".cursor", "scripts")), false);
+            assert.equal(await fse.pathExists(path.join(target, ".cursor", "shared")), false);
 
             assert.deepEqual(await danglingSkillRefs(target), []);
             assert.equal(await isKitInstalled(target, "cursor"), true);
@@ -101,23 +108,37 @@ for (const profile of ["standard", "security"]) {
                 for (const rel of [
                     "AGENTS.md",
                     "CLAUDE.md",
+                    ".claude/commands/discover.md",
+                    ".claude/commands/specify.md",
                     ".claude/commands/plan.md",
+                    ".claude/commands/implement.md",
                     ".claude/agents/orchestrator.md",
                     ".agents/skills/plan-writing/SKILL.md",
                     ".claude/skills/plan-writing/SKILL.md",
                     ".axion/scripts/lint_paths.py",
                     ".agents/schemas/command-contract.schema.json",
                     ".mcp.json",
+                    ".claude/commands/design.md",
+                    ".agents/skills/design/SKILL.md",
+                    ".claude/skills/design/SKILL.md",
+                    ".agents/shared/ui-ux-pro-max/scripts/search.py",
                 ]) {
                     assert.ok(await fse.pathExists(path.join(target, rel)), `missing ${rel}`);
                 }
                 assert.equal(await fse.pathExists(path.join(target, ".cursor", "scripts")), false);
+                assert.equal(await fse.pathExists(path.join(target, ".cursor", "shared")), false);
 
                 assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands", "plan.md")), false);
                 assert.equal(
                     await fse.pathExists(path.join(target, ".claude", "commands", "ui-ux-pro-max.md")),
                     false,
                 );
+
+                const design = await fse.readFile(
+                    path.join(target, ".claude", "commands", "design.md"),
+                    "utf8",
+                );
+                assert.match(design, /\$ARGUMENTS/);
 
                 const plan = await fse.readFile(path.join(target, ".claude", "commands", "plan.md"), "utf8");
                 assert.match(plan, /\$ARGUMENTS/);
@@ -159,6 +180,8 @@ for (const profile of ["standard", "security"]) {
                 for (const rel of [
                     "AGENTS.md",
                     ".agents/skills/plan-writing/SKILL.md",
+                    ".agents/skills/design/SKILL.md",
+                    ".agents/shared/ui-ux-pro-max/scripts/search.py",
                     ".axion/scripts/lint_paths.py",
                     ".agents/schemas/command-contract.schema.json",
                     ".codex/config.toml",
@@ -173,6 +196,7 @@ for (const profile of ["standard", "security"]) {
                     ".cursor/commands",
                     ".cursor/rules",
                     ".cursor/scripts",
+                    ".cursor/shared",
                     "CLAUDE.md",
                 ]) {
                     assert.equal(await fse.pathExists(path.join(target, absent)), false, `unexpected ${absent}`);
@@ -241,6 +265,8 @@ for (const profile of ["standard", "security"]) {
                 for (const rel of [
                     "AGENTS.md",
                     ".agents/skills/plan-writing/SKILL.md",
+                    ".agents/skills/design/SKILL.md",
+                    ".agents/shared/ui-ux-pro-max/scripts/search.py",
                     ".axion/scripts/lint_paths.py",
                     ".agents/schemas/command-contract.schema.json",
                     ".windsurf/mcp_config.json",
@@ -255,6 +281,7 @@ for (const profile of ["standard", "security"]) {
                     ".cursor/commands",
                     ".cursor/rules",
                     ".cursor/scripts",
+                    ".cursor/shared",
                     "CLAUDE.md",
                     ".devin",
                 ]) {

@@ -1,7 +1,7 @@
 ---
 name: parallel-agents
 description: Multi-agent orchestration patterns. Use when multiple independent tasks can run with different domain expertise or when comprehensive analysis requires multiple perspectives.
-when_to_use: "When a task requires 2+ specialist agents, comprehensive multi-domain analysis, or coordinated parallel execution. Use with /orchestrate or /coordinate workflows. NOT for single-domain tasks where one agent suffices."
+when_to_use: "When a task requires 2+ specialist agents, comprehensive multi-domain analysis, or coordinated parallel execution. Use with /orchestrate workflow. NOT for single-domain tasks where one agent suffices."
 allowed-tools: Read, Glob, Grep
 effort: medium
 ---

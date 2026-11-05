@@ -2,7 +2,7 @@
 
 Install the Axion kit — spec-driven development with adapters per tool — into any project.
 
-**npm:** [`@zanetta/axion@1.1.2`](https://www.npmjs.com/package/@zanetta/axion). Default tool: **Cursor** (`--tool cursor`). Claude Code: `--tool claude-code`. OpenAI Codex: `--tool codex`. Windsurf: `--tool windsurf`.
+**npm:** [`@zanetta/axion@1.2.0`](https://www.npmjs.com/package/@zanetta/axion). Default tool: **Cursor** (`--tool cursor`). Claude Code: `--tool claude-code`. OpenAI Codex: `--tool codex`. Windsurf: `--tool windsurf`.
 
 ## Usage
 
@@ -29,9 +29,9 @@ npx @zanetta/axion status
 | Tool | Destino principal | Default |
 | --- | --- | --- |
 | `cursor` | `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` | sim (omitir a flag) |
-| `claude-code` | `.claude/commands/` (`$ARGUMENTS`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` | não |
-| `codex` | `.agents/skills/`, `.codex/config.toml` (`[mcp_servers.<id>]`), `AGENTS.md` (`/ui-ux-pro-max`: `não`) | não |
-| `windsurf` | `.agents/skills/`, `.windsurf/mcp_config.json` (`mcpServers` JSON), `AGENTS.md` (`/ui-ux-pro-max`: `não`) | não |
+| `claude-code` | `.claude/commands/` (`$ARGUMENTS`, inclui `/design`), `.claude/skills/`, `.agents/shared/`, `CLAUDE.md`, `.mcp.json` | não |
+| `codex` | `.agents/skills/`, `.agents/shared/`, `.codex/config.toml` (`[mcp_servers.<id>]`), `AGENTS.md` (sem slash commands) | não |
+| `windsurf` | `.agents/skills/`, `.agents/shared/`, `.windsurf/mcp_config.json` (`mcpServers` JSON), `AGENTS.md` (sem slash commands) | não |
 
 `update` sem `--tool` herda `manifest.tool`. ID desconhecido sai com código ≠ 0 e lista `cursor, claude-code, codex, windsurf`.
 
@@ -41,15 +41,15 @@ O **profile** filtra o que é copiado **no momento da cópia** (`isInProfile` em
 
 | Profile | Conteúdo (resumo) | Pack real (aprox.) |
 | --- | --- | --- |
-| `minimal` | 11 agents core + skills de processo (planejamento, verify, orquestração básica) + dependências | 11 agents / 35 skills |
-| `standard` | Pack completo **sem** superfície ofensiva (fallback final) | 19 / 44 |
-| `security` | Pack completo **com** `red-team-tactics` + `penetration-tester` | 20 / 45 |
-| `fullstack` | Pack sem game/mobile (e skills relacionadas) | 17 / 42 |
-| `mobile` | Pack focado mobile; exclui game, SEO e parte do stack web | 16 / 39 |
+| `minimal` | 11 agents core + skills de processo (planejamento, verify, orquestração, design) + dependências | 11 agents / 36 skills |
+| `standard` | Pack completo **sem** superfície ofensiva (fallback final) | 19 / 45 |
+| `security` | Pack completo **com** `red-team-tactics` + `penetration-tester` | 20 / 46 |
+| `fullstack` | Pack sem game/mobile (e skills relacionadas) | 17 / 43 |
+| `mobile` | Pack focado mobile; exclui game, SEO e parte do stack web | 16 / 40 |
 
 **Fechamento de dependências:** uma skill é sempre copiada se algum agent mantido a lista no `skills:` do frontmatter — sem referências penduradas. `security-auditor` não declara `red-team-tactics` no frontmatter; só a carrega se estiver instalada (nota opt-in no corpo do agent).
 
-**Fora do profile:** componentes do kit (skill/agent) excluídos pelo profile mas que **já existem** no projeto são mantidos e listados no resumo como aviso (*outside profile — remove manually*). Consequência: trocar para um profile menor **não** remove arquivos instalados antes — apague-os à mão se quiser. O resumo mostra o contador **`Excluded`** (fora do profile), separado de `Skipped`.
+**Fora do profile:** componentes do kit (skill/agent) excluídos pelo profile mas que **já existem** no projeto são mantidos e listados no resumo como aviso (*outside profile — remove manually*). Consequência: trocar para um profile menor **não** remove arquivos instalados antes — apague-os à mão se quiser. O resumo mostra o contador `Excluded` (fora do profile), separado de `Skipped`.
 
 ### Herança de profile no `init`/`update`
 
@@ -70,11 +70,11 @@ Skills/agents ofensivos (`red-team-tactics`, `penetration-tester`) só entram se
 - `--enable-offensive` (qualquer profile), **ou**
 - herdado de um manifesto com `enable_offensive: true` (sem `--profile` explícito)
 
-Caso contrário **não são copiados** e o CLI grava **`.axion/OFFENSIVE_DISABLED.md`**, que sugere `npx @zanetta/axion update --enable-offensive` ou `update --profile security`.
+Caso contrário **não são copiados** e o CLI grava `.axion/OFFENSIVE_DISABLED.md`, que sugere `npx @zanetta/axion update --enable-offensive` ou `update --profile security`.
 
 ## Manifesto e status (SemVer)
 
-`init` e `update` gravam **`.axion/kit.manifest.json`** no projeto (via `cli/lib/manifest.js`). O arquivo **não** vem do template do pack — é estado local do kit instalado.
+`init` e `update` gravam `.axion/kit.manifest.json` no projeto (via `cli/lib/manifest.js`). O arquivo **não** vem do template do pack — é estado local do kit instalado.
 
 | Campo (resumo) | Significado |
 | --- | --- |
@@ -99,15 +99,15 @@ Se o manifesto não existir (install antigo), rode `init`/`update` de novo para 
 A fonte do kit vive em `pack/` + `.axion/scripts/`. Cópia no destino (filtrada pelo profile, projetada pelo `--tool`):
 
 - `.claude/agents/`
-- `.agents/` (skills + memory + `schemas/` + templates SDD)
+- `.agents/` (skills + memory + `schemas/` + templates SDD + `shared/ui-ux-pro-max/`)
 - `.axion/scripts/` — scripts master de gate e validação nos dois adapters (**breaking em relação à v1**, onde `.cursor/scripts/` deixou de ser o path canônico; `axion update` é aditivo e não apaga `.cursor/scripts/` residual)
-- `cursor`: `.cursor/` (commands, rules, mcp, shared, `ARCHITECTURE.md`)
-- `claude-code`: `.claude/commands/`, `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/ARCHITECTURE.md`
-- `codex`: `.codex/config.toml` (merge aditivo de `[mcp_servers.<id>]`; omite agents, commands, rules e shared)
-- `windsurf`: `.windsurf/mcp_config.json` (merge aditivo de `mcpServers`; omite agents, commands, rules e shared)
+- `cursor`: `.cursor/` (commands, rules, mcp, `ARCHITECTURE.md`)
+- `claude-code`: `.claude/commands/` (inclui `/design`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/ARCHITECTURE.md`
+- `codex`: `.codex/config.toml` (merge aditivo de `[mcp_servers.<id>]`; omite agents, commands e rules)
+- `windsurf`: `.windsurf/mcp_config.json` (merge aditivo de `mcpServers`; omite agents, commands e rules)
 - `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`
-- **`.axion/trace/README.md`** — copiado do `.axion/` do template (`KIT_AXION_FILES` em `cli/lib/constants.js`)
-- **`.axion/kit.manifest.json`** — gravado pelo CLI (não vem do template)
+- `.axion/trace/README.md` — copiado do `.axion/` do template (`KIT_AXION_FILES` em `cli/lib/constants.js`)
+- `.axion/kit.manifest.json` — gravado pelo CLI (não vem do template)
 
 O `inventory.json` e o manifesto do próprio repo do kit **não** são copiados. Inventário machine-readable (maintainers ou consumidores): `python3 .axion/scripts/generate_inventory.py .` → `.axion/inventory.json`.
 

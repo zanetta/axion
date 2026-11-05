@@ -15,7 +15,7 @@ cp .env.example .env   # opcional — MCP Context7
 | Modo | Comportamento |
 | --- | --- |
 | `init` (padrão) | Profile do manifesto (senão **`standard`**) + **`--tool cursor`** + **merge** (`mcp.json`, rules existentes preservados) |
-| `init --tool <id>` | `cursor` (default) \| `claude-code` \| `codex` \| `windsurf` — projeta o pack nos paths nativos da ferramenta (`--tool codex` faz projeção híbrida: `.agents/skills/`, `.codex/config.toml`, `AGENTS.md`, `.axion/scripts/`; `--tool windsurf` faz projeção híbrida: `.agents/skills/`, `.windsurf/mcp_config.json`, `AGENTS.md`, `.axion/scripts/`) |
+| `init --tool <id>` | `cursor` (default) \| `claude-code` \| `codex` \| `windsurf` — projeta o pack nos paths nativos da ferramenta (`--tool codex` faz projeção híbrida: `.agents/skills/`, `.agents/shared/`, `.codex/config.toml`, `AGENTS.md`, `.axion/scripts/`; `--tool windsurf` faz projeção híbrida: `.agents/skills/`, `.agents/shared/`, `.windsurf/mcp_config.json`, `AGENTS.md`, `.axion/scripts/`) |
 | `init --profile <name>` | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (filtra na cópia; nunca apaga arquivos já instalados) |
 | `init --enable-offensive` | Inclui `red-team-tactics` + `penetration-tester` (ou use `--profile security`) |
 | `init --force` | Sobrescreve todos os arquivos do kit |
@@ -34,15 +34,16 @@ discover → specify → plan → implement → verify → remember
 
 | Estado FSM | Command | Artefato / saída |
 | --- | --- | --- |
-| `discover` / `specify` | `/brainstorm` | SPEC (template em `.agents/skills/plan-writing/templates/SPEC.template.md`) |
-| `plan` | `/plan` | PLAN (+ Traceability → SPEC/ACCEPTANCE) |
-| `implement` | `/create` \| `/enhance` | código alinhado ao PLAN |
+| `discover` | `/discover` | Notas de exploração + opções (sem fechar `{slug}.spec.md`) |
+| `specify` | `/specify` | `{slug}.spec.md` (template em `.agents/skills/plan-writing/templates/SPEC.template.md`) |
+| `plan` | `/plan` | `{slug}.plan.md` + `{slug}.acceptance.md` (+ Traceability → SPEC/ACCEPTANCE) |
+| `implement` | `/implement` | Código alinhado ao PLAN (unifica app novo e código existente) |
 | `verify` | `/verify` | ACCEPTANCE + evidência de execução |
 | `remember` | `/remember` | `.agents/memory/` |
 
-Commands de apoio (fora da FSM linear): `/debug`, `/test`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
+Commands de apoio (fora da FSM linear): `/debug`, `/test`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/design`.
 
-### Socratic Gate (antes de `/plan`, `/create`, `/orchestrate`)
+### Socratic Gate (antes de `/plan`, `/implement`, `/orchestrate`)
 
 Exigir **um** dos seguintes:
 
@@ -118,23 +119,22 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 
 | Comando | FSM | Skill / agent principal | Uso |
 | --- | --- | --- | --- |
-| `/brainstorm` | discover/specify | `brainstorming` | Explorar + produzir SPEC; alimenta o gate |
+| `/discover` | discover | `brainstorming` | Explorar opções e perguntas socráticas (sem fechar SPEC) |
+| `/specify` | specify | `brainstorming`, `plan-writing` | Fechar `{slug}.spec.md` após o Socratic Gate |
 | `/plan` | plan | `plan-writing`, `architecture` | PLAN estruturado (**gate**) |
-| `/create` | implement | `app-builder` | Nova feature/app (**gate**) |
-| `/enhance` | implement | domain agents | Melhorar código existente |
+| `/implement` | implement | `app-builder`, `plan-writing`, domain agents | Construir app novo ou evoluir código existente (**gate**) |
 | `/verify` | verify | `verify-changes` | Roda os AC-*, grava evidência, marca `[x]`; roda `python3 .axion/scripts/checklist.py .` antes do gate; o gate roda o checklist de novo; exit 0 fecha a tarefa |
 | `/remember` | remember | `memory-system` | Persistir em `.agents/memory/` |
-| `/orchestrate` | — (multi) | `parallel-agents` + `orchestrator` | Multi-agente (mín. 3) (**gate**) |
-| `/coordinate` | — (multi) | `coordinator-mode` + `orchestrator` | Orquestração avançada paralela |
+| `/orchestrate` | — (multi) | `parallel-agents`, `coordinator-mode` + `orchestrator` | Multi-agente (mín. 3) e coordenação paralela (**gate**) |
 | `/debug` | — | `systematic-debugging` | Debug baseado em evidência |
 | `/deploy` | — | `deployment-procedures` | Pré-flight + deploy |
 | `/preview` | — | `auto_preview.py` | Preview local |
 | `/status` | — | — | Relatório de progresso |
 | `/test` | — (apoio verify) | `testing-patterns`, `webapp-testing` | Testes |
-| `/ui-ux-pro-max` | — | `.cursor/shared/ui-ux-pro-max` | **Cursor-only** — design |
+| `/design` | — | `.agents/shared/ui-ux-pro-max` | Design system (slash no Cursor e no Claude Code; skill nas quatro IDEs) |
 
 > **Cursor:** argumentos são texto livre após o comando (ex.: `/plan auth JWT`), não `$ARGUMENTS`.
-> **Gate:** `/plan`, `/create`, `/orchestrate` exigem SPEC **ou** ≥3 respostas socráticas no SPEC/PLAN.
+> **Gate:** `/plan`, `/implement`, `/orchestrate` exigem SPEC **ou** ≥3 respostas socráticas no SPEC/PLAN.
 
 ---
 
@@ -142,7 +142,7 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 
 | Domínio | Agent | Skills típicas |
 | --- | --- | --- |
-| UI/UX Web | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `tailwind-patterns` |
+| UI/UX Web | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `tailwind-patterns`, `design` |
 | API | `backend-specialist` | `api-patterns`, `nodejs-best-practices` |
 | Database | `database-architect` | `database-design` |
 | Mobile | `mobile-developer` | `mobile-design` |
@@ -222,4 +222,4 @@ python3 .axion/scripts/verify_all.py . --url http://localhost:3000
 - Sync: `python3 .axion/scripts/sync_upstream.py`
 - Repositório: https://github.com/zanetta/axion
 
-**Last Updated:** 2026-10-30 · **npm:** `@zanetta/axion@1.1.0` · FSM SDD P1
+**Last Updated:** 2026-11-04 · **npm:** `@zanetta/axion@1.1.3` · FSM SDD P1

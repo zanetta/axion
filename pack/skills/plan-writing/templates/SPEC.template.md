@@ -9,7 +9,7 @@ updated: "{ISO_DATE}"
 
 # SPEC: {TITLE}
 
-> Fill after Socratic Gate (`/brainstorm`). Do not implement until SPEC is accepted.
+> Fill after Socratic Gate (`/discover` → `/specify`). Do not implement until SPEC is accepted.
 
 ## 1. Problem
 

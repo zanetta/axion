@@ -80,6 +80,7 @@ test("resolveProfile minimal keeps skills required by kept agents", () => {
     assert.equal(plan.keepSkill("nextjs-react-expert"), true);
     assert.equal(plan.keepSkill("game-development"), false);
     assert.equal(plan.keepSkill("clean-code"), true);
+    assert.equal(plan.keepSkill("design"), true);
 });
 
 test("resolveProfile mobile keeps an excluded skill still required by a kept agent", () => {

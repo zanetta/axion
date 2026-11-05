@@ -40,6 +40,7 @@ const MINIMAL_CORE_SKILLS = new Set([
     "intelligent-routing",
     "documentation-templates",
     "code-review-checklist",
+    "design",
 ]);
 
 const EXCLUDED_AGENTS = {

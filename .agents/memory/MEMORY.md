@@ -14,6 +14,11 @@
 - [project] Kit repo dogfoods via root symlinks to pack/; memory stays live at repo root → tech-decisions.md
 - [project] Codex hybrid: AGENTS.md + .agents/skills + .codex/config.toml → tech-decisions.md
 - [project] Windsurf hybrid: AGENTS.md + .agents/skills + .windsurf/mcp_config.json; close #11 after merge → tech-decisions.md
+- [project] FSM commands 1:1: discover, specify, plan, implement, verify, remember → tech-decisions.md
+- [project] Transition aliases not in pack; docs+skills canonical-only; commands=13; hide-transition-aliases verified → tech-decisions.md
+- [project] Slug sdd-command-rename verified; ACCEPTANCE evidence cannot use bare braces → project-conventions.md
+- [project] /design on Cursor+Claude Code; skill+search.py on all four IDEs via .agents/shared → tech-decisions.md
+- [project] Slug design-all-tools verified; design data path is .agents/shared not .cursor/shared → tech-decisions.md
 
 ## Feedback
 - [feedback] Issue 11: Option B single cutover, then Option A pack symlinks when skills vanished → feedback-history.md

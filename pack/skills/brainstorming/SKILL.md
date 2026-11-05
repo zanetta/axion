@@ -1,7 +1,7 @@
 ---
 name: brainstorming
 description: Socratic questioning protocol + user communication. MANDATORY for complex requests, new features, or unclear requirements. Includes progress reporting and error handling.
-when_to_use: "When exploring options before implementation, clarifying requirements, or when the user needs creative problem-solving. Use with /brainstorm workflow."
+when_to_use: "When exploring options before implementation, clarifying requirements, or when the user needs creative problem-solving. Use with /discover and /specify workflows."
 allowed-tools: Read, Glob, Grep
 contract_version: "1.0.0"
 inputs:
@@ -68,7 +68,7 @@ verify_hooks: []
    - 📦 Scope: Must-have vs nice-to-have?
 4. **WAIT** - Get response before proceeding
 5. **SAVE** - After brainstorming, save key decisions: `/remember [decision]`
-6. **SPEC** - After direction is chosen, write `{slug}.spec.md` from `.agents/skills/plan-writing/templates/SPEC.template.md` (hand-off to `/plan`)
+6. **SPEC (`/specify`)** - After direction is chosen in `/discover`, run `/specify` to write `{slug}.spec.md` from `.agents/skills/plan-writing/templates/SPEC.template.md` (hand-off to `/plan`)
 
 ---
 
