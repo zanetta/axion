@@ -2,7 +2,7 @@
 
 Framework de Spec-Driven Development (SDD). A especificação é a fonte da verdade; o código deriva dela. O Cursor é o adapter **default** (`--tool cursor`); Claude Code entra com `--tool claude-code`, OpenAI Codex com `--tool codex`, Windsurf com `--tool windsurf` e Google Antigravity com `--tool antigravity`.
 
-Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.2.0`](https://www.npmjs.com/package/@zanetta/axion)
+Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.3.2`](https://www.npmjs.com/package/@zanetta/axion)
 
 | | |
 | --- | --- |
