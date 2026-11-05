@@ -60,7 +60,7 @@ Antes de modificar QUALQUER arquivo:
 | **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md` |
 | **MCP env vars**    | `.env` (no `.gitignore`); template em `.env.example` |
 
-> No repo do kit, a fonte canônica vive em `pack/` + `.axion/scripts/` (e é projetada pelos adapters no `init`/`update`; `axion update` é aditivo e não apaga `.cursor/scripts/` residual de installs v1). Cursor (default `--tool cursor`) lê `.agents/skills/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md`. Claude Code (`--tool claude-code`) lê `.claude/agents/`, `.claude/commands/`, `.claude/skills/`, `CLAUDE.md` / `AGENTS.md` e `.mcp.json`. OpenAI Codex (`--tool codex`) lê `AGENTS.md`, `.agents/skills/` e `.codex/config.toml`. Windsurf (`--tool windsurf`) lê `AGENTS.md`, `.agents/skills/` e `.windsurf/mcp_config.json`.
+> No repo do kit, a fonte canônica vive em `pack/` + `.axion/scripts/` (e é projetada pelos adapters no `init`/`update`; `axion update` é aditivo e não apaga `.cursor/scripts/` residual de installs v1). Cursor (default `--tool cursor`) lê `.agents/skills/`, `.agents/shared/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md`. Claude Code (`--tool claude-code`) lê `.claude/agents/`, `.claude/commands/`, `.claude/skills/`, `.agents/shared/`, `CLAUDE.md` / `AGENTS.md` e `.mcp.json`. OpenAI Codex (`--tool codex`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.codex/config.toml`. Windsurf (`--tool windsurf`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.windsurf/mcp_config.json`.
 
 ---
 

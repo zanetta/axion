@@ -2,7 +2,7 @@
 
 Framework de Spec-Driven Development (SDD). A especificação é a fonte da verdade; o código deriva dela. O Cursor é o adapter **default** (`--tool cursor`); Claude Code entra com `--tool claude-code`, OpenAI Codex com `--tool codex` e Windsurf com `--tool windsurf`.
 
-Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.1.0`](https://www.npmjs.com/package/@zanetta/axion)
+Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.2.0`](https://www.npmjs.com/package/@zanetta/axion)
 
 | | |
 | --- | --- |
@@ -422,7 +422,7 @@ echo ".agents/" >> .git/info/exclude
     ├── ARCHITECTURE.md
     ├── commands/             # 18 slash commands
     ├── rules/                # 7 regras por domínio
-    ├── scripts/              # checklist, verify_all, lint_paths, generate_inventory, …
+    ├── scripts/              # leftover v1; masters are `.axion/scripts/`
     └── mcp.json
 ```
 
@@ -438,7 +438,7 @@ echo ".agents/" >> .git/info/exclude
 
 ## Manutenção do kit
 
-O script compara agents, skills, memória e commands com [zanetta/axion](https://github.com/zanetta/axion). Não altera `/design` (`/ui-ux-pro-max`), `AGENTS.md`, `.cursor/rules/` nem este README.
+O script compara agents, skills, memória e commands com [zanetta/axion](https://github.com/zanetta/axion). Sincroniza `/design`; preserva apenas o alias `/ui-ux-pro-max`, `AGENTS.md`, `.cursor/rules/` e este README.
 
 ```bash
 python3 .axion/scripts/lint_paths.py .                  # drift de paths (legado .agents/scripts/)

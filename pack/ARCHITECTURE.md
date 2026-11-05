@@ -1,6 +1,6 @@
 # Axion — Architecture
 
-> Framework de Spec-Driven Development — Cursor default (`--tool cursor`), Claude Code via `--tool claude-code`, OpenAI Codex via `--tool codex` (`AGENTS.md` + `.agents/skills/` + `.codex/config.toml`), Windsurf via `--tool windsurf` (`AGENTS.md` + `.agents/skills/` + `.windsurf/mcp_config.json`) — **npm `@zanetta/axion@1.1.2`**
+> Framework de Spec-Driven Development — Cursor default (`--tool cursor`), Claude Code via `--tool claude-code`, OpenAI Codex via `--tool codex` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.codex/config.toml`), Windsurf via `--tool windsurf` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.windsurf/mcp_config.json`) — **npm `@zanetta/axion@1.1.3`**
 
 ---
 
@@ -54,7 +54,7 @@ axion/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 18 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
-    ├── scripts/                 # checklist, verify_gate, side_effect_guard, circuit_breaker, eval_routing, verify_all, lint_paths, lint_contracts, lint_inventory, …
+    ├── scripts/                 # leftover v1; masters live in `.axion/scripts/`
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
 
@@ -64,7 +64,7 @@ axion/
 
 | Item | Detalhe |
 | --- | --- |
-| Pacote | `@zanetta/axion@1.1.0` |
+| Pacote | `@zanetta/axion@1.1.3` |
 | Binário | `axion` |
 | Comandos CLI | `init`, `update`, `status` |
 | Install default | Profile do manifesto (senão `standard`) + `--tool cursor` (`cursor` \| `claude-code` \| `codex` \| `windsurf`) + merge (`mcp.json` / `.codex/config.toml` / `.windsurf/mcp_config.json`, rules); ver `--profile` e `--tool` |
@@ -192,7 +192,7 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 
-## 🧩 Skills (45)
+## 🧩 Skills (46)
 
 Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicional.
 
@@ -204,6 +204,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | `web-design-guidelines` | Auditoria UI (100+ regras a11y/UX) |
 | `tailwind-patterns` | Tailwind CSS v4 |
 | `frontend-design` | UI/UX, design systems |
+| `design` | Guia UI/UX pesquisável (estilos, paletas, tipos; `.agents/shared/`) |
 
 ### Backend & API
 
@@ -436,7 +437,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 
 | Necessidade | Agent | Skills |
 | --- | --- | --- |
-| Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design` |
+| Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `design` |
 | API | `backend-specialist` | `api-patterns`, `nodejs-best-practices` |
 | Mobile | `mobile-developer` | `mobile-design` |
 | Database | `database-architect` | `database-design` |

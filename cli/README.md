@@ -2,7 +2,7 @@
 
 Install the Axion kit — spec-driven development with adapters per tool — into any project.
 
-**npm:** [`@zanetta/axion@1.1.2`](https://www.npmjs.com/package/@zanetta/axion). Default tool: **Cursor** (`--tool cursor`). Claude Code: `--tool claude-code`. OpenAI Codex: `--tool codex`. Windsurf: `--tool windsurf`.
+**npm:** [`@zanetta/axion@1.2.0`](https://www.npmjs.com/package/@zanetta/axion). Default tool: **Cursor** (`--tool cursor`). Claude Code: `--tool claude-code`. OpenAI Codex: `--tool codex`. Windsurf: `--tool windsurf`.
 
 ## Usage
 
@@ -49,7 +49,7 @@ O **profile** filtra o que é copiado **no momento da cópia** (`isInProfile` em
 
 **Fechamento de dependências:** uma skill é sempre copiada se algum agent mantido a lista no `skills:` do frontmatter — sem referências penduradas. `security-auditor` não declara `red-team-tactics` no frontmatter; só a carrega se estiver instalada (nota opt-in no corpo do agent).
 
-**Fora do profile:** componentes do kit (skill/agent) excluídos pelo profile mas que **já existem** no projeto são mantidos e listados no resumo como aviso (*outside profile — remove manually*). Consequência: trocar para um profile menor **não** remove arquivos instalados antes — apague-os à mão se quiser. O resumo mostra o contador **`Excluded`** (fora do profile), separado de `Skipped`.
+**Fora do profile:** componentes do kit (skill/agent) excluídos pelo profile mas que **já existem** no projeto são mantidos e listados no resumo como aviso (*outside profile — remove manually*). Consequência: trocar para um profile menor **não** remove arquivos instalados antes — apague-os à mão se quiser. O resumo mostra o contador `Excluded` (fora do profile), separado de `Skipped`.
 
 ### Herança de profile no `init`/`update`
 
@@ -70,11 +70,11 @@ Skills/agents ofensivos (`red-team-tactics`, `penetration-tester`) só entram se
 - `--enable-offensive` (qualquer profile), **ou**
 - herdado de um manifesto com `enable_offensive: true` (sem `--profile` explícito)
 
-Caso contrário **não são copiados** e o CLI grava **`.axion/OFFENSIVE_DISABLED.md`**, que sugere `npx @zanetta/axion update --enable-offensive` ou `update --profile security`.
+Caso contrário **não são copiados** e o CLI grava `.axion/OFFENSIVE_DISABLED.md`, que sugere `npx @zanetta/axion update --enable-offensive` ou `update --profile security`.
 
 ## Manifesto e status (SemVer)
 
-`init` e `update` gravam **`.axion/kit.manifest.json`** no projeto (via `cli/lib/manifest.js`). O arquivo **não** vem do template do pack — é estado local do kit instalado.
+`init` e `update` gravam `.axion/kit.manifest.json` no projeto (via `cli/lib/manifest.js`). O arquivo **não** vem do template do pack — é estado local do kit instalado.
 
 | Campo (resumo) | Significado |
 | --- | --- |
@@ -106,8 +106,8 @@ A fonte do kit vive em `pack/` + `.axion/scripts/`. Cópia no destino (filtrada 
 - `codex`: `.codex/config.toml` (merge aditivo de `[mcp_servers.<id>]`; omite agents, commands e rules)
 - `windsurf`: `.windsurf/mcp_config.json` (merge aditivo de `mcpServers`; omite agents, commands e rules)
 - `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`
-- **`.axion/trace/README.md`** — copiado do `.axion/` do template (`KIT_AXION_FILES` em `cli/lib/constants.js`)
-- **`.axion/kit.manifest.json`** — gravado pelo CLI (não vem do template)
+- `.axion/trace/README.md` — copiado do `.axion/` do template (`KIT_AXION_FILES` em `cli/lib/constants.js`)
+- `.axion/kit.manifest.json` — gravado pelo CLI (não vem do template)
 
 O `inventory.json` e o manifesto do próprio repo do kit **não** são copiados. Inventário machine-readable (maintainers ou consumidores): `python3 .axion/scripts/generate_inventory.py .` → `.axion/inventory.json`.
 

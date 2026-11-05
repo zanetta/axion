@@ -15,7 +15,7 @@ cp .env.example .env   # opcional — MCP Context7
 | Modo | Comportamento |
 | --- | --- |
 | `init` (padrão) | Profile do manifesto (senão **`standard`**) + **`--tool cursor`** + **merge** (`mcp.json`, rules existentes preservados) |
-| `init --tool <id>` | `cursor` (default) \| `claude-code` \| `codex` \| `windsurf` — projeta o pack nos paths nativos da ferramenta (`--tool codex` faz projeção híbrida: `.agents/skills/`, `.codex/config.toml`, `AGENTS.md`, `.axion/scripts/`; `--tool windsurf` faz projeção híbrida: `.agents/skills/`, `.windsurf/mcp_config.json`, `AGENTS.md`, `.axion/scripts/`) |
+| `init --tool <id>` | `cursor` (default) \| `claude-code` \| `codex` \| `windsurf` — projeta o pack nos paths nativos da ferramenta (`--tool codex` faz projeção híbrida: `.agents/skills/`, `.agents/shared/`, `.codex/config.toml`, `AGENTS.md`, `.axion/scripts/`; `--tool windsurf` faz projeção híbrida: `.agents/skills/`, `.agents/shared/`, `.windsurf/mcp_config.json`, `AGENTS.md`, `.axion/scripts/`) |
 | `init --profile <name>` | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (filtra na cópia; nunca apaga arquivos já instalados) |
 | `init --enable-offensive` | Inclui `red-team-tactics` + `penetration-tester` (ou use `--profile security`) |
 | `init --force` | Sobrescreve todos os arquivos do kit |
@@ -148,7 +148,7 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 
 | Domínio | Agent | Skills típicas |
 | --- | --- | --- |
-| UI/UX Web | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `tailwind-patterns` |
+| UI/UX Web | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `tailwind-patterns`, `design` |
 | API | `backend-specialist` | `api-patterns`, `nodejs-best-practices` |
 | Database | `database-architect` | `database-design` |
 | Mobile | `mobile-developer` | `mobile-design` |
@@ -228,4 +228,4 @@ python3 .axion/scripts/verify_all.py . --url http://localhost:3000
 - Sync: `python3 .axion/scripts/sync_upstream.py`
 - Repositório: https://github.com/zanetta/axion
 
-**Last Updated:** 2026-10-30 · **npm:** `@zanetta/axion@1.1.0` · FSM SDD P1
+**Last Updated:** 2026-11-04 · **npm:** `@zanetta/axion@1.1.3` · FSM SDD P1

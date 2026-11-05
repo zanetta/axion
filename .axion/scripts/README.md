@@ -315,7 +315,7 @@ Adaptações automáticas ao aplicar:
 
 - Agents → `.claude/agents/` com paths `.axion/scripts/`
 - Workflows → `.cursor/commands/` sem `$ARGUMENTS`
-- Preserva `/design` e `/ui-ux-pro-max`
+- Sincroniza `/design`; não altera o alias Cursor-only `/ui-ux-pro-max`
 
 ## CLI npm (`cli/`)
 
