@@ -56,11 +56,11 @@ Antes de modificar QUALQUER arquivo:
 | **Templates SDD** | SPEC/PLAN: `.agents/skills/plan-writing/templates/`; ACCEPTANCE: `.agents/skills/verify-changes/templates/` |
 | **Traceability** | `.axion/trace/` — opcional `{slug}.json`; leitor `python3 .axion/scripts/trace_report.py . {slug}` |
 | **Contratos (schemas)** | `.agents/schemas/` — `skill-contract.schema.json`, `command-contract.schema.json` |
-| **CLI npm (instalar kit)** | `npx @zanetta/axion init [--profile …] [--tool cursor\|claude-code\|codex\|windsurf] [--enable-offensive]` · código em `cli/` |
+| **CLI npm (instalar kit)** | `npx @zanetta/axion init [--profile …] [--tool cursor\|claude-code\|codex\|windsurf\|antigravity] [--enable-offensive]` · código em `cli/` |
 | **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md` |
 | **MCP env vars**    | `.env` (no `.gitignore`); template em `.env.example` |
 
-> No repo do kit, a fonte canônica vive em `pack/` + `.axion/scripts/` (e é projetada pelos adapters no `init`/`update`; `axion update` é aditivo e não apaga `.cursor/scripts/` residual de installs v1). Cursor (default `--tool cursor`) lê `.agents/skills/`, `.agents/shared/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md`. Claude Code (`--tool claude-code`) lê `.claude/agents/`, `.claude/commands/`, `.claude/skills/`, `.agents/shared/`, `CLAUDE.md` / `AGENTS.md` e `.mcp.json`. OpenAI Codex (`--tool codex`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.codex/config.toml`. Windsurf (`--tool windsurf`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.windsurf/mcp_config.json`.
+> No repo do kit, a fonte canônica vive em `pack/` + `.axion/scripts/` (e é projetada pelos adapters no `init`/`update`; `axion update` é aditivo e não apaga `.cursor/scripts/` residual de installs v1). Cursor (default `--tool cursor`) lê `.agents/skills/`, `.agents/shared/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md`. Claude Code (`--tool claude-code`) lê `.claude/agents/`, `.claude/commands/`, `.claude/skills/`, `.agents/shared/`, `CLAUDE.md` / `AGENTS.md` e `.mcp.json`. OpenAI Codex (`--tool codex`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.codex/config.toml`. Windsurf (`--tool windsurf`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.windsurf/mcp_config.json`. Google Antigravity (`--tool antigravity`) lê `AGENTS.md`, `GEMINI.md`, `.agents/skills/`, `.agents/workflows/`, `.agents/rules/`, `.agents/shared/` e `.agents/mcp_config.json`.
 
 ---
 

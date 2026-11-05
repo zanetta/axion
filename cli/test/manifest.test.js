@@ -122,3 +122,34 @@ test("writeKitManifest handles windsurf null componentDirs (agents/commands/rule
         await fse.remove(tmp);
     }
 });
+
+test("writeKitManifest counts antigravity workflows and .md rules", async () => {
+    const tmp = await fse.mkdtemp(path.join(os.tmpdir(), "axion-manifest-antigravity-"));
+    try {
+        await fse.writeFile(path.join(tmp, "AGENTS.md"), "# test\n");
+        await fse.ensureDir(path.join(tmp, ".agents", "skills", "foo"));
+        await fse.writeFile(path.join(tmp, ".agents", "skills", "foo", "SKILL.md"), "x");
+        await fse.ensureDir(path.join(tmp, ".agents", "workflows"));
+        await fse.writeFile(path.join(tmp, ".agents", "workflows", "plan.md"), "x");
+        await fse.ensureDir(path.join(tmp, ".agents", "rules"));
+        await fse.writeFile(path.join(tmp, ".agents", "rules", "backend.md"), "x");
+
+        const written = await writeKitManifest(tmp, {
+            version: "1.1.2",
+            packageName: "@zanetta/axion",
+            profile: "standard",
+            action: "init",
+            tool: "antigravity",
+        });
+
+        assert.strictEqual(written.tool, "antigravity");
+        assert.strictEqual(written.components.agents, 0);
+        assert.strictEqual(written.components.commands, 1);
+        assert.strictEqual(written.components.rules, 1);
+        assert.strictEqual(written.components.skills, 1);
+        assert.ok(written.install_paths.includes(".agents/mcp_config.json"));
+        assert.ok(written.install_paths.includes("GEMINI.md"));
+    } finally {
+        await fse.remove(tmp);
+    }
+});

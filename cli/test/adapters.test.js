@@ -57,11 +57,22 @@ test("isValidTool rejects unknown ids", () => {
     assert.equal(isValidTool("claude-code"), true);
     assert.equal(isValidTool("codex"), true);
     assert.equal(isValidTool("windsurf"), true);
+    assert.equal(isValidTool("antigravity"), true);
     assert.equal(isValidTool("foo"), false);
     assert.equal(isValidTool("devin"), false);
     assert.equal(isValidTool("openai-codex"), false);
-    assert.throws(() => resolveAdapter("foo"), /cursor, claude-code, codex, windsurf/);
-    assert.deepEqual(TOOL_NAMES, ["cursor", "claude-code", "codex", "windsurf"]);
+    assert.equal(isValidTool("gemini"), false);
+    assert.throws(
+        () => resolveAdapter("foo"),
+        /cursor, claude-code, codex, windsurf, antigravity/,
+    );
+    assert.deepEqual(TOOL_NAMES, [
+        "cursor",
+        "claude-code",
+        "codex",
+        "windsurf",
+        "antigravity",
+    ]);
 });
 
 test("claude-code maps pack/ commands, skills, MCP, .axion/scripts and omits cursor-only files", () => {
@@ -268,4 +279,98 @@ test("windsurf transformContent sanitizes MCP JSON without envFile or TOML", () 
     assert.ok(Object.hasOwn(sanitized, "mcpServers"));
     assert.equal(raw.includes("envFile"), false);
     assert.equal(raw.includes("[mcp_servers"), false);
+});
+
+test("antigravity maps pack to native workflows, rules .md, MCP, GEMINI stub and omits agents", () => {
+    const adapter = resolveAdapter("antigravity");
+    assert.equal(adapter.id, "antigravity");
+    assert.ok(adapter.installPaths.includes(".agents"));
+    assert.ok(adapter.installPaths.includes(".axion/scripts"));
+    assert.ok(adapter.installPaths.includes(".agents/mcp_config.json"));
+    assert.ok(adapter.installPaths.includes("GEMINI.md"));
+    assert.ok(adapter.installPaths.includes(".env.example"));
+    assert.equal(adapter.installPaths.some((p) => p.startsWith(".claude")), false);
+    assert.equal(adapter.installPaths.some((p) => p.startsWith(".cursor")), false);
+    assert.equal(adapter.installPaths.some((p) => p.startsWith(".gemini")), false);
+    assert.equal(adapter.installPaths.some((p) => p.startsWith("~")), false);
+    assert.match(adapter.postInstallHints.join("\n"), /\/design/);
+
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
+        ".agents/workflows/plan.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/design.md"), [
+        ".agents/workflows/design.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/plan.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), [
+        ".agents/rules/frontend.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/skills/clean-code/SKILL.md"), [
+        ".agents/skills/clean-code/SKILL.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/mcp.json"), [".agents/mcp_config.json"]);
+    assert.deepEqual(adapter.mapTemplateTargets("AGENTS.md"), ["AGENTS.md", "GEMINI.md"]);
+    assert.deepEqual(adapter.mapTemplateTargets(".env.example"), [".env.example"]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/agents/orchestrator.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/ARCHITECTURE.md"), []);
+    assert.deepEqual(
+        adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/scripts/search.py"),
+        [".agents/shared/ui-ux-pro-max/scripts/search.py"],
+    );
+
+    for (const dest of adapter.mapTemplateTargets("pack/mcp.json")) {
+        assert.equal(dest.startsWith("~"), false);
+        assert.equal(dest.startsWith(".gemini/"), false);
+    }
+});
+
+test("antigravity transformContent writes glob rules, model_decision fallback, MCP sanitize, GEMINI stub", () => {
+    const adapter = resolveAdapter("antigravity");
+    const packRule = [
+        "---",
+        "description: Frontend UI rules",
+        "globs: **/*.tsx,**/*.jsx",
+        "alwaysApply: false",
+        "---",
+        "",
+        "# Frontend",
+        "",
+    ].join("\n");
+    const globbed = adapter.transformContent(
+        "pack/rules/frontend.mdc",
+        ".agents/rules/frontend.md",
+        packRule,
+    );
+    assert.match(globbed, /trigger: glob/);
+    assert.match(globbed, /description: "Frontend UI rules"/);
+    assert.match(globbed, /globs: "\*\*\/\*\.tsx,\*\*\/\*\.jsx"/);
+    assert.equal(globbed.includes("alwaysApply"), false);
+
+    const bare = adapter.transformContent(
+        "pack/rules/backend.mdc",
+        ".agents/rules/backend.md",
+        "# backend rule from kit\n",
+    );
+    assert.match(bare, /trigger: model_decision/);
+    assert.match(bare, /description: "Workspace rule: backend"/);
+
+    const mcp = JSON.stringify({
+        mcpServers: {
+            context7: {
+                command: "npx",
+                args: ["--api-key", "${env:CONTEXT7_API_KEY}"],
+                envFile: "${workspaceFolder}/.env",
+            },
+        },
+    });
+    const sanitized = JSON.parse(
+        adapter.transformContent("pack/mcp.json", ".agents/mcp_config.json", mcp),
+    );
+    assert.equal(sanitized.mcpServers.context7.envFile, undefined);
+    assert.equal(sanitized.mcpServers.context7.args[1], "${CONTEXT7_API_KEY}");
+
+    const stub = adapter.transformContent("AGENTS.md", "GEMINI.md", "# AGENTS\n");
+    assert.match(stub, /@AGENTS\.md/);
+    assert.match(stub, /AGENT_FLOW\.md/);
+    assert.match(stub, /\.agents\/workflows/);
 });

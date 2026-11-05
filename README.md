@@ -1,6 +1,6 @@
 # Axion
 
-Framework de Spec-Driven Development (SDD). A especificação é a fonte da verdade; o código deriva dela. O Cursor é o adapter **default** (`--tool cursor`); Claude Code entra com `--tool claude-code`, OpenAI Codex com `--tool codex` e Windsurf com `--tool windsurf`.
+Framework de Spec-Driven Development (SDD). A especificação é a fonte da verdade; o código deriva dela. O Cursor é o adapter **default** (`--tool cursor`); Claude Code entra com `--tool claude-code`, OpenAI Codex com `--tool codex`, Windsurf com `--tool windsurf` e Google Antigravity com `--tool antigravity`.
 
 Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.2.0`](https://www.npmjs.com/package/@zanetta/axion)
 
@@ -56,6 +56,7 @@ npx @zanetta/axion init --profile standard
 npx @zanetta/axion init --tool claude-code
 npx @zanetta/axion init --tool codex
 npx @zanetta/axion init --tool windsurf
+npx @zanetta/axion init --tool antigravity
 npx @zanetta/axion init --profile security   # inclui red-team / penetration-tester
 ```
 
@@ -76,7 +77,7 @@ axion init --profile standard
 | Regras globais e fluxo | `AGENTS.md`, `AGENT_FLOW.md` |
 | Template de env | `.env.example` |
 
-`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, com `/design`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` e `.agents/shared/`. `--tool codex` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.codex/config.toml` (`[mcp_servers.<id>]` com merge aditivo; omite agents, commands e rules). `--tool windsurf` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.windsurf/mcp_config.json` (JSON `mcpServers`, merge aditivo; omite agents, commands e rules). Detalhes: [`cli/README.md`](cli/README.md).
+`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, com `/design`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` e `.agents/shared/`. `--tool codex` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.codex/config.toml` (`[mcp_servers.<id>]` com merge aditivo; omite agents, commands e rules). `--tool windsurf` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.windsurf/mcp_config.json` (JSON `mcpServers`, merge aditivo; omite agents, commands e rules). `--tool antigravity` projeta `.agents/workflows/`, `.agents/skills/`, `.agents/rules/` (`.md` com `trigger`), `.agents/shared/`, `.axion/scripts/`, `AGENTS.md`, `GEMINI.md` e `.agents/mcp_config.json`. Detalhes: [`cli/README.md`](cli/README.md).
 
 O `init` (e o `update`) também grava `.axion/kit.manifest.json` — estado local do kit (SemVer, profile). Não faz parte do template do pack. `npx @zanetta/axion status` lê esse manifesto e mostra a versão instalada (e compara com o latest no npm, se a rede responder).
 
@@ -115,7 +116,7 @@ Detalhes, publish e desenvolvimento local: [`cli/README.md`](cli/README.md). Tag
 | --- | --- |
 | `npx` não acha o pacote recém-publicado | `NPM_CONFIG_MIN_RELEASE_AGE=0 npx @zanetta/axion init`. Confira com `npm view @zanetta/axion version`. |
 | O kit caiu na pasta errada | `init` grava no diretório atual. Entre na raiz do app e rode de novo. |
-| `/comando` não aparece no chat | Cursor: `.cursor/commands/`. Claude Code: `.claude/commands/` (`init --tool claude-code`). |
+| `/comando` não aparece no chat | Cursor: `.cursor/commands/`. Claude Code: `.claude/commands/` (`init --tool claude-code`). Antigravity: `.agents/workflows/` (`init --tool antigravity`). |
 | Troquei para `minimal` e os agents antigos continuam | O CLI não apaga arquivo do projeto. O que ficou de fora do profile aparece como *outside profile* e sai só se você remover. |
 | `--force` e o SPEC/PLAN sumiu | Não deve sumir. `*.spec.md`, `*.plan.md`, `*.acceptance.md`, `.agents/memory/`, `.axion/logs/` e `.axion/trace/` (exceto o `README.md`) não são sobrescritos se já existem. |
 | `update` diz que há drift | A lista é informativa. Sem `--force`, o arquivo local fica. Com `--force`, só arquivo do kit que não é protegido é substituído. |

@@ -1,6 +1,6 @@
 # Axion — Architecture
 
-> Framework de Spec-Driven Development — Cursor default (`--tool cursor`), Claude Code via `--tool claude-code`, OpenAI Codex via `--tool codex` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.codex/config.toml`), Windsurf via `--tool windsurf` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.windsurf/mcp_config.json`) — **npm `@zanetta/axion@1.1.3`**
+> Framework de Spec-Driven Development — Cursor default (`--tool cursor`), Claude Code via `--tool claude-code`, OpenAI Codex via `--tool codex` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.codex/config.toml`), Windsurf via `--tool windsurf` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.windsurf/mcp_config.json`), Google Antigravity via `--tool antigravity` (`AGENTS.md` + `GEMINI.md` + `.agents/workflows/` + `.agents/rules/` + `.agents/skills/` + `.agents/mcp_config.json`) — **npm `@zanetta/axion@1.1.3`**
 
 ---
 
@@ -67,7 +67,7 @@ axion/
 | Pacote | `@zanetta/axion@1.1.3` |
 | Binário | `axion` |
 | Comandos CLI | `init`, `update`, `status` |
-| Install default | Profile do manifesto (senão `standard`) + `--tool cursor` (`cursor` \| `claude-code` \| `codex` \| `windsurf`) + merge (`mcp.json` / `.codex/config.toml` / `.windsurf/mcp_config.json`, rules); ver `--profile` e `--tool` |
+| Install default | Profile do manifesto (senão `standard`) + `--tool cursor` (`cursor` \| `claude-code` \| `codex` \| `windsurf` \| `antigravity`) + merge (`mcp.json` / `.codex/config.toml` / `.windsurf/mcp_config.json` / `.agents/mcp_config.json`, rules); ver `--profile` e `--tool` |
 | Manifesto | `.axion/kit.manifest.json` (SemVer, profile, tool, components) |
 | Profiles | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (`cli/lib/profiles.js`; filtro na cópia em `cli/lib/install.js`, nunca apaga no alvo) |
 | Offensive | Só com `--profile security` ou `--enable-offensive` |

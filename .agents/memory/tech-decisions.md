@@ -1,7 +1,7 @@
 ---
 type: project
 created: 2026-11-03
-updated: "2026-11-04"
+updated: "2026-11-05"
 ---
 
 # Tech Decisions
@@ -9,7 +9,7 @@ updated: "2026-11-04"
 ## Tool-agnostic SDD (issue 9, v1)
 
 - Axion is an SDD framework with install adapters, not a Cursor-only kit.
-- CLI `--tool` accepts `cursor` (default), `claude-code`, `codex`, or `windsurf`. Unknown IDs exit 1.
+- CLI `--tool` accepts `cursor` (default), `claude-code`, `codex`, `windsurf`, or `antigravity`. Unknown IDs exit 1.
 - `diffKit` must compare adapter-transformed content. Without that, Claude Code installs show false drift on commands, MCP, and `CLAUDE.md`.
 - Profiles and protect stay orthogonal to `--tool`. Profile filter runs on source paths before projection. `update --tool` is additive and does not delete the other tool tree.
 - Cursor rules stay Cursor-only. The design workflow does not: see "Design on all tools" below.
@@ -42,6 +42,15 @@ updated: "2026-11-04"
 - Kit repo does not dogfood Windsurf. Tool id is `windsurf` (not `devin`). Issue 11 closes after this cut; Copilot/Aider/Gemini are new issues.
 - Verify of slug `axion-agnostico-fase-4` passed 2026-11-04.
 
+## Antigravity adapter (issue 17, Option B native)
+
+- `--tool antigravity` only (no `gemini` alias). Native, not Codex-thin: `pack/commands` → `.agents/workflows/`, `pack/rules` `.mdc` → `.agents/rules/*.md` (`trigger: glob` on pack rules; `model_decision` if no Cursor frontmatter). Skills/shared/memory/schemas under `.agents/`. MCP `.agents/mcp_config.json` (JSON merge like Windsurf).
+- `GEMINI.md` stub like `CLAUDE.md` (no clobber without `--force`). Omit `pack/agents` and `ARCHITECTURE.md`. Never write `~/.gemini/`. Kit repo does not dogfood Antigravity.
+- `writeKitManifest` uses `adapter.rulesExt` (`.md` here; default `.mdc`). Pack smoke: commands=13, rules=7.
+- Slash `/design` collides (workflow + skill). Document in `postInstallHints`; do not probe the IDE in CI. No npm version bump in this cut.
+- Copilot, Aider, and Gemini CLI stay separate issues.
+- Verify of slug `antigravity-adapter` passed 2026-11-05 (GitHub issue 17, branch `17-antigravity-adapter`).
+
 ## SDD command names (six states)
 
 - Slash commands match FSM states one to one: `/discover` → `/specify` → `/plan` → `/implement` → `/verify` → `/remember`. State names did not change. `/specify` stays outside `/discover`.
@@ -57,4 +66,4 @@ updated: "2026-11-04"
 - One data path: `.agents/shared/ui-ux-pro-max/`, projected from `pack/shared/` by all four adapters. Cursor no longer maps that tree to `.cursor/shared/`. `update` is additive, so an old `.cursor/shared/` tree may remain on disk unused.
 - Skill `design` is in `MINIMAL_CORE_SKILLS` so profile `minimal` also gets it. CSVs stay in shared data, not inside the skill.
 - Kit dogfood: `.agents/shared` → `pack/shared`.
-- Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills = 46.
+- Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills = 46. Fifth tool (`antigravity`) also gets the skill and `.agents/shared/`; slash `/design` is a workflow there (see Antigravity adapter).
