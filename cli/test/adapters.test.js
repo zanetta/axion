@@ -17,6 +17,12 @@ test("resolveAdapter defaults to cursor and maps pack/ to Cursor paths + .axion/
     assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
         ".cursor/commands/plan.md",
     ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/discover.md"), [
+        ".cursor/commands/discover.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/design.md"), [
+        ".cursor/commands/design.md",
+    ]);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), [
         ".cursor/rules/frontend.mdc",
     ]);
@@ -61,6 +67,11 @@ test("claude-code maps pack/ commands, skills, MCP, .axion/scripts and omits cur
     assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
         ".claude/commands/plan.md",
     ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/discover.md"), [
+        ".claude/commands/discover.md",
+    ]);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/design.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/design.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ui-ux-pro-max.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/SKILL.md"), []);

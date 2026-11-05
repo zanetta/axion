@@ -103,7 +103,7 @@ Testes: `cli/test/memory-secret-scan.test.js` (6 casos; suíte CLI 50).
 
 ## side_effect_guard.py
 
-Allowlist de escrita do PLAN (P2 X-03). Antes de criar ou modificar um arquivo, `coordinator-mode`, `batch-operations`, o agent `orchestrator`, `/orchestrate` e `/coordinate` mandam rodar o guard e manter a allowlist como está. O agente honra o exit code.
+Allowlist de escrita do PLAN (P2 X-03). Antes de criar ou modificar um arquivo, `coordinator-mode`, `batch-operations`, o agent `orchestrator`, `/implement` e `/orchestrate` (alias `/coordinate`) mandam rodar o guard e manter a allowlist como está. O agente honra o exit code.
 
 Lê a seção exata `## Write allowlist`: bullet `- path` ou a primeira coluna da tabela. O `PLAN.template.md` já traz a seção. Sem seção, ou com ela vazia, todo write sai `no-allowlist`.
 
@@ -129,7 +129,7 @@ Testes: `cli/test/side-effect-guard.test.js` (3 casos; `cd cli && npm test` = 56
 
 ## circuit_breaker.py
 
-Circuit breaker da orquestração (P3 W-04). Stateless: uma chamada, um domínio. Antes de cada dispatch ou retry, `coordinator-mode`, `parallel-agents`, `/coordinate` e `/orchestrate` mandam rodar o script. O agente honra o exit; o IDE não bloqueia sozinho.
+Circuit breaker da orquestração (P3 W-04). Stateless: uma chamada, um domínio. Antes de cada dispatch ou retry, `coordinator-mode`, `parallel-agents` e `/orchestrate` (alias `/coordinate`) mandam rodar o script. O agente honra o exit; o IDE não bloqueia sozinho.
 
 ```bash
 python3 .axion/scripts/circuit_breaker.py --domain backend --domain-failures 0 --worker-failures 0
@@ -315,7 +315,7 @@ Adaptações automáticas ao aplicar:
 
 - Agents → `.claude/agents/` com paths `.axion/scripts/`
 - Workflows → `.cursor/commands/` sem `$ARGUMENTS`
-- Preserva `/ui-ux-pro-max`
+- Preserva `/design` e `/ui-ux-pro-max`
 
 ## CLI npm (`cli/`)
 
@@ -347,7 +347,7 @@ python3 .axion/scripts/session_manager.py log . --command-name verify --slug {sl
 Append-only em `.axion/logs/runs.jsonl`. Cada linha é um JSON. Não há campo de texto livre nem PII. As quatro flags de orquestração são opcionais: a chave só entra se a flag foi passada.
 
 ```bash
-python3 .axion/scripts/session_manager.py log . --command-name coordinate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 1 --artifact {slug}.plan.md
+python3 .axion/scripts/session_manager.py log . --command-name orchestrate --slug {slug} --exit 0 --workers 4 --failures 1 --duration-ms 120000 --breaker-trips 1 --artifact {slug}.plan.md
 ```
 
 | Campo | Origem | Regra |
@@ -362,7 +362,7 @@ python3 .axion/scripts/session_manager.py log . --command-name coordinate --slug
 | `duration_ms` | `--duration-ms` | opcional; inteiro 0–86400000 (24h); a chave só entra se a flag foi passada |
 | `breaker_trips` | `--breaker-trips` | opcional; inteiro 0–1000; a chave só entra se a flag foi passada |
 
-`--command-name` ausente, token inválido ou artifact inválido → exit 2 e nada é gravado. O `--exit 0` do exemplo de verify é o sucesso do gate; grave o exit real. Se o gate falhar, registre esse número e pare o relatório. Contador negativo, acima do limite, ou ausente de forma inválida (flag sem inteiro válido): exit 2 e a linha não é acrescentada. Sem essas flags, o registro de verify continua igual (sem as chaves). `/coordinate`, `/orchestrate` e `coordinator-mode` gravam os contadores no fim da orquestração. O `.gitignore` já tem `logs` (sem barra) e ignora qualquer diretório com esse nome, inclusive `.axion/logs/`.
+`--command-name` ausente, token inválido ou artifact inválido → exit 2 e nada é gravado. O `--exit 0` do exemplo de verify é o sucesso do gate; grave o exit real. Se o gate falhar, registre esse número e pare o relatório. Contador negativo, acima do limite, ou ausente de forma inválida (flag sem inteiro válido): exit 2 e a linha não é acrescentada. Sem essas flags, o registro de verify continua igual (sem as chaves). `/orchestrate` (alias `/coordinate`) e `coordinator-mode` gravam os contadores no fim da orquestração. O `.gitignore` já tem `logs` (sem barra) e ignora qualquer diretório com esse nome, inclusive `.axion/logs/`.
 
 Testes: `cli/test/run-metrics.test.js` (2 casos; `cd cli && npm test` = 61 pass / 0 fail).
 

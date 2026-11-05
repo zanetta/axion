@@ -176,7 +176,7 @@ Identify ALL domains this task touches:
 
 | Condition | Action |
 |-----------|--------|
-| No SPEC and no ≥3 Socratic answers | → Socratic Gate / `/brainstorm` first |
+| No SPEC and no ≥3 Socratic answers | → Socratic Gate / `/discover` → `/specify` first |
 | NO `{slug}.plan.md` / `{slug}.md` | → PHASE 1 (planning only) |
 | YES plan + user approved | → PHASE 2 (implementation) |
 

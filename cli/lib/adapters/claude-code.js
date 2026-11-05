@@ -38,6 +38,8 @@ export function mapTemplateTargets(rel) {
 
     if (sub === "commands/ui-ux-pro-max.md" || sub === ".cursor/commands/ui-ux-pro-max.md") return [];
     if (sub.startsWith("commands/ui-ux-pro-max/") || sub.startsWith(".cursor/commands/ui-ux-pro-max/")) return [];
+    if (sub === "commands/design.md" || sub === ".cursor/commands/design.md") return [];
+    if (sub.startsWith("commands/design/") || sub.startsWith(".cursor/commands/design/")) return [];
     if (sub === "rules" || sub.startsWith("rules/") || sub === ".cursor/rules" || sub.startsWith(".cursor/rules/")) {
         return [];
     }

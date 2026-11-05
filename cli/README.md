@@ -30,8 +30,8 @@ npx @zanetta/axion status
 | --- | --- | --- |
 | `cursor` | `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` | sim (omitir a flag) |
 | `claude-code` | `.claude/commands/` (`$ARGUMENTS`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` | não |
-| `codex` | `.agents/skills/`, `.codex/config.toml` (`[mcp_servers.<id>]`), `AGENTS.md` (`/ui-ux-pro-max`: `não`) | não |
-| `windsurf` | `.agents/skills/`, `.windsurf/mcp_config.json` (`mcpServers` JSON), `AGENTS.md` (`/ui-ux-pro-max`: `não`) | não |
+| `codex` | `.agents/skills/`, `.codex/config.toml` (`[mcp_servers.<id>]`), `AGENTS.md` (`/design` / `/ui-ux-pro-max`: `não`) | não |
+| `windsurf` | `.agents/skills/`, `.windsurf/mcp_config.json` (`mcpServers` JSON), `AGENTS.md` (`/design` / `/ui-ux-pro-max`: `não`) | não |
 
 `update` sem `--tool` herda `manifest.tool`. ID desconhecido sai com código ≠ 0 e lista `cursor, claude-code, codex, windsurf`.
 

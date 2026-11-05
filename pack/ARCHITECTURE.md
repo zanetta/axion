@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | **Agents** | 20 | `.claude/agents/<name>.md` |
 | **Skills** | 45 | `.agents/skills/<name>/SKILL.md` |
-| **Workflows** | 14 | `.cursor/commands/<name>.md` |
+| **Workflows** | 18 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
@@ -51,7 +51,7 @@ axion/
 │   └── memory/                  # Memória cross-session (MEMORY.md + tópicos)
 └── .cursor/
     ├── ARCHITECTURE.md          # Este arquivo
-    ├── commands/                # 14 slash commands
+    ├── commands/                # 18 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
     ├── scripts/                 # checklist, verify_gate, side_effect_guard, circuit_breaker, eval_routing, verify_all, lint_paths, lint_contracts, lint_inventory, …
     ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
@@ -140,13 +140,14 @@ discover → specify → plan → implement → verify → remember
 
 | Estado | Command(s) | Artefato esperado |
 | --- | --- | --- |
-| `discover` / `specify` | `/brainstorm` | SPEC (a partir de `SPEC.template.md`) |
-| `plan` | `/plan` | PLAN (+ links SPEC/ACCEPTANCE) |
-| `implement` | `/create`, `/enhance` | código alinhado ao PLAN |
+| `discover` | `/discover` (alias: `/brainstorm`) | notas de exploração + opções (sem fechar SPEC) |
+| `specify` | `/specify` (alias: `/brainstorm`) | SPEC (`{slug}.spec.md` a partir de `SPEC.template.md`) |
+| `plan` | `/plan` | PLAN (`{slug}.plan.md` + links SPEC/ACCEPTANCE) |
+| `implement` | `/implement` (aliases: `/create`, `/enhance`) | código alinhado ao PLAN |
 | `verify` | `/verify` | ACCEPTANCE + evidência; `verify_gate.py` exit 0 (W-03) |
 | `remember` | `/remember` | entradas em `.agents/memory/` só com `memory_secret_scan.py` limpo (X-02) |
 
-**Socratic Gate (W-02):** antes de `/plan`, `/create` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate continuam instrução em commands/agents (advisory): o IDE não bloqueia a transição sozinho e o agente honra o exit. O eval E-02 (`eval_routing.py --gates` e `--plan`) regressa esses gates. O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
+**Socratic Gate (W-02):** antes de `/plan`, `/implement` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate continuam instrução em commands/agents (advisory): o IDE não bloqueia a transição sozinho e o agente honra o exit. O eval E-02 (`eval_routing.py --gates` e `--plan`) regressa esses gates. O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
 
 **Verify hard gate (W-03):** `/verify` roda os AC-*, grava a evidência, marca `[x]` e roda `python3 .axion/scripts/checklist.py .` antes do gate. Só conclui se esse comando e `python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0. O gate roda o checklist de novo e não reexecuta os AC-*. Exit diferente de 0 (ACCEPTANCE incompleto, sign-off aberto ou `checklist.py` ≠ 0) impede o relatório. O IDE não bloqueia a FSM sozinho; o agente honra o exit.
 
@@ -293,20 +294,24 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 
 | Comando | Descrição |
 | --- | --- |
-| `/brainstorm` | Exploração socrática antes de codar |
-| `/coordinate` | Coordenação avançada (coordinator-mode) |
-| `/create` | Nova feature ou app |
+| `/discover` | Exploração socrática de ideias e opções antes da SPEC |
+| `/specify` | Formalizar e fechar `{slug}.spec.md` após o Socratic Gate |
+| `/plan` | Plano estruturado (`{slug}.plan.md` + `{slug}.acceptance.md`) |
+| `/implement` | Construir aplicação nova ou evoluir código existente seguindo o PLAN |
+| `/verify` | Provar que funciona (execução + `verify_gate.py`) |
+| `/remember` | Salvar em `.agents/memory/` |
+| `/orchestrate` | Multi-agente (mín. 3 agents) e coordenação paralela |
 | `/debug` | Debug sistemático |
 | `/deploy` | Pré-flight + deploy |
-| `/enhance` | Melhorar código existente |
-| `/orchestrate` | Multi-agente (mín. 3 agents) |
-| `/plan` | Plano estruturado |
 | `/preview` | Servidor de preview local |
-| `/remember` | Salvar em `.agents/memory/` |
 | `/status` | Relatório de progresso |
 | `/test` | Gerar e rodar testes |
-| `/verify` | Provar que funciona (execução) |
-| `/ui-ux-pro-max` | **Cursor-only** — design system (50 estilos) |
+| `/design` | **Cursor-only** — design system (50 estilos, `ui-ux-pro-max`) |
+| `/brainstorm` | Alias de transição → `/discover` seguido de `/specify` |
+| `/create` | Alias de transição → `/implement` (Greenfield) |
+| `/enhance` | Alias de transição → `/implement` (Existing codebase) |
+| `/coordinate` | Alias de transição → `/orchestrate` (`coordinator-mode`) |
+| `/ui-ux-pro-max` | Alias de transição → `/design` (**Cursor-only**) |
 
 ---
 
@@ -416,7 +421,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | --- | --- |
 | Agents | 20 |
 | Skills | 45 |
-| Workflows | 14 |
+| Workflows | 18 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |

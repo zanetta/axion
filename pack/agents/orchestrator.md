@@ -311,7 +311,7 @@ Combine findings into structured report:
 
 | Checkpoint | Verification | Failure Action |
 |------------|--------------|----------------|
-| **Socratic / SPEC** | `{slug}.spec.md` OR ≥3 answered questions in PLAN | `/brainstorm` or ask first |
+| **Socratic / SPEC** | `{slug}.spec.md` OR ≥3 answered questions in PLAN | `/discover` → `/specify` or ask first |
 | **Task plan exists** | `Read {slug}.plan.md` (or `{slug}.md`) + Traceability | Use project-planner first |
 | **ACCEPTANCE linked** | `{slug}.acceptance.md` for verify phase | Create from template |
 | **Project type valid** | WEB/MOBILE/BACKEND identified | Ask user or analyze request |

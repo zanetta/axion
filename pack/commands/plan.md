@@ -43,9 +43,9 @@ side_effects:
 ## Gate checklist (before writing)
 
 - [ ] `{slug}.spec.md` exists, **or** Socratic Q&A (≥3) embedded in PLAN Gate section
-- [ ] User direction confirmed (from `/brainstorm` or explicit answers)
+- [ ] User direction confirmed (from `/discover` / `/specify` or explicit answers)
 
-If gate fails → run `/brainstorm` or ask 3 questions; **do not** invent a plan.
+If gate fails → run `/discover` → `/specify` or ask 3 questions; **do not** invent a plan.
 
 After the PLAN exists, confirm the gate. Exit 1 means it is not ready (empty SPEC and fewer than 3 real answers; a `{placeholder}` does not count):
 
@@ -105,7 +105,7 @@ Tell user:
 
 Next steps:
 - Review + approve
-- `/create` or `/enhance` for implementation
+- `/implement` for implementation
 - `/verify` against ACCEPTANCE
 ```
 

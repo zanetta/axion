@@ -100,7 +100,7 @@ Antes de codificar, responda:
 
 ## 🛑 Socratic Gate (para tarefas complexas)
 
-FSM: `discover → specify → plan → implement → verify → remember` (commands: `/brainstorm` → `/plan` → `/create`\|`/enhance` → `/verify` → `/remember`).
+FSM: `discover → specify → plan → implement → verify → remember` (commands: `/discover` → `/specify` → `/plan` → `/implement` → `/verify` → `/remember`; aliases de transição: `/brainstorm`, `/create`, `/enhance`, `/coordinate`, `/ui-ux-pro-max`).
 
 | Tipo de pedido            | Ação obrigatória                                                  |
 | ------------------------- | ----------------------------------------------------------------- |
@@ -110,7 +110,7 @@ FSM: `discover → specify → plan → implement → verify → remember` (comm
 | **Orquestração total**    | **PAUSE** subagents até o usuário confirmar o plano               |
 | **"Proceed" direto**      | Mesmo com respostas, faça 2 perguntas de Edge Case antes de iniciar |
 
-**Gate (instrução ao agent, sem enforcement por tooling):** antes de `/plan`, `/create` ou `/orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`). O eval E-02 (`python3 .axion/scripts/eval_routing.py . --plan {slug}.plan.md`) regressa esse gate: o agente honra o exit e o IDE não bloqueia a transição sozinho.
+**Gate (instrução ao agent, sem enforcement por tooling):** antes de `/plan`, `/implement` ou `/orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`). O eval E-02 (`python3 .axion/scripts/eval_routing.py . --plan {slug}.plan.md`) regressa esse gate: o agente honra o exit e o IDE não bloqueia a transição sozinho.
 
 Protocolo:
 
@@ -141,7 +141,7 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 
 - Tarefa NÃO está concluída até `checklist.py` retornar sucesso.
 - **Hard gate (W-03):** `/verify` roda `python3 .axion/scripts/checklist.py .` e só fecha se esse comando e `python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0 (AC-* em `[x]` com evidência, sign-off fechado, `checklist.py` ok). Exit diferente de 0 = tarefa não verificada.
-- **Run log (O-01):** depois do gate, `python3 .axion/scripts/session_manager.py log . --command-name verify --slug {slug} --exit <exit-do-gate> --artifact {slug}.acceptance.md` (append-only em `.axion/logs/runs.jsonl`). O número é o exit do gate: se não for 0, registre-o e pare o relatório. Token ou path inválido → exit 2, nada gravado. No fim de `/coordinate`, `/orchestrate` ou `coordinator-mode`, `--workers`, `--failures`, `--duration-ms` e `--breaker-trips` são opcionais e a chave só entra se a flag foi passada.
+- **Run log (O-01):** depois do gate, `python3 .axion/scripts/session_manager.py log . --command-name verify --slug {slug} --exit <exit-do-gate> --artifact {slug}.acceptance.md` (append-only em `.axion/logs/runs.jsonl`). O número é o exit do gate: se não for 0, registre-o e pare o relatório. Token ou path inválido → exit 2, nada gravado. No fim de `/orchestrate` (alias `/coordinate`) ou `coordinator-mode`, `--workers`, `--failures`, `--duration-ms` e `--breaker-trips` são opcionais e a chave só entra se a flag foi passada.
 - **Write allowlist (X-03):** antes de gravar, `python3 .axion/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write <path>`; exit 1 recusa — mantenha a allowlist e honre o exit code.
 - Se falhar, corrija os blockers **Críticos** primeiro (Segurança/Lint).
 
@@ -195,7 +195,7 @@ Esses agents contêm:
 **CLI npm:** `@zanetta/axion` — `init [--profile minimal|standard|security|fullstack|mobile] [--enable-offensive]`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 
 **Slash commands** (em `.cursor/commands/`):
-`/brainstorm`, `/coordinate`, `/create`, `/debug`, `/deploy`, `/enhance`, `/orchestrate`, `/plan`, `/preview`, `/remember`, `/status`, `/test`, `/ui-ux-pro-max`, `/verify`.
+`/discover`, `/specify`, `/plan`, `/implement`, `/verify`, `/remember`, `/orchestrate`, `/debug`, `/deploy`, `/preview`, `/status`, `/test`, `/design` (aliases de transição: `/brainstorm`, `/create`, `/enhance`, `/coordinate`, `/ui-ux-pro-max`).
 
 ---
 

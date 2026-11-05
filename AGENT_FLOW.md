@@ -34,15 +34,17 @@ discover → specify → plan → implement → verify → remember
 
 | Estado FSM | Command | Artefato / saída |
 | --- | --- | --- |
-| `discover` / `specify` | `/brainstorm` | SPEC (template em `.agents/skills/plan-writing/templates/SPEC.template.md`) |
-| `plan` | `/plan` | PLAN (+ Traceability → SPEC/ACCEPTANCE) |
-| `implement` | `/create` \| `/enhance` | código alinhado ao PLAN |
+| `discover` | `/discover` | Notas de exploração + opções (sem fechar `{slug}.spec.md`) |
+| `specify` | `/specify` | `{slug}.spec.md` (template em `.agents/skills/plan-writing/templates/SPEC.template.md`) |
+| `plan` | `/plan` | `{slug}.plan.md` + `{slug}.acceptance.md` (+ Traceability → SPEC/ACCEPTANCE) |
+| `implement` | `/implement` | Código alinhado ao PLAN (unifica app novo e código existente) |
 | `verify` | `/verify` | ACCEPTANCE + evidência de execução |
 | `remember` | `/remember` | `.agents/memory/` |
 
-Commands de apoio (fora da FSM linear): `/debug`, `/test`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/coordinate`, `/ui-ux-pro-max`.
+Commands de apoio (fora da FSM linear): `/debug`, `/test`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/design`.
+Aliases de transição (stubs compatíveis): `/brainstorm` (`→ /discover` + `/specify`), `/create` e `/enhance` (`→ /implement`), `/coordinate` (`→ /orchestrate`), `/ui-ux-pro-max` (`→ /design`).
 
-### Socratic Gate (antes de `/plan`, `/create`, `/orchestrate`)
+### Socratic Gate (antes de `/plan`, `/implement`, `/orchestrate`)
 
 Exigir **um** dos seguintes:
 
@@ -118,23 +120,27 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 
 | Comando | FSM | Skill / agent principal | Uso |
 | --- | --- | --- | --- |
-| `/brainstorm` | discover/specify | `brainstorming` | Explorar + produzir SPEC; alimenta o gate |
+| `/discover` | discover | `brainstorming` | Explorar opções e perguntas socráticas (sem fechar SPEC) |
+| `/specify` | specify | `brainstorming`, `plan-writing` | Fechar `{slug}.spec.md` após o Socratic Gate |
 | `/plan` | plan | `plan-writing`, `architecture` | PLAN estruturado (**gate**) |
-| `/create` | implement | `app-builder` | Nova feature/app (**gate**) |
-| `/enhance` | implement | domain agents | Melhorar código existente |
+| `/implement` | implement | `app-builder`, `plan-writing`, domain agents | Construir app novo ou evoluir código existente (**gate**) |
 | `/verify` | verify | `verify-changes` | Roda os AC-*, grava evidência, marca `[x]`; roda `python3 .axion/scripts/checklist.py .` antes do gate; o gate roda o checklist de novo; exit 0 fecha a tarefa |
 | `/remember` | remember | `memory-system` | Persistir em `.agents/memory/` |
-| `/orchestrate` | — (multi) | `parallel-agents` + `orchestrator` | Multi-agente (mín. 3) (**gate**) |
-| `/coordinate` | — (multi) | `coordinator-mode` + `orchestrator` | Orquestração avançada paralela |
+| `/orchestrate` | — (multi) | `parallel-agents`, `coordinator-mode` + `orchestrator` | Multi-agente (mín. 3) e coordenação paralela (**gate**) |
 | `/debug` | — | `systematic-debugging` | Debug baseado em evidência |
 | `/deploy` | — | `deployment-procedures` | Pré-flight + deploy |
 | `/preview` | — | `auto_preview.py` | Preview local |
 | `/status` | — | — | Relatório de progresso |
 | `/test` | — (apoio verify) | `testing-patterns`, `webapp-testing` | Testes |
-| `/ui-ux-pro-max` | — | `.cursor/shared/ui-ux-pro-max` | **Cursor-only** — design |
+| `/design` | — | `.cursor/shared/ui-ux-pro-max` | **Cursor-only** — design system |
+| `/brainstorm` | discover/specify (alias) | `brainstorming` | Stub de transição → `/discover` então `/specify` |
+| `/create` | implement (alias) | `app-builder`, `plan-writing` | Stub de transição → `/implement` (Greenfield) |
+| `/enhance` | implement (alias) | `plan-writing` | Stub de transição → `/implement` (Existing codebase) |
+| `/coordinate` | orchestrate (alias) | `coordinator-mode`, `parallel-agents` | Stub de transição → `/orchestrate` |
+| `/ui-ux-pro-max` | — (alias) | `.cursor/shared/ui-ux-pro-max` | Stub de transição → `/design` (Cursor-only) |
 
 > **Cursor:** argumentos são texto livre após o comando (ex.: `/plan auth JWT`), não `$ARGUMENTS`.
-> **Gate:** `/plan`, `/create`, `/orchestrate` exigem SPEC **ou** ≥3 respostas socráticas no SPEC/PLAN.
+> **Gate:** `/plan`, `/implement`, `/orchestrate` exigem SPEC **ou** ≥3 respostas socráticas no SPEC/PLAN.
 
 ---
 

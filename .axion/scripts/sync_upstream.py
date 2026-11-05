@@ -39,11 +39,14 @@ CURSOR_COMMANDS = [
     "create",
     "debug",
     "deploy",
+    "discover",
     "enhance",
+    "implement",
     "orchestrate",
     "plan",
     "preview",
     "remember",
+    "specify",
     "status",
     "test",
     "verify",
@@ -170,7 +173,7 @@ def sync_memory(upstream: Path) -> None:
 
 
 def sync_commands_from_upstream(upstream: Path, only: list[str] | None = None) -> int:
-    """Sync upstream workflows — skips Cursor-only commands like ui-ux-pro-max."""
+    """Sync upstream workflows — skips Cursor-only commands like design and ui-ux-pro-max."""
     src_dir = upstream / ".agents" / "workflows"
     dst_dir = REPO_ROOT / "pack" / "commands" if (REPO_ROOT / "pack").is_dir() else REPO_ROOT / ".cursor" / "commands"
     names = only or CURSOR_COMMANDS

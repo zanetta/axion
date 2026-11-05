@@ -245,7 +245,7 @@ Switch modes when the work changes shape (e.g. drop from IMPLEMENT to DEBUG the 
 Users can explicitly request a mode:
 
 ```
-/brainstorm new feature ideas
+/discover new feature ideas
 /implement the user profile page
 /debug why login fails
 /review this pull request

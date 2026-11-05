@@ -6,7 +6,7 @@ allowed-tools: Read, Glob, Grep
 contract_version: "1.0.0"
 inputs:
   - name: scoped_request
-    description: Clarified request after Socratic Gate / brainstorm
+    description: Clarified request after Socratic Gate (/discover → /specify)
     required: true
 outputs:
   - name: plan_file

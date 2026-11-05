@@ -62,7 +62,11 @@ for (const profile of PROFILE_NAMES) {
 
             for (const rel of [
                 "AGENTS.md",
+                ".cursor/commands/discover.md",
+                ".cursor/commands/specify.md",
                 ".cursor/commands/plan.md",
+                ".cursor/commands/implement.md",
+                ".cursor/commands/design.md",
                 ".axion/scripts/lint_paths.py",
                 ".agents/schemas/command-contract.schema.json",
                 ".agents/skills/plan-writing/templates/PLAN.template.md",
@@ -101,7 +105,10 @@ for (const profile of ["standard", "security"]) {
                 for (const rel of [
                     "AGENTS.md",
                     "CLAUDE.md",
+                    ".claude/commands/discover.md",
+                    ".claude/commands/specify.md",
                     ".claude/commands/plan.md",
+                    ".claude/commands/implement.md",
                     ".claude/agents/orchestrator.md",
                     ".agents/skills/plan-writing/SKILL.md",
                     ".claude/skills/plan-writing/SKILL.md",
@@ -114,6 +121,10 @@ for (const profile of ["standard", "security"]) {
                 assert.equal(await fse.pathExists(path.join(target, ".cursor", "scripts")), false);
 
                 assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands", "plan.md")), false);
+                assert.equal(
+                    await fse.pathExists(path.join(target, ".claude", "commands", "design.md")),
+                    false,
+                );
                 assert.equal(
                     await fse.pathExists(path.join(target, ".claude", "commands", "ui-ux-pro-max.md")),
                     false,
