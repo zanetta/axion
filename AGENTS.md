@@ -47,7 +47,7 @@ Antes de modificar QUALQUER arquivo:
 | **Workflows**       | `.cursor/commands/<name>.md` (`/<name>`)   |
 | **MCP**             | `.cursor/mcp.json`                         |
 | **Runtime scripts** | `.axion/scripts/` (master: `checklist.py`, `verify_gate.py`, `circuit_breaker.py`, `eval_routing.py`, `verify_all.py`, `lint_paths.py`, `lint_contracts.py`, `lint_inventory.py`, …) e `.agents/skills/<x>/scripts/` (por skill) |
-| **Shared assets**   | `.cursor/shared/` (ex.: `ui-ux-pro-max`)   |
+| **Shared assets**   | `.agents/shared/` (ex.: `ui-ux-pro-max`)   |
 | **Rules globais**   | `AGENTS.md` (este arquivo) — sempre aplicado |
 | **Rules por glob**  | `.cursor/rules/*.mdc` — Auto-Attached por domínio (frontend, backend, database, testing, security, mobile, devops) |
 | **Memória persistente** | `.agents/memory/MEMORY.md` — `memory_secret_scan.py` antes de gravar |
@@ -190,7 +190,7 @@ Esses agents contêm:
 `orchestrator`, `project-planner`, `security-auditor`, `backend-specialist`, `frontend-specialist`, `mobile-developer`, `debugger`, `game-developer`.
 
 **Skills-chave** (em `.agents/skills/`):
-`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
+`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
 
 **CLI npm:** `@zanetta/axion` — `init [--profile minimal|standard|security|fullstack|mobile] [--enable-offensive]`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 

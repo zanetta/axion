@@ -32,13 +32,11 @@ export function mapTemplateTargets(rel) {
     ) {
         return [];
     }
-    if (
-        sub === "shared" ||
-        sub.startsWith("shared/") ||
-        sub === ".cursor/shared" ||
-        sub.startsWith(".cursor/shared/")
-    ) {
+    if (sub === ".cursor/shared" || sub.startsWith(".cursor/shared/")) {
         return [];
+    }
+    if (sub === "shared" || sub.startsWith("shared/")) {
+        return [sub.replace(/^shared/, ".agents/shared")];
     }
     if (sub === "ARCHITECTURE.md" || sub === ".cursor/ARCHITECTURE.md") {
         return [];

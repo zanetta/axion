@@ -77,7 +77,7 @@ axion init --profile standard
 | Regras globais e fluxo | `AGENTS.md`, `AGENT_FLOW.md` |
 | Template de env | `.env.example` |
 
-`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, sem `/design` e `/ui-ux-pro-max`), `.claude/skills/`, `CLAUDE.md` e `.mcp.json`. `--tool codex` projeta `.agents/skills/`, `.axion/scripts/`, `AGENTS.md` e `.codex/config.toml` (`[mcp_servers.<id>]` com merge aditivo; omite agents, commands, rules e shared). `--tool windsurf` projeta `.agents/skills/`, `.axion/scripts/`, `AGENTS.md` e `.windsurf/mcp_config.json` (JSON `mcpServers`, merge aditivo; omite agents, commands, rules e shared). Detalhes: [`cli/README.md`](cli/README.md).
+`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, com `/design`, sem `/ui-ux-pro-max`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` e `.agents/shared/`. `--tool codex` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.codex/config.toml` (`[mcp_servers.<id>]` com merge aditivo; omite agents, commands e rules). `--tool windsurf` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.windsurf/mcp_config.json` (JSON `mcpServers`, merge aditivo; omite agents, commands e rules). Detalhes: [`cli/README.md`](cli/README.md).
 
 O `init` (e o `update`) também grava `.axion/kit.manifest.json` — estado local do kit (SemVer, profile). Não faz parte do template do pack. `npx @zanetta/axion status` lê esse manifesto e mostra a versão instalada (e compara com o latest no npm, se a rede responder).
 
@@ -159,7 +159,7 @@ Um command por mensagem, no chat do Agent: `/<comando>` e o pedido em texto livr
 | `/status` | Progresso da tarefa atual | `/status` |
 | `/orchestrate` | Vários specialists (mínimo 3) e coordenação em paralelo | `/orchestrate painel admin com CRUD e testes E2E` |
 | `/remember` | Convenção entre sessões | `/remember prefiro bun em vez de npm neste projeto` |
-| `/design` | Direção visual (Cursor-only) | `/design dashboard fintech dark mode minimalista` |
+| `/design` | Direção visual (slash no Cursor e no Claude Code; skill nas quatro IDEs) | `/design dashboard fintech dark mode minimalista` |
 
 > Aliases de transição permanecem disponíveis: `/brainstorm` (`→ /discover` + `/specify`), `/create` e `/enhance` (`→ /implement`), `/coordinate` (`→ /orchestrate`), `/ui-ux-pro-max` (`→ /design`).
 
@@ -317,7 +317,7 @@ O frontmatter de cada arquivo em `.cursor/commands/` declara as skills que o age
 | `/test` | — |
 | `/deploy` | — |
 | `/preview` | — (usa `.axion/scripts/auto_preview.py`) |
-| `/design` | — (usa `.cursor/shared/ui-ux-pro-max/scripts/search.py`) |
+| `/design` | `design` (usa `.agents/shared/ui-ux-pro-max/scripts/search.py`) |
 | `/brainstorm` *(alias)* | `brainstorming` |
 | `/create` *(alias)* | `app-builder`, `plan-writing`, `brainstorming` |
 | `/enhance` *(alias)* | `plan-writing`, `brainstorming` |
@@ -376,7 +376,7 @@ Estado `remember`. Grava preferência ou decisão em `.agents/memory/`. Antes de
 
 ### `/design`
 
-Consulta o guia visual em `.cursor/shared/ui-ux-pro-max/` (estilos, paletas, tipos, UX — Cursor-only). A busca é `python3 .cursor/shared/ui-ux-pro-max/scripts/search.py`. Em seguida sintetiza o design system e implementa a tela.
+Consulta o guia visual em `.agents/shared/ui-ux-pro-max/` (estilos, paletas, tipos, UX). A busca é `python3 .agents/shared/ui-ux-pro-max/scripts/search.py`. Em seguida sintetiza o design system e implementa a tela. Slash `/design` no Cursor e no Claude Code; nas quatro IDEs o agente usa a skill `design`.
 
 ### Aliases de transição (`/brainstorm`, `/create`, `/enhance`, `/coordinate`, `/ui-ux-pro-max`)
 
@@ -415,14 +415,14 @@ echo ".agents/" >> .git/info/exclude
 ├── .claude/agents/           # 20 agents
 ├── .agents/
 │   ├── schemas/              # Contratos skill/command
-│   ├── skills/               # 45 skills (+ templates SPEC/PLAN/ACCEPTANCE)
+│   ├── skills/               # 46 skills (+ templates SPEC/PLAN/ACCEPTANCE)
+│   ├── shared/ui-ux-pro-max/ # Dados e search.py do fluxo /design
 │   └── memory/
 └── .cursor/
     ├── ARCHITECTURE.md
     ├── commands/             # 18 slash commands
     ├── rules/                # 7 regras por domínio
     ├── scripts/              # checklist, verify_all, lint_paths, generate_inventory, …
-    ├── shared/ui-ux-pro-max/
     └── mcp.json
 ```
 

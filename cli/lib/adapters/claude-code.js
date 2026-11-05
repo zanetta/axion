@@ -38,13 +38,12 @@ export function mapTemplateTargets(rel) {
 
     if (sub === "commands/ui-ux-pro-max.md" || sub === ".cursor/commands/ui-ux-pro-max.md") return [];
     if (sub.startsWith("commands/ui-ux-pro-max/") || sub.startsWith(".cursor/commands/ui-ux-pro-max/")) return [];
-    if (sub === "commands/design.md" || sub === ".cursor/commands/design.md") return [];
-    if (sub.startsWith("commands/design/") || sub.startsWith(".cursor/commands/design/")) return [];
     if (sub === "rules" || sub.startsWith("rules/") || sub === ".cursor/rules" || sub.startsWith(".cursor/rules/")) {
         return [];
     }
-    if (sub === "shared" || sub.startsWith("shared/") || sub.startsWith(".cursor/shared/")) {
-        return [];
+    if (sub === ".cursor/shared" || sub.startsWith(".cursor/shared/")) return [];
+    if (sub === "shared" || sub.startsWith("shared/")) {
+        return [sub.replace(/^shared/, ".agents/shared")];
     }
     if (sub === "mcp.json" || sub === ".cursor/mcp.json") return [".mcp.json"];
     if (sub === "ARCHITECTURE.md" || sub === ".cursor/ARCHITECTURE.md") return [".cursor/ARCHITECTURE.md"];

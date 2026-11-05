@@ -9,7 +9,7 @@
 | Componente | Quantidade | Caminho canônico (Cursor) |
 | --- | --- | --- |
 | **Agents** | 20 | `.claude/agents/<name>.md` |
-| **Skills** | 45 | `.agents/skills/<name>/SKILL.md` |
+| **Skills** | 46 | `.agents/skills/<name>/SKILL.md` |
 | **Workflows** | 18 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
@@ -21,7 +21,7 @@
 | **Templates SDD** | 3 | SPEC/PLAN + ACCEPTANCE (skills `plan-writing`, `verify-changes`) |
 | **Traceability** | — | `.axion/trace/` (opcional `{slug}.json`) |
 | **MCP** | — | `.cursor/mcp.json` |
-| **Assets compartilhados** | — | `.cursor/shared/` (ex.: `ui-ux-pro-max`) |
+| **Assets compartilhados** | — | `.agents/shared/` (ex.: `ui-ux-pro-max`) |
 
 ---
 
@@ -45,16 +45,16 @@ axion/
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
-│   ├── skills/                  # 45 skills top-level (+ sub-skills game-dev)
+│   ├── skills/                  # 46 skills top-level (+ sub-skills game-dev)
 │   │   ├── plan-writing/templates/   # SPEC.template.md, PLAN.template.md
 │   │   └── verify-changes/templates/ # ACCEPTANCE.template.md
+│   ├── shared/ui-ux-pro-max/    # Dados e scripts de design (path único)
 │   └── memory/                  # Memória cross-session (MEMORY.md + tópicos)
 └── .cursor/
     ├── ARCHITECTURE.md          # Este arquivo
     ├── commands/                # 18 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
     ├── scripts/                 # checklist, verify_gate, side_effect_guard, circuit_breaker, eval_routing, verify_all, lint_paths, lint_contracts, lint_inventory, …
-    ├── shared/ui-ux-pro-max/    # Dados e scripts de design (Cursor-only)
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
 ```
 
@@ -306,12 +306,12 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | `/preview` | Servidor de preview local |
 | `/status` | Relatório de progresso |
 | `/test` | Gerar e rodar testes |
-| `/design` | **Cursor-only** — design system (50 estilos, `ui-ux-pro-max`) |
+| `/design` | Design system (50 estilos, `ui-ux-pro-max`; slash no Cursor e no Claude Code) |
 | `/brainstorm` | Alias de transição → `/discover` seguido de `/specify` |
 | `/create` | Alias de transição → `/implement` (Greenfield) |
 | `/enhance` | Alias de transição → `/implement` (Existing codebase) |
 | `/coordinate` | Alias de transição → `/orchestrate` (`coordinator-mode`) |
-| `/ui-ux-pro-max` | Alias de transição → `/design` (**Cursor-only**) |
+| `/ui-ux-pro-max` | Alias de transição → `/design` (alias Cursor-only) |
 
 ---
 
@@ -420,7 +420,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Métrica | Valor |
 | --- | --- |
 | Agents | 20 |
-| Skills | 45 |
+| Skills | 46 |
 | Workflows | 18 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |

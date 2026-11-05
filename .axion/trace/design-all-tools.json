@@ -1,0 +1,13 @@
+{
+  "slug": "design-all-tools",
+  "spec": "design-all-tools.spec.md",
+  "plan": "design-all-tools.plan.md",
+  "acceptance": "design-all-tools.acceptance.md",
+  "links": [
+    { "spec_id": "SPEC-design-all-tools-1", "plan_task": "P1-1", "acceptance_id": "AC-1" },
+    { "spec_id": "SPEC-design-all-tools-2", "plan_task": "P1-2", "acceptance_id": "AC-2" },
+    { "spec_id": "SPEC-design-all-tools-3", "plan_task": "P1-3", "acceptance_id": "AC-3" },
+    { "spec_id": "SPEC-design-all-tools-4", "plan_task": "P1-4", "acceptance_id": "AC-4" },
+    { "spec_id": "SPEC-design-all-tools-5", "plan_task": "PV-1", "acceptance_id": "AC-5" }
+  ]
+}
