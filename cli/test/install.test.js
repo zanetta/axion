@@ -178,3 +178,65 @@ test("installKit projects windsurf hybrid paths, merges .windsurf/mcp_config.jso
         await fse.remove(tmp);
     }
 });
+
+test("installKit projects antigravity native paths, merges MCP, and leaves no false drift", async () => {
+    const tmp = await fse.mkdtemp(path.join(os.tmpdir(), "ag4c-antigravity-"));
+
+    try {
+        const target = path.join(tmp, "project");
+        await fse.ensureDir(path.join(target, ".agents"));
+        await fse.writeJson(
+            path.join(target, ".agents", "mcp_config.json"),
+            { mcpServers: { custom: { command: "node" } } },
+            { spaces: 4 },
+        );
+
+        await installKit(fixtureRoot, target, {
+            force: false,
+            tool: "antigravity",
+            version: "0.0.0-test",
+            packageName: "@zanetta/axion",
+        });
+
+        assert.ok(await fse.pathExists(path.join(target, ".agents", "workflows", "plan.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".agents", "rules", "backend.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".agents", "skills", "test-skill", "SKILL.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".axion", "scripts", "checklist.py")));
+        assert.ok(await fse.pathExists(path.join(target, ".agents", "mcp_config.json")));
+        assert.ok(await fse.pathExists(path.join(target, "AGENTS.md")));
+        assert.ok(await fse.pathExists(path.join(target, "GEMINI.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".env.example")));
+
+        assert.equal(await fse.pathExists(path.join(target, ".claude", "agents")), false);
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands")), false);
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "rules")), false);
+        assert.equal(await fse.pathExists(path.join(target, "CLAUDE.md")), false);
+        assert.equal(await fse.pathExists(path.join(target, "pack", "ARCHITECTURE.md")), false);
+
+        const rule = await fse.readFile(path.join(target, ".agents", "rules", "backend.md"), "utf8");
+        assert.match(rule, /trigger: model_decision/);
+
+        const gemini = await fse.readFile(path.join(target, "GEMINI.md"), "utf8");
+        assert.match(gemini, /@AGENTS\.md/);
+
+        const mcp = await fse.readJson(path.join(target, ".agents", "mcp_config.json"));
+        assert.strictEqual(mcp.mcpServers.custom.command, "node");
+        assert.ok(mcp.mcpServers.shadcn);
+        for (const server of Object.values(mcp.mcpServers)) {
+            assert.equal(server.envFile, undefined);
+        }
+
+        const manifest = await fse.readJson(path.join(target, ".axion", "kit.manifest.json"));
+        assert.equal(manifest.tool, "antigravity");
+        assert.equal(manifest.components.agents, 0);
+        assert.ok(manifest.components.commands >= 1);
+        assert.ok(manifest.components.rules >= 1);
+
+        const drift = await diffKit(fixtureRoot, target, { tool: "antigravity" });
+        assert.deepEqual(drift.drifted, []);
+        assert.deepEqual(drift.missing, []);
+        assert.equal(await isKitInstalled(target, "antigravity"), true);
+    } finally {
+        await fse.remove(tmp);
+    }
+});

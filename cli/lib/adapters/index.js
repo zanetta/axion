@@ -1,3 +1,4 @@
+import { antigravityAdapter } from "./antigravity.js";
 import { claudeCodeAdapter } from "./claude-code.js";
 import { codexAdapter } from "./codex.js";
 import { cursorAdapter } from "./cursor.js";
@@ -10,6 +11,7 @@ const ADAPTERS = {
     "claude-code": claudeCodeAdapter,
     codex: codexAdapter,
     windsurf: windsurfAdapter,
+    antigravity: antigravityAdapter,
 };
 
 export const TOOL_NAMES = Object.keys(ADAPTERS);

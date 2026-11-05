@@ -1,7 +1,7 @@
 ---
 type: feedback
 created: 2026-11-03
-updated: 2026-11-04
+updated: 2026-11-05
 ---
 
 # Feedback History
@@ -20,3 +20,8 @@ updated: 2026-11-04
 
 - Dest only `.windsurf/` (not `.devin/`, not dual-write). Omit commands and rules (Codex-thin). Id `windsurf`; skills only `.agents/skills/`.
 - MCP path `.windsurf/mcp_config.json` (not `mcp.json`). Close issue 11 after this cut; Copilot/Aider/Gemini get new issues.
+
+## Issue 17 (Antigravity adapter)
+
+- Discover: Option B native, id `antigravity`, map workflows, no kit dogfood. Specify locked those plus MCP `.agents/mcp_config.json`, rules transform, GEMINI stub, omit personas.
+- Verified 2026-11-05: no `gemini` alias, no `~/.gemini/`, no kit dogfood, no version bump. `/design` collision is hint-only.

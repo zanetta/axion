@@ -317,14 +317,97 @@ for (const profile of ["standard", "security"]) {
     });
 }
 
+for (const profile of ["standard", "security"]) {
+    test(`smoke: antigravity ${profile} install projects native paths`, async () => {
+        await withInstall(
+            profile,
+            async (target) => {
+                const manifest = await fse.readJson(path.join(target, ".axion", "kit.manifest.json"));
+                assert.equal(manifest.tool, "antigravity");
+                assert.equal(manifest.components.agents, 0);
+                assert.equal(manifest.components.commands, 13);
+                assert.equal(manifest.components.rules, 7);
+                assert.ok(manifest.components.skills > 0);
+
+                for (const rel of [
+                    "AGENTS.md",
+                    "GEMINI.md",
+                    ".env.example",
+                    ".agents/workflows/discover.md",
+                    ".agents/workflows/design.md",
+                    ".agents/rules/frontend.md",
+                    ".agents/skills/plan-writing/SKILL.md",
+                    ".agents/skills/design/SKILL.md",
+                    ".agents/shared/ui-ux-pro-max/scripts/search.py",
+                    ".axion/scripts/lint_paths.py",
+                    ".agents/schemas/command-contract.schema.json",
+                    ".agents/mcp_config.json",
+                ]) {
+                    assert.ok(await fse.pathExists(path.join(target, rel)), `missing ${rel}`);
+                }
+
+                const frontend = await fse.readFile(
+                    path.join(target, ".agents", "rules", "frontend.md"),
+                    "utf8",
+                );
+                assert.match(frontend, /trigger: glob/);
+
+                for (const absent of [
+                    ".claude/agents",
+                    ".claude/commands",
+                    ".claude/skills",
+                    ".cursor/commands",
+                    ".cursor/rules",
+                    ".cursor/scripts",
+                    ".cursor/shared",
+                    "CLAUDE.md",
+                    ".codex",
+                    ".windsurf",
+                    ".gemini",
+                ]) {
+                    assert.equal(await fse.pathExists(path.join(target, absent)), false, `unexpected ${absent}`);
+                }
+
+                const mcp = await fse.readJson(path.join(target, ".agents", "mcp_config.json"));
+                assert.equal(mcp.mcpServers.context7.envFile, undefined);
+                assert.ok(mcp.mcpServers.context7.args.includes("${CONTEXT7_API_KEY}"));
+                assert.equal(JSON.stringify(mcp).includes("envFile"), false);
+
+                assert.equal(await isKitInstalled(target, "antigravity"), true);
+
+                const drift = await diffKit(packRoot, target, { tool: "antigravity" });
+                assert.deepEqual(drift.drifted, []);
+
+                const offensive = profile === "security";
+                assert.equal(
+                    await fse.pathExists(path.join(target, ".agents", "skills", "red-team-tactics", "SKILL.md")),
+                    offensive,
+                );
+
+                const lintPaths = runScript(target, "lint_paths.py");
+                assert.equal(lintPaths.status, 0, lintPaths.stdout + lintPaths.stderr);
+
+                if (hasPythonDeps) {
+                    const lintContracts = runScript(target, "lint_contracts.py");
+                    assert.equal(lintContracts.status, 0, lintContracts.stdout + lintContracts.stderr);
+                }
+            },
+            "antigravity",
+        );
+    });
+}
+
 test("CLI --tool foo exits non-zero and lists allowed tools", () => {
-    for (const invalidTool of ["foo", "devin", "openai-codex"]) {
+    for (const invalidTool of ["foo", "devin", "openai-codex", "gemini"]) {
         const result = spawnSync(
             process.execPath,
             [cliBin, "init", "--tool", invalidTool, "--dry-run"],
             { encoding: "utf8" },
         );
         assert.notEqual(result.status, 0);
-        assert.match(`${result.stdout}\n${result.stderr}`, /cursor, claude-code, codex, windsurf/);
+        assert.match(
+            `${result.stdout}\n${result.stderr}`,
+            /cursor, claude-code, codex, windsurf, antigravity/,
+        );
     }
 });

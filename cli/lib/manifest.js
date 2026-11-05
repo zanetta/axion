@@ -39,7 +39,12 @@ async function collectComponentSummary(targetRoot, adapter) {
         commands: dirs.commands
             ? await countMarkdown(path.join(targetRoot, dirs.commands), ".md")
             : 0,
-        rules: dirs.rules ? await countMarkdown(path.join(targetRoot, dirs.rules), ".mdc") : 0,
+        rules: dirs.rules
+            ? await countMarkdown(
+                  path.join(targetRoot, dirs.rules),
+                  adapter.rulesExt ?? ".mdc",
+              )
+            : 0,
     };
 }
 
