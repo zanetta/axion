@@ -80,7 +80,6 @@ test("claude-code maps pack/ commands, skills, MCP, .axion/scripts and omits cur
     assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/design.md"), [
         ".claude/commands/design.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ui-ux-pro-max.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
     assert.deepEqual(
         adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/scripts/search.py"),

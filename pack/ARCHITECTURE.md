@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | **Agents** | 20 | `.claude/agents/<name>.md` |
 | **Skills** | 46 | `.agents/skills/<name>/SKILL.md` |
-| **Workflows** | 18 | `.cursor/commands/<name>.md` |
+| **Workflows** | 13 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
 | **Memória persistente** | — | `.agents/memory/MEMORY.md` |
@@ -52,7 +52,7 @@ axion/
 │   └── memory/                  # Memória cross-session (MEMORY.md + tópicos)
 └── .cursor/
     ├── ARCHITECTURE.md          # Este arquivo
-    ├── commands/                # 18 slash commands
+    ├── commands/                # 13 slash commands
     ├── rules/                   # 7 regras auto-attach por glob
     ├── scripts/                 # leftover v1; masters live in `.axion/scripts/`
     └── mcp.json                 # MCP servers (Context7, Playwright, shadcn)
@@ -140,10 +140,10 @@ discover → specify → plan → implement → verify → remember
 
 | Estado | Command(s) | Artefato esperado |
 | --- | --- | --- |
-| `discover` | `/discover` (alias: `/brainstorm`) | notas de exploração + opções (sem fechar SPEC) |
-| `specify` | `/specify` (alias: `/brainstorm`) | SPEC (`{slug}.spec.md` a partir de `SPEC.template.md`) |
+| `discover` | `/discover` | notas de exploração + opções (sem fechar SPEC) |
+| `specify` | `/specify` | SPEC (`{slug}.spec.md` a partir de `SPEC.template.md`) |
 | `plan` | `/plan` | PLAN (`{slug}.plan.md` + links SPEC/ACCEPTANCE) |
-| `implement` | `/implement` (aliases: `/create`, `/enhance`) | código alinhado ao PLAN |
+| `implement` | `/implement` | código alinhado ao PLAN |
 | `verify` | `/verify` | ACCEPTANCE + evidência; `verify_gate.py` exit 0 (W-03) |
 | `remember` | `/remember` | entradas em `.agents/memory/` só com `memory_secret_scan.py` limpo (X-02) |
 
@@ -308,11 +308,6 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | `/status` | Relatório de progresso |
 | `/test` | Gerar e rodar testes |
 | `/design` | Design system (50 estilos, `ui-ux-pro-max`; slash no Cursor e no Claude Code) |
-| `/brainstorm` | Alias de transição → `/discover` seguido de `/specify` |
-| `/create` | Alias de transição → `/implement` (Greenfield) |
-| `/enhance` | Alias de transição → `/implement` (Existing codebase) |
-| `/coordinate` | Alias de transição → `/orchestrate` (`coordinator-mode`) |
-| `/ui-ux-pro-max` | Alias de transição → `/design` (alias Cursor-only) |
 
 ---
 
@@ -422,7 +417,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | --- | --- |
 | Agents | 20 |
 | Skills | 46 |
-| Workflows | 18 |
+| Workflows | 13 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
 | Templates SDD | 3 (SPEC, PLAN, ACCEPTANCE) |

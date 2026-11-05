@@ -25,7 +25,7 @@ updated: "{ISO_DATE}"
 ## Gate checklist (blocking)
 
 - [ ] SPEC exists **or** ≥3 Socratic answers recorded below
-- [ ] User confirmed plan before `/implement` (aliases: `/create`, `/enhance`)
+- [ ] User confirmed plan before `/implement`
 
 ### Socratic evidence (if no separate SPEC)
 

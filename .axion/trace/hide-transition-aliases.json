@@ -1,0 +1,14 @@
+{
+  "slug": "hide-transition-aliases",
+  "spec": "hide-transition-aliases.spec.md",
+  "plan": "hide-transition-aliases.plan.md",
+  "acceptance": "hide-transition-aliases.acceptance.md",
+  "links": [
+    { "spec_id": "SPEC-hide-transition-aliases-1", "plan_task": "P1-1", "acceptance_id": "AC-1" },
+    { "spec_id": "SPEC-hide-transition-aliases-2", "plan_task": "P1-2", "acceptance_id": "AC-2" },
+    { "spec_id": "SPEC-hide-transition-aliases-3", "plan_task": "P1-3", "acceptance_id": "AC-3" },
+    { "spec_id": "SPEC-hide-transition-aliases-4", "plan_task": "P1-4", "acceptance_id": "AC-4" },
+    { "spec_id": "SPEC-hide-transition-aliases-5", "plan_task": "P1-5", "acceptance_id": "AC-5" },
+    { "spec_id": "SPEC-hide-transition-aliases-6", "plan_task": "PV-1", "acceptance_id": "AC-6" }
+  ]
+}

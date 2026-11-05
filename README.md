@@ -36,12 +36,11 @@ O que cada estado exige:
 | `discover` | ≥3 perguntas socráticas exploradas e o usuário escolheu uma direção para `/specify`. |
 | `specify` | Existe `{slug}.spec.md` com ≥3 perguntas respondidas (ou registradas no PLAN). Célula com `{placeholder}` não conta. |
 | `plan` | O usuário aprovou `{slug}.plan.md` (ou o legado `{slug}.md`) e o `{slug}.acceptance.md`. |
-| `implement` | O plano está aprovado. `/implement` cobre tanto app novo (antigo `/create`) quanto código que já existe (antigo `/enhance`). Correção pequena pode seguir depois de confirmar o impacto. |
+| `implement` | O plano está aprovado. `/implement` cobre tanto app novo quanto código que já existe. Correção pequena pode seguir depois de confirmar o impacto. |
 | `verify` | Os critérios AC-* têm evidência e `[x]`, o checklist sai 0 e o `verify_gate.py` sai 0. |
 | `remember` | A nota passou no `memory_secret_scan.py`. Segredo não entra em `.agents/memory/`. |
 
 Commands de apoio: `/debug`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/test`, `/design`.
-Aliases de transição (stubs compatíveis): `/brainstorm` (`→ /discover` + `/specify`), `/create` e `/enhance` (`→ /implement`), `/coordinate` (`→ /orchestrate`), `/ui-ux-pro-max` (`→ /design`).
 
 ---
 
@@ -73,11 +72,11 @@ axion init --profile standard
 | --- | --- |
 | Agents do profile | `.claude/agents/` |
 | Skills do profile (+ sub-skills de game-dev), memória e schemas | `.agents/` |
-| 18 slash commands (13 canônicos + 5 aliases de transição), 7 regras por domínio, scripts, MCP | `.cursor/` |
+| 13 slash commands, 7 regras por domínio, scripts, MCP | `.cursor/` |
 | Regras globais e fluxo | `AGENTS.md`, `AGENT_FLOW.md` |
 | Template de env | `.env.example` |
 
-`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, com `/design`, sem `/ui-ux-pro-max`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` e `.agents/shared/`. `--tool codex` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.codex/config.toml` (`[mcp_servers.<id>]` com merge aditivo; omite agents, commands e rules). `--tool windsurf` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.windsurf/mcp_config.json` (JSON `mcpServers`, merge aditivo; omite agents, commands e rules). Detalhes: [`cli/README.md`](cli/README.md).
+`--tool claude-code` projeta o mesmo pack para `.claude/commands/` (`$ARGUMENTS`, com `/design`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json` e `.agents/shared/`. `--tool codex` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.codex/config.toml` (`[mcp_servers.<id>]` com merge aditivo; omite agents, commands e rules). `--tool windsurf` projeta `.agents/skills/`, `.agents/shared/`, `.axion/scripts/`, `AGENTS.md` e `.windsurf/mcp_config.json` (JSON `mcpServers`, merge aditivo; omite agents, commands e rules). Detalhes: [`cli/README.md`](cli/README.md).
 
 O `init` (e o `update`) também grava `.axion/kit.manifest.json` — estado local do kit (SemVer, profile). Não faz parte do template do pack. `npx @zanetta/axion status` lê esse manifesto e mostra a versão instalada (e compara com o latest no npm, se a rede responder).
 
@@ -160,8 +159,6 @@ Um command por mensagem, no chat do Agent: `/<comando>` e o pedido em texto livr
 | `/orchestrate` | Vários specialists (mínimo 3) e coordenação em paralelo | `/orchestrate painel admin com CRUD e testes E2E` |
 | `/remember` | Convenção entre sessões | `/remember prefiro bun em vez de npm neste projeto` |
 | `/design` | Direção visual (slash no Cursor e no Claude Code; skill nas quatro IDEs) | `/design dashboard fintech dark mode minimalista` |
-
-> Aliases de transição permanecem disponíveis: `/brainstorm` (`→ /discover` + `/specify`), `/create` e `/enhance` (`→ /implement`), `/coordinate` (`→ /orchestrate`), `/ui-ux-pro-max` (`→ /design`).
 
 Definição de cada workflow: [`.cursor/commands/`](.cursor/commands/). A lista com as skills e o texto de cada command estão em [Comandos e skills](#comandos-e-skills) e [Cada comando](#cada-comando).
 
@@ -318,11 +315,6 @@ O frontmatter de cada arquivo em `.cursor/commands/` declara as skills que o age
 | `/deploy` | — |
 | `/preview` | — (usa `.axion/scripts/auto_preview.py`) |
 | `/design` | `design` (usa `.agents/shared/ui-ux-pro-max/scripts/search.py`) |
-| `/brainstorm` *(alias)* | `brainstorming` |
-| `/create` *(alias)* | `app-builder`, `plan-writing`, `brainstorming` |
-| `/enhance` *(alias)* | `plan-writing`, `brainstorming` |
-| `/coordinate` *(alias)* | `coordinator-mode`, `parallel-agents` |
-| `/ui-ux-pro-max` *(alias)* | — (aponta para `/design`) |
 
 ## Cada comando
 
@@ -340,7 +332,7 @@ Estado `plan`. O `project-planner` produz `{slug}.plan.md` e `{slug}.acceptance.
 
 ### `/implement`
 
-Estado `implement`. Unifica criação de aplicação nova (Modo A — antigo `/create`, coordenando `app-builder` + schema/API/UI) e evolução de código existente (Modo B — antigo `/enhance`, lendo `session_manager.py info` e aplicando mudanças incrementais). Exige PLAN aprovado para escopo não trivial e valida cada escrita com `side_effect_guard.py`.
+Estado `implement`. Unifica criação de aplicação nova (Modo A — Greenfield, coordenando `app-builder` + schema/API/UI) e evolução de código existente (Modo B — Existing codebase, lendo `session_manager.py info` e aplicando mudanças incrementais). Exige PLAN aprovado para escopo não trivial e valida cada escrita com `side_effect_guard.py`.
 
 ### `/verify`
 
@@ -377,10 +369,6 @@ Estado `remember`. Grava preferência ou decisão em `.agents/memory/`. Antes de
 ### `/design`
 
 Consulta o guia visual em `.agents/shared/ui-ux-pro-max/` (estilos, paletas, tipos, UX). A busca é `python3 .agents/shared/ui-ux-pro-max/scripts/search.py`. Em seguida sintetiza o design system e implementa a tela. Slash `/design` no Cursor e no Claude Code; nas quatro IDEs o agente usa a skill `design`.
-
-### Aliases de transição (`/brainstorm`, `/create`, `/enhance`, `/coordinate`, `/ui-ux-pro-max`)
-
-Stubs mantidos em `.cursor/commands/` para compatibilidade: `/brainstorm` encaminha para `/discover` seguido de `/specify`; `/create` e `/enhance` encaminham para `/implement`; `/coordinate` encaminha para `/orchestrate`; `/ui-ux-pro-max` encaminha para `/design`.
 
 ## Configuração
 
@@ -420,7 +408,7 @@ echo ".agents/" >> .git/info/exclude
 │   └── memory/
 └── .cursor/
     ├── ARCHITECTURE.md
-    ├── commands/             # 18 slash commands
+    ├── commands/             # 13 slash commands
     ├── rules/                # 7 regras por domínio
     ├── scripts/              # leftover v1; masters are `.axion/scripts/`
     └── mcp.json
@@ -438,7 +426,7 @@ echo ".agents/" >> .git/info/exclude
 
 ## Manutenção do kit
 
-O script compara agents, skills, memória e commands com [zanetta/axion](https://github.com/zanetta/axion). Sincroniza `/design`; preserva apenas o alias `/ui-ux-pro-max`, `AGENTS.md`, `.cursor/rules/` e este README.
+O script compara agents, skills, memória e commands com [zanetta/axion](https://github.com/zanetta/axion). Sincroniza `/design`; preserva `AGENTS.md`, `.cursor/rules/` e este README.
 
 ```bash
 python3 .axion/scripts/lint_paths.py .                  # drift de paths (legado .agents/scripts/)

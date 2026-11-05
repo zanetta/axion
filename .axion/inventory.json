@@ -3,7 +3,7 @@
   "counts": {
     "agents": 20,
     "skills": 46,
-    "commands": 18,
+    "commands": 13,
     "rules": 7,
     "scripts": 15,
     "schemas": 2
@@ -79,14 +79,10 @@
     "webapp-testing"
   ],
   "commands": [
-    "brainstorm",
-    "coordinate",
-    "create",
     "debug",
     "deploy",
     "design",
     "discover",
-    "enhance",
     "implement",
     "orchestrate",
     "plan",
@@ -95,7 +91,6 @@
     "specify",
     "status",
     "test",
-    "ui-ux-pro-max",
     "verify"
   ],
   "rules": [

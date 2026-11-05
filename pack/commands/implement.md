@@ -36,7 +36,7 @@ side_effects:
 
 ## Task
 
-This command unifies greenfield application creation (former `/create`) and iterative updates to an existing codebase (former `/enhance`).
+This command unifies greenfield application creation and iterative updates to an existing codebase.
 
 ### 🛑 Gate (blocking)
 
@@ -58,7 +58,7 @@ Tiny single-file fixes may proceed after confirming impact with the user.
 
 Detect whether the target is a greenfield project or an existing codebase and follow the corresponding mode:
 
-### Mode A — Greenfield / New App (former `/create`)
+### Mode A — Greenfield / New App
 
 1. **Request Analysis & Planning Check**
    - Verify approved `{slug}.plan.md` exists (if not, stop and run `/discover` → `/specify` → `/plan`)
@@ -72,7 +72,7 @@ Detect whether the target is a greenfield project or an existing codebase and fo
    - Start preview when appropriate via `python3 .axion/scripts/auto_preview.py`
    - Hand off to `/verify {slug}.acceptance.md`
 
-### Mode B — Existing Codebase / Feature Update (former `/enhance`)
+### Mode B — Existing Codebase / Feature Update
 
 1. **Inspect Current State**
    - Check project state with `python3 .axion/scripts/session_manager.py info`

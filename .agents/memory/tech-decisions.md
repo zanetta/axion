@@ -20,7 +20,7 @@ updated: "2026-11-04"
 - `pack/` is the canonical kit tree. `.axion/scripts/` is a real directory of 15 master scripts in the kit repo and in consumers (not a git symlink).
 - Dual-layout: Python masters resolve `pack/` when present at the scanned root, else installed `.agents` / `.claude` / `.cursor` paths.
 - Cursor adapter is not identity: it maps `pack/` onto Cursor native layout plus `.axion/scripts/`.
-- Claude Code adapter maps `pack/` plus `.axion/scripts/`; omits `pack/rules` and the `/ui-ux-pro-max` alias; writes the `CLAUDE.md` stub. `/design` and `.agents/shared/` are installed.
+- Claude Code adapter maps `pack/` plus `.axion/scripts/`; omits `pack/rules`; writes the `CLAUDE.md` stub. `/design` and `.agents/shared/` are installed.
 - CLI walks `SOURCE_PATHS` (`pack`, `.axion/scripts`, `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`) so dogfood root symlinks are not copied as extra source.
 - `update` remains additive and does not delete leftover `.cursor/scripts/` from v1 installs.
 - Kit repo dogfoods via root symlinks to `pack/`. `.agents/memory/` stays live at repo root; `pack/memory` is consumer seed.
@@ -46,14 +46,14 @@ updated: "2026-11-04"
 
 - Slash commands match FSM states one to one: `/discover` → `/specify` → `/plan` → `/implement` → `/verify` → `/remember`. State names did not change. `/specify` stays outside `/discover`.
 - `/discover` explores and asks; it does not close `{slug}.spec.md`. `/specify` holds the Socratic gate and writes the SPEC.
-- `/implement` unifies former `/create` (greenfield) and `/enhance` (existing code). Gate for non-trivial work is the old `/create` gate.
-- Canonical design command is `/design`. The `brainstorming` skill and the data folder name `ui-ux-pro-max` keep their names. See "Design on all tools" for where `/design` installs.
-- Transition stubs, with no parallel workflow: `/brainstorm`, `/create`, `/enhance`, `/coordinate`, `/ui-ux-pro-max`. Inventory counts every command file, including stubs (18).
+- `/implement` unifies greenfield (Mode A) and existing-code (Mode B). Gate for non-trivial work is the greenfield-strength gate.
+- Canonical design command is `/design`. The `brainstorming` skill and the data folder name `ui-ux-pro-max` keep those names. See "Design on all tools" for where `/design` installs.
+- Transition aliases are maintainer-personal only and are not in `pack/`. Public docs, skill `when_to_use`, and `PLAN.template` name only canonical slashes. Inventory `commands=13`. Optional overlay: user-level Cursor commands outside git. Verify of slug `hide-transition-aliases` passed 2026-11-04 (Option C).
 - Verify of slug `sdd-command-rename` passed 2026-11-04.
 
 ## Design on all tools
 
-- Direction (discover 1A / 2A / 3B): the agent runs the design workflow and `search.py` on all four IDEs. Slash `/design` exists on Cursor and Claude Code only. Alias `/ui-ux-pro-max` stays Cursor-only.
+- Direction (discover 1A / 2A / 3B): the agent runs the design workflow and `search.py` on all four IDEs. Slash `/design` exists on Cursor and Claude Code only.
 - One data path: `.agents/shared/ui-ux-pro-max/`, projected from `pack/shared/` by all four adapters. Cursor no longer maps that tree to `.cursor/shared/`. `update` is additive, so an old `.cursor/shared/` tree may remain on disk unused.
 - Skill `design` is in `MINIMAL_CORE_SKILLS` so profile `minimal` also gets it. CSVs stay in shared data, not inside the skill.
 - Kit dogfood: `.agents/shared` → `pack/shared`.

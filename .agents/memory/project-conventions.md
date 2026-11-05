@@ -19,6 +19,7 @@ updated: 2026-11-04
 - Slug for Windsurf adapter v4: `axion-agnostico-fase-4`.
 - Slug for the six-state command rename: `sdd-command-rename`. Verified 2026-11-04.
 - Slug for design on all four IDEs: `design-all-tools`. Verified 2026-11-04.
+- Slug for dropping transition aliases from pack: `hide-transition-aliases`. Verified 2026-11-04 (Option C, pack 13).
 - `trace_report.py` PLAN-task cells must be a single `P#-#` or `PV-#`. A comma list fails the chain.
 - ACCEPTANCE evidence must not contain bare `{...}`. `verify_gate.py` treats braces as an unevaluated placeholder and rejects the row.
 

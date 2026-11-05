@@ -42,7 +42,6 @@ discover → specify → plan → implement → verify → remember
 | `remember` | `/remember` | `.agents/memory/` |
 
 Commands de apoio (fora da FSM linear): `/debug`, `/test`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/design`.
-Aliases de transição (stubs compatíveis): `/brainstorm` (`→ /discover` + `/specify`), `/create` e `/enhance` (`→ /implement`), `/coordinate` (`→ /orchestrate`), `/ui-ux-pro-max` (`→ /design`).
 
 ### Socratic Gate (antes de `/plan`, `/implement`, `/orchestrate`)
 
@@ -133,11 +132,6 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 | `/status` | — | — | Relatório de progresso |
 | `/test` | — (apoio verify) | `testing-patterns`, `webapp-testing` | Testes |
 | `/design` | — | `.agents/shared/ui-ux-pro-max` | Design system (slash no Cursor e no Claude Code; skill nas quatro IDEs) |
-| `/brainstorm` | discover/specify (alias) | `brainstorming` | Stub de transição → `/discover` então `/specify` |
-| `/create` | implement (alias) | `app-builder`, `plan-writing` | Stub de transição → `/implement` (Greenfield) |
-| `/enhance` | implement (alias) | `plan-writing` | Stub de transição → `/implement` (Existing codebase) |
-| `/coordinate` | orchestrate (alias) | `coordinator-mode`, `parallel-agents` | Stub de transição → `/orchestrate` |
-| `/ui-ux-pro-max` | — (alias) | `.agents/shared/ui-ux-pro-max` | Stub de transição → `/design` (alias Cursor-only) |
 
 > **Cursor:** argumentos são texto livre após o comando (ex.: `/plan auth JWT`), não `$ARGUMENTS`.
 > **Gate:** `/plan`, `/implement`, `/orchestrate` exigem SPEC **ou** ≥3 respostas socráticas no SPEC/PLAN.

@@ -29,7 +29,7 @@ npx @zanetta/axion status
 | Tool | Destino principal | Default |
 | --- | --- | --- |
 | `cursor` | `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` | sim (omitir a flag) |
-| `claude-code` | `.claude/commands/` (`$ARGUMENTS`, inclui `/design`, omite `/ui-ux-pro-max`), `.claude/skills/`, `.agents/shared/`, `CLAUDE.md`, `.mcp.json` | não |
+| `claude-code` | `.claude/commands/` (`$ARGUMENTS`, inclui `/design`), `.claude/skills/`, `.agents/shared/`, `CLAUDE.md`, `.mcp.json` | não |
 | `codex` | `.agents/skills/`, `.agents/shared/`, `.codex/config.toml` (`[mcp_servers.<id>]`), `AGENTS.md` (sem slash commands) | não |
 | `windsurf` | `.agents/skills/`, `.agents/shared/`, `.windsurf/mcp_config.json` (`mcpServers` JSON), `AGENTS.md` (sem slash commands) | não |
 
@@ -102,7 +102,7 @@ A fonte do kit vive em `pack/` + `.axion/scripts/`. Cópia no destino (filtrada 
 - `.agents/` (skills + memory + `schemas/` + templates SDD + `shared/ui-ux-pro-max/`)
 - `.axion/scripts/` — scripts master de gate e validação nos dois adapters (**breaking em relação à v1**, onde `.cursor/scripts/` deixou de ser o path canônico; `axion update` é aditivo e não apaga `.cursor/scripts/` residual)
 - `cursor`: `.cursor/` (commands, rules, mcp, `ARCHITECTURE.md`)
-- `claude-code`: `.claude/commands/` (inclui `/design`, omite `/ui-ux-pro-max`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/ARCHITECTURE.md`
+- `claude-code`: `.claude/commands/` (inclui `/design`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/ARCHITECTURE.md`
 - `codex`: `.codex/config.toml` (merge aditivo de `[mcp_servers.<id>]`; omite agents, commands e rules)
 - `windsurf`: `.windsurf/mcp_config.json` (merge aditivo de `mcpServers`; omite agents, commands e rules)
 - `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`
