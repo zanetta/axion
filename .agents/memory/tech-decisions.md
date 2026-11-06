@@ -98,8 +98,17 @@ updated: "2026-11-06"
 - Pointers from `api-patterns` / `auth-patterns` (auth = identity; payments = money + PCI).
 - Slug `add-payment-patterns`; branch `24-add-payment-patterns` (stacked on accessibility). Epic #24.
 - Inventory after cut: skills **51**, agents **21**. Profile approx: minimal 41 / standard 50 / security 51.
-- Next ADR slice (when scheduled): **new skill** (not only expand `architecture`) — locked in discover.
 - Verify of slug `add-payment-patterns` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
+
+## ADR writing skill (issue 24, P0)
+
+- Option **A**: skill `adr-writing` only — no new agent. Not in `MINIMAL_CORE_SKILLS` (`architecture` remains in core).
+- Wire via `project-planner`, `orchestrator`, `backend-specialist`, `explorer-agent`.
+- **Move** canonical ADR template out of `architecture/trade-off-analysis.md` into `adr-writing`; architecture keeps generic trade-off framework + pointer.
+- Scope: when-to-write, template, lifecycle/status, storage/index (`docs/adr/`), supersede/amend, anti-patterns.
+- Slug `add-adr-writing`; branch `24-add-adr-writing` (stacked on payments). Epic #24. Id “ad-writing” → canonical `adr-writing`.
+- Inventory after cut: skills **52**, agents **21**. Profile approx: minimal 42 / standard 51 / security 52.
+- Verify of slug `add-adr-writing` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
 
 ## Auth patterns skill (issue 19)
 

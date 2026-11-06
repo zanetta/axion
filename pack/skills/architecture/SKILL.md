@@ -1,7 +1,7 @@
 ---
 name: architecture
-description: Architectural decision-making framework. Requirements analysis, trade-off evaluation, ADR documentation. Use when making architecture decisions or analyzing system design.
-when_to_use: "When making architectural decisions, evaluating trade-offs, writing ADRs, or analyzing system design. NOT for direct code implementation."
+description: Architectural decision-making framework. Requirements analysis, trade-off evaluation, pattern selection. For formal ADRs use adr-writing.
+when_to_use: "When making architecture decisions, evaluating trade-offs, or analyzing system design. For writing/status/storage of Architecture Decision Records use adr-writing. NOT for direct code implementation."
 allowed-tools: Read, Glob, Grep
 ---
 
@@ -16,7 +16,7 @@ allowed-tools: Read, Glob, Grep
 | File | Description | When to Read |
 |------|-------------|--------------|
 | `context-discovery.md` | Questions to ask, project classification | Starting architecture design |
-| `trade-off-analysis.md` | ADR templates, trade-off framework | Documenting decisions |
+| `trade-off-analysis.md` | Trade-off framework (+ pointer to adr-writing) | Comparing options before an ADR |
 | `pattern-selection.md` | Decision trees, anti-patterns | Choosing patterns |
 | `examples.md` | MVP, SaaS, Enterprise examples | Reference implementations |
 | `patterns-reference.md` | Quick lookup for patterns | Pattern comparison |
@@ -27,6 +27,7 @@ allowed-tools: Read, Glob, Grep
 
 | Skill | Use For |
 |-------|---------|
+| `@[skills/adr-writing]` | Formal ADRs (template, lifecycle, storage) |
 | `@[skills/database-design]` | Database schema design |
 | `@[skills/api-patterns]` | API design patterns |
 | `@[skills/deployment-procedures]` | Deployment architecture |
@@ -52,5 +53,5 @@ Before finalizing architecture:
 - [ ] Constraints identified
 - [ ] Each decision has trade-off analysis
 - [ ] Simpler alternatives considered
-- [ ] ADRs written for significant decisions
+- [ ] Significant decisions recorded via `adr-writing`
 - [ ] Team expertise matches chosen patterns
