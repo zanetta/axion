@@ -21,6 +21,7 @@
 - [project] Slug design-all-tools verified; design data path is .agents/shared not .cursor/shared → tech-decisions.md
 - [project] Slug antigravity-adapter verified 2026-11-05: native, id antigravity, no kit dogfood, issue 17 → tech-decisions.md
 - [project] Slug rename-design-skill verified 2026-11-05: design-guide on all five adapters; command /design stays; no stub → tech-decisions.md
+- [project] Slug add-observability verified 2026-11-05: skill observability, devops+debugger, not MINIMAL_CORE, skills=47 → tech-decisions.md
 
 ## Feedback
 - [feedback] Issue 11: Option B single cutover, then Option A pack symlinks when skills vanished → feedback-history.md
@@ -28,3 +29,4 @@
 - [feedback] Issue 11 fase 4: .windsurf/ only, omit commands/rules, id windsurf, mcp_config.json, close #11 → feedback-history.md
 - [feedback] Issue 17 verified: native Antigravity, workflows mapped, GEMINI stub, /design hint-only, no dogfood → feedback-history.md
 - [feedback] Rename skill: Option A global, keep /design, no stub, smokes-only on five tools → feedback-history.md
+- [feedback] Issue 20: skill-only observability, not MINIMAL_CORE, wire devops+debugger → feedback-history.md

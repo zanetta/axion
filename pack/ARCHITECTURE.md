@@ -9,7 +9,7 @@
 | Componente | Quantidade | Caminho canônico (Cursor) |
 | --- | --- | --- |
 | **Agents** | 20 | `.claude/agents/<name>.md` |
-| **Skills** | 46 | `.agents/skills/<name>/SKILL.md` |
+| **Skills** | 47 | `.agents/skills/<name>/SKILL.md` |
 | **Workflows** | 13 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
@@ -45,7 +45,7 @@ axion/
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
-│   ├── skills/                  # 46 skills top-level (+ sub-skills game-dev)
+│   ├── skills/                  # 47 skills top-level (+ sub-skills game-dev)
 │   │   ├── plan-writing/templates/   # SPEC.template.md, PLAN.template.md
 │   │   └── verify-changes/templates/ # ACCEPTANCE.template.md
 │   ├── shared/ui-ux-pro-max/    # Dados e scripts de design (path único)
@@ -176,11 +176,11 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 | `database-architect` | Schema, SQL | `database-design` |
 | `mobile-developer` | iOS, Android, RN | `mobile-design` |
 | `game-developer` | Mecânicas de jogo | `game-development` |
-| `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management` |
+| `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management`, `observability` |
 | `security-auditor` | Compliance, OWASP | `vulnerability-scanner`, `red-team-tactics` |
 | `penetration-tester` | Segurança ofensiva | `red-team-tactics` |
 | `test-engineer` | Estratégias de teste | `testing-patterns`, `tdd-workflow`, `webapp-testing` |
-| `debugger` | Root cause analysis | `systematic-debugging` |
+| `debugger` | Root cause analysis | `systematic-debugging`, `observability` |
 | `performance-optimizer` | Web Vitals, speed | `performance-profiling` |
 | `seo-specialist` | SEO, visibilidade | `seo-fundamentals`, `geo-fundamentals` |
 | `documentation-writer` | Docs, manuais | `documentation-templates` |
@@ -192,7 +192,7 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 
-## 🧩 Skills (46)
+## 🧩 Skills (47)
 
 Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicional.
 
@@ -227,6 +227,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | --- | --- |
 | `deployment-procedures` | CI/CD, deploy |
 | `server-management` | Infra, processos |
+| `observability` | Logs, traces, métricas, alertas, error tracking |
 
 ### Testing & Quality
 
@@ -416,7 +417,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Métrica | Valor |
 | --- | --- |
 | Agents | 20 |
-| Skills | 46 |
+| Skills | 47 |
 | Workflows | 13 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
@@ -438,7 +439,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Database | `database-architect` | `database-design` |
 | Security | `security-auditor` | `vulnerability-scanner` |
 | Testing | `test-engineer` | `testing-patterns`, `webapp-testing` |
-| Debug | `debugger` | `systematic-debugging` |
+| Debug | `debugger` | `systematic-debugging`, `observability` |
 | Plan | `project-planner` | `brainstorming`, `plan-writing` |
 | Orquestração | `orchestrator` | `coordinator-mode`, `parallel-agents` |
 | Memória | — | `memory-system` + `/remember` |

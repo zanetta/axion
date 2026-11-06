@@ -1,8 +1,9 @@
-# Axion
+
+<img src="axion-logo.png" alt="Logotipo do Axion - Uma letra A estilizada de forma tecnologica" width="150">
 
 Framework de Spec-Driven Development (SDD). A especificação é a fonte da verdade; o código deriva dela. O Cursor é o adapter **default** (`--tool cursor`); Claude Code entra com `--tool claude-code`, OpenAI Codex com `--tool codex`, Windsurf com `--tool windsurf` e Google Antigravity com `--tool antigravity`.
 
-Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.3.2`](https://www.npmjs.com/package/@zanetta/axion)
+Repositório: [zanetta/axion](https://github.com/zanetta/axion) · Pacote: [`@zanetta/axion@1.3.4`](https://www.npmjs.com/package/@zanetta/axion)
 
 | | |
 | --- | --- |
@@ -404,7 +405,7 @@ echo ".agents/" >> .git/info/exclude
 ├── .claude/agents/           # 20 agents
 ├── .agents/
 │   ├── schemas/              # Contratos skill/command
-│   ├── skills/               # 46 skills (+ templates SPEC/PLAN/ACCEPTANCE)
+│   ├── skills/               # 47 skills (+ templates SPEC/PLAN/ACCEPTANCE)
 │   ├── shared/ui-ux-pro-max/ # Dados e search.py do fluxo /design
 │   └── memory/
 └── .cursor/

@@ -43,9 +43,9 @@ O **profile** filtra o que é copiado **no momento da cópia** (`isInProfile` em
 
 | Profile | Conteúdo (resumo) | Pack real (aprox.) |
 | --- | --- | --- |
-| `minimal` | 11 agents core + skills de processo (planejamento, verify, orquestração, design-guide) + dependências | 11 agents / 36 skills |
-| `standard` | Pack completo **sem** superfície ofensiva (fallback final) | 19 / 45 |
-| `security` | Pack completo **com** `red-team-tactics` + `penetration-tester` | 20 / 46 |
+| `minimal` | 11 agents core + skills de processo (planejamento, verify, orquestração, design-guide) + dependências | 11 agents / 37 skills |
+| `standard` | Pack completo **sem** superfície ofensiva (fallback final) | 19 / 46 |
+| `security` | Pack completo **com** `red-team-tactics` + `penetration-tester` | 20 / 47 |
 | `fullstack` | Pack sem game/mobile (e skills relacionadas) | 17 / 43 |
 | `mobile` | Pack focado mobile; exclui game, SEO e parte do stack web | 16 / 40 |
 

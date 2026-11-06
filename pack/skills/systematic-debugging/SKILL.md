@@ -108,3 +108,9 @@ pm2 logs app-name --err --lines 100
 ❌ **Assuming** - "It must be X" without proof
 ❌ **Not reproducing first** - Fixing blindly
 ❌ **Stopping at symptoms** - Not finding root cause
+
+## Related Skills
+
+| Need | Skill |
+|------|-------|
+| Production logs, traces, metrics, error tracking | `@[skills/observability]` |

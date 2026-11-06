@@ -62,6 +62,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 | Error tracking | Sentry |
 | Uptime | UptimeRobot, Pingdom |
 
+> **App-level signals** (structured logs, traces, SLIs, alerts, error tracking): see `@[skills/observability]`. This skill stays focused on host/process operations.
+
 ---
 
 ## 3. Log Management Principles

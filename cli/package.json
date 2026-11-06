@@ -1,6 +1,6 @@
 {
     "name": "@zanetta/axion",
-    "version": "1.3.2",
+    "version": "1.3.4",
     "description": "CLI to install Axion, a spec-driven development kit",
     "type": "module",
     "main": "bin/index.js",

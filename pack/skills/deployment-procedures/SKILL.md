@@ -75,7 +75,7 @@ What are you deploying?
 - [ ] Database migrations ready (if any)
 - [ ] Rollback plan documented
 - [ ] Team notified
-- [ ] Monitoring ready
+- [ ] Monitoring ready (app signals: `@[skills/observability]`)
 
 ---
 

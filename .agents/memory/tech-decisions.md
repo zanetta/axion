@@ -1,7 +1,7 @@
 ---
 type: project
 created: 2026-11-03
-updated: "2026-11-05"
+updated: "2026-11-05T21:52:00-03:00"
 ---
 
 # Tech Decisions
@@ -68,3 +68,12 @@ updated: "2026-11-05"
 - Verify of slug `rename-design-skill` passed 2026-11-05 (Option A global): pack `design` → `design-guide` on all five adapters, no per-adapter transform, no leftover stub. Additive `update` may leave unused `skills/design/`. E-01 WEB row stays without `design`/`design-guide`. Accept = smokes paths, not IDE slash probe.
 - Kit dogfood: `.agents/shared` → `pack/shared`.
 - Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills = 46. Antigravity hint: `/design` is the SDD workflow; the searchable guide is skill `design-guide`.
+
+## Observability skill (issue 20)
+
+- Option A: skill `observability` only — no new agent. Not in `MINIMAL_CORE_SKILLS` (arrives via agent deps).
+- Wire via `devops-engineer` and `debugger`. Decision trees (logs, OTel, metrics, alerts, error tracking) — not vendor cookbooks. Light pointers from `server-management` / `deployment-procedures` / `systematic-debugging`.
+- Slug `add-observability`; branch `20-add-observability`. Kit run-log (O-01 / `.axion/logs/runs.jsonl`) is out of scope for this skill (consumer apps only).
+- Inventory skills = 47 after this cut (base was 46 on main without auth). Profile approx: minimal 37 / standard 46 / security 47.
+- Parallel track: auth skill (`add-auth-patterns`, issue 19) on branch `19-add-auth-patterns` — rebase inventory if both merge.
+- Verify of slug `add-observability` passed 2026-11-05 (checklist + verify_gate + trace 5/5).

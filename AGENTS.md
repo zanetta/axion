@@ -89,8 +89,8 @@ Antes de codificar, responda:
 | **Database**                             | `database-architect`                   | `database-design`                |
 | **Segurança / Auditoria**                | `security-auditor`, `penetration-tester` | `vulnerability-scanner`, `red-team-tactics` |
 | **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing` |
-| **Debug**                                | `debugger`                             | `systematic-debugging`           |
-| **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management` |
+| **Debug**                                | `debugger`                             | `systematic-debugging`, `observability` |
+| **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management`, `observability` |
 | **Planejamento / Discovery**             | `project-planner`                      | `brainstorming`, `plan-writing`, `architecture` |
 | **Multi-domínio / complexo**             | `orchestrator`                         | `coordinator-mode`, `parallel-agents`, `memory-system`, `verify-changes` |
 

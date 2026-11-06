@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "counts": {
     "agents": 20,
-    "skills": 46,
+    "skills": 47,
     "commands": 13,
     "rules": 7,
     "scripts": 15,
@@ -58,6 +58,7 @@
     "mobile-design",
     "nextjs-react-expert",
     "nodejs-best-practices",
+    "observability",
     "parallel-agents",
     "performance-profiling",
     "plan-writing",

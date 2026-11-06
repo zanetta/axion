@@ -147,10 +147,10 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 | Database | `database-architect` | `database-design` |
 | Mobile | `mobile-developer` | `mobile-design` |
 | Game | `game-developer` | `game-development` |
-| DevOps | `devops-engineer` | `deployment-procedures`, `server-management` |
+| DevOps | `devops-engineer` | `deployment-procedures`, `server-management`, `observability` |
 | Security | `security-auditor` | `vulnerability-scanner` |
 | Testing | `test-engineer` | `testing-patterns`, `webapp-testing` |
-| Debug | `debugger` | `systematic-debugging` |
+| Debug | `debugger` | `systematic-debugging`, `observability` |
 | Multi-domínio | `orchestrator` | `coordinator-mode`, `parallel-agents`, `memory-system` |
 | Planejamento | `project-planner` | `brainstorming`, `plan-writing` |
 

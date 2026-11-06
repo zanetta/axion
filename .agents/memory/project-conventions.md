@@ -1,7 +1,7 @@
 ---
 type: project
 created: 2026-05-25
-updated: 2026-11-05
+updated: "2026-11-05"
 ---
 
 # Project Conventions
@@ -22,6 +22,7 @@ updated: 2026-11-05
 - Slug for dropping transition aliases from pack: `hide-transition-aliases`. Verified 2026-11-04 (Option C, pack 13).
 - Slug for Google Antigravity install adapter: `antigravity-adapter` (issue 17, branch `17-antigravity-adapter`). Verified 2026-11-05.
 - Slug for renaming skill `design` → `design-guide` on all adapters: `rename-design-skill`. Verified 2026-11-05.
+- Slug for observability skill: `add-observability` (issue 20, branch `20-add-observability`). Verified 2026-11-05.
 - `trace_report.py` PLAN-task cells must be a single `P#-#` or `PV-#`. A comma list fails the chain.
 - ACCEPTANCE evidence must not contain bare `{...}`. `verify_gate.py` treats braces as an unevaluated placeholder and rejects the row.
 

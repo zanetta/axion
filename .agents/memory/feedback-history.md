@@ -1,7 +1,7 @@
 ---
 type: feedback
 created: 2026-11-03
-updated: 2026-11-05
+updated: "2026-11-05"
 ---
 
 # Feedback History
@@ -30,3 +30,8 @@ updated: 2026-11-05
 
 - Rediscover: Option A global, not an Antigravity-only transform. Command `/design` stays. No leftover stub. Accept = smokes on five tools, not IDE slash probe.
 - Verified 2026-11-05 as slug `rename-design-skill`.
+
+## Observability skill (issue 20)
+
+- Defaults locked like auth: skill-only, not MINIMAL_CORE, wire `devops-engineer` + `debugger`. Branch `20-add-observability`.
+- Verified 2026-11-05 as slug `add-observability` (gate + trace covered).
