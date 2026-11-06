@@ -23,6 +23,7 @@
 - [project] Slug rename-design-skill verified 2026-11-05: design-guide on all five adapters; command /design stays; no stub → tech-decisions.md
 - [project] Slug add-observability verified 2026-11-05: skill observability, devops+debugger, not MINIMAL_CORE, skills=47 → tech-decisions.md
 - [project] Slug add-rag-patterns verified 2026-11-06: rag-patterns+ai-specialist; agents=21 skills=49; not MINIMAL; issue 23 → tech-decisions.md
+- [project] Slug add-accessibility verified 2026-11-06: skill accessibility Option A; frontend+QA+mobile; not MINIMAL; skills=50; issue 24 → tech-decisions.md
 - [project] Slug add-auth-patterns verified 2026-11-05: skill auth-patterns; issue 19; skills=47; not MINIMAL_CORE → tech-decisions.md
 
 ## Feedback
@@ -33,3 +34,4 @@
 - [feedback] Rename skill: Option A global, keep /design, no stub, smokes-only on five tools → feedback-history.md
 - [feedback] Issue 20: skill-only observability, not MINIMAL_CORE, wire devops+debugger → feedback-history.md
 - [feedback] Issue 23: Option C rag+ai-specialist, agentic RAG, wire backend/DB + mcp-builder → feedback-history.md
+- [feedback] Issue 24: Option A skill-only accessibility; wire frontend+QA+mobile; script stays frontend-design → feedback-history.md

@@ -400,6 +400,7 @@ For deeper guidance on specific areas:
 | Skill | When to Use |
 |-------|-------------|
 | **frontend-design** (this) | Before coding - Learn design principles (color, typography, UX psychology) |
+| **[accessibility](../accessibility/SKILL.md)** | WCAG decision trees; keyboard, ARIA, contrast, forms, light mobile a11y |
 | **[web-design-guidelines](../web-design-guidelines/SKILL.md)** | After coding - Audit for accessibility, performance, and best practices |
 
 ## Post-Design Workflow
@@ -413,7 +414,7 @@ After implementing your design, run the audit:
 4. FIX      → Address findings from audit
 ```
 
-> **Next Step:** After coding, use `web-design-guidelines` skill to audit your implementation for accessibility, focus states, animations, and performance issues.
+> **Next Step:** For WCAG/a11y decisions use `accessibility`. After coding, use `web-design-guidelines` for broader UI guidelines audit. Heuristic script: `scripts/accessibility_checker.py` (stays in this skill).
 
 ---
 

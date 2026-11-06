@@ -36,6 +36,11 @@ updated: "2026-11-06"
 - Defaults locked like auth: skill-only, not MINIMAL_CORE, wire `devops-engineer` + `debugger`. Branch `20-add-observability`.
 - Verified 2026-11-05 as slug `add-observability` (gate + trace covered).
 
+## Accessibility (issue 24 P0)
+
+- Defaults: Option A skill-only; wire frontend-specialist + qa-automation-engineer + mobile-developer; WCAG web + light mobile; script stays in frontend-design with pointer.
+- Verified 2026-11-06 as slug `add-accessibility` (gate + trace 5/5; skills=50).
+
 ## RAG patterns (issue 23)
 
 - Chose Option C (skill + new agent), not skill-only. Agentic RAG + tool-calling in scope. Wire backend-specialist, database-architect, and relate mcp-builder skill.

@@ -47,6 +47,7 @@ If no files specified, ask the user which files to review.
 | Skill | When to Use |
 |-------|-------------|
 | **[frontend-design](../frontend-design/SKILL.md)** | Before coding - Learn design principles (color, typography, UX psychology) |
+| **[accessibility](../accessibility/SKILL.md)** | Canonical WCAG / a11y decision trees (keyboard, ARIA, contrast, forms) |
 | **web-design-guidelines** (this) | After coding - Audit for accessibility, performance, and best practices |
 
 ## Design Workflow
