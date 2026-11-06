@@ -90,6 +90,17 @@ updated: "2026-11-06"
 - Inventory after cut: skills **50**, agents **21**. WEB E-01 agent stays `frontend-specialist` (skills col may list `accessibility`).
 - Verify of slug `add-accessibility` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
 
+## Payment patterns skill (issue 24, P0)
+
+- Option **A**: skill `payment-patterns` only — no new agent. Not in `MINIMAL_CORE_SKILLS`.
+- Wire via `backend-specialist` and `security-auditor`. Stripe-first (prefer Checkout Sessions; ban Charges/Sources).
+- Scope: one-time + webhooks + Billing **light** + PCI boundary; **not** Connect/multi-PSP this slice.
+- Pointers from `api-patterns` / `auth-patterns` (auth = identity; payments = money + PCI).
+- Slug `add-payment-patterns`; branch `24-add-payment-patterns` (stacked on accessibility). Epic #24.
+- Inventory after cut: skills **51**, agents **21**. Profile approx: minimal 41 / standard 50 / security 51.
+- Next ADR slice (when scheduled): **new skill** (not only expand `architecture`) — locked in discover.
+- Verify of slug `add-payment-patterns` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
+
 ## Auth patterns skill (issue 19)
 
 - Chose Option A over observability and rag-patterns. Skill only — no new agent.
