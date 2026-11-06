@@ -1,0 +1,16 @@
+{
+  "slug": "add-adr-writing",
+  "spec": "add-adr-writing.spec.md",
+  "plan": "add-adr-writing.plan.md",
+  "acceptance": "add-adr-writing.acceptance.md",
+  "issue": "https://github.com/zanetta/axion/issues/24",
+  "branch": "24-add-adr-writing",
+  "direction": "Option A — skill adr-writing only; move ADR template from architecture",
+  "links": [
+    { "spec_id": "SPEC-add-adr-writing-1", "plan_task": "P1-1", "acceptance_id": "AC-1" },
+    { "spec_id": "SPEC-add-adr-writing-2", "plan_task": "P1-2", "acceptance_id": "AC-2" },
+    { "spec_id": "SPEC-add-adr-writing-3", "plan_task": "P1-3", "acceptance_id": "AC-3" },
+    { "spec_id": "SPEC-add-adr-writing-4", "plan_task": "P1-4", "acceptance_id": "AC-4" },
+    { "spec_id": "SPEC-add-adr-writing-5", "plan_task": "P1-5", "acceptance_id": "AC-5" }
+  ]
+}

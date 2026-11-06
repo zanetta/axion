@@ -92,7 +92,7 @@ Antes de codificar, responda:
 | **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing` |
 | **Debug**                                | `debugger`                             | `systematic-debugging`, `observability` |
 | **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management`, `observability` |
-| **Planejamento / Discovery**             | `project-planner`                      | `brainstorming`, `plan-writing`, `architecture` |
+| **Planejamento / Discovery**             | `project-planner`                      | `brainstorming`, `plan-writing`, `architecture`, `adr-writing` |
 | **Multi-domínio / complexo**             | `orchestrator`                         | `coordinator-mode`, `parallel-agents`, `memory-system`, `verify-changes` |
 
 > Mobile + frontend-specialist = **ERRADO**. Mobile → `mobile-developer`.
