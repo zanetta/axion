@@ -9,7 +9,7 @@
 | Componente | Quantidade | Caminho canônico (Cursor) |
 | --- | --- | --- |
 | **Agents** | 21 | `.claude/agents/<name>.md` |
-| **Skills** | 49 | `.agents/skills/<name>/SKILL.md` |
+| **Skills** | 50 | `.agents/skills/<name>/SKILL.md` |
 | **Workflows** | 13 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
@@ -45,7 +45,7 @@ axion/
 ├── .claude/agents/              # 21 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
-│   ├── skills/                  # 49 skills top-level (+ sub-skills game-dev)
+│   ├── skills/                  # 50 skills top-level (+ sub-skills game-dev)
 │   │   ├── plan-writing/templates/   # SPEC.template.md, PLAN.template.md
 │   │   └── verify-changes/templates/ # ACCEPTANCE.template.md
 │   ├── shared/ui-ux-pro-max/    # Dados e scripts de design (path único)
@@ -171,11 +171,11 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 | --- | --- | --- |
 | `orchestrator` | Coordenação multi-agente | `parallel-agents`, `coordinator-mode`, `memory-system`, `context-compression`, `verify-changes` |
 | `project-planner` | Discovery, planejamento | `brainstorming`, `plan-writing`, `architecture` |
-| `frontend-specialist` | Web UI/UX | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns` |
+| `frontend-specialist` | Web UI/UX | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns`, `accessibility` |
 | `backend-specialist` | API, lógica de negócio | `api-patterns`, `auth-patterns`, `nodejs-best-practices`, `database-design`, `rag-patterns` |
 | `database-architect` | Schema, SQL | `database-design`, `rag-patterns` |
 | `ai-specialist` | RAG, embeddings, agentic retrieval | `rag-patterns`, `mcp-builder`, `database-design` |
-| `mobile-developer` | iOS, Android, RN | `mobile-design` |
+| `mobile-developer` | iOS, Android, RN | `mobile-design`, `accessibility` |
 | `game-developer` | Mecânicas de jogo | `game-development` |
 | `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management`, `observability` |
 | `security-auditor` | Compliance, OWASP | `vulnerability-scanner`, `red-team-tactics` |
@@ -187,13 +187,13 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 | `documentation-writer` | Docs, manuais | `documentation-templates` |
 | `product-manager` | Requisitos, stories | `plan-writing`, `brainstorming` |
 | `product-owner` | Backlog, MVP | `plan-writing`, `brainstorming` |
-| `qa-automation-engineer` | E2E, CI | `webapp-testing`, `testing-patterns` |
+| `qa-automation-engineer` | E2E, CI | `webapp-testing`, `testing-patterns`, `accessibility` |
 | `code-archaeologist` | Legacy, refactor | `clean-code`, `code-review-checklist` |
 | `explorer-agent` | Análise de codebase | — |
 
 ---
 
-## 🧩 Skills (49)
+## 🧩 Skills (50)
 
 Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicional.
 
@@ -206,6 +206,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | `tailwind-patterns` | Tailwind CSS v4 |
 | `frontend-design` | UI/UX, design systems |
 | `design-guide` | Guia UI/UX pesquisável (estilos, paletas, tipos; `.agents/shared/`) |
+| `accessibility` | WCAG 2.2, keyboard/ARIA/contrast, light mobile a11y |
 
 ### Backend & API
 
@@ -420,7 +421,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Métrica | Valor |
 | --- | --- |
 | Agents | 21 |
-| Skills | 49 |
+| Skills | 50 |
 | Workflows | 13 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
@@ -436,10 +437,10 @@ Detalhes: [scripts/README.md](scripts/README.md)
 
 | Necessidade | Agent | Skills |
 | --- | --- | --- |
-| Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `design-guide` |
+| Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `design-guide`, `accessibility` |
 | API | `backend-specialist` | `api-patterns`, `auth-patterns`, `nodejs-best-practices` |
 | AI / RAG | `ai-specialist` | `rag-patterns`, `mcp-builder` |
-| Mobile | `mobile-developer` | `mobile-design` |
+| Mobile | `mobile-developer` | `mobile-design`, `accessibility` |
 | Database | `database-architect` | `database-design`, `rag-patterns` |
 | Security | `security-auditor` | `vulnerability-scanner`, `auth-patterns` |
 | Testing | `test-engineer` | `testing-patterns`, `webapp-testing` |

@@ -24,6 +24,7 @@ updated: "2026-11-06"
 - Slug for renaming skill `design` → `design-guide` on all adapters: `rename-design-skill`. Verified 2026-11-05.
 - Slug for observability skill: `add-observability` (issue 20, branch `20-add-observability`). Verified 2026-11-05.
 - Slug for RAG skill (+ agent): `add-rag-patterns` (issue 23, branch `23-add-rag-patterns`). Verified 2026-11-06 (Option C).
+- Issue 24 (`Atualizar catálogo de skills`) is the epic for AAS-derived skill slices; first P0 branch `24-add-accessibility`, slug `add-accessibility` (discover locked Option A).
 
 - Slug for auth skill: `add-auth-patterns` (issue 19, branch `19-add-auth-patterns`). Verified 2026-11-05.
 - `trace_report.py` PLAN-task cells must be a single `P#-#` or `PV-#`. A comma list fails the chain.

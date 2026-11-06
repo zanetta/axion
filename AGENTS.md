@@ -83,8 +83,8 @@ Antes de codificar, responda:
 
 | Tipo de projeto                          | Subagent / persona indicado            | Skills relevantes                |
 | ---------------------------------------- | -------------------------------------- | -------------------------------- |
-| **MOBILE** (iOS, Android, RN, Flutter)   | `mobile-developer`                     | `mobile-design`                  |
-| **WEB** (Next.js, React web)             | `frontend-specialist`                  | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns` |
+| **MOBILE** (iOS, Android, RN, Flutter)   | `mobile-developer`                     | `mobile-design`, `accessibility` |
+| **WEB** (Next.js, React web)             | `frontend-specialist`                  | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns`, `accessibility` |
 | **BACKEND** (API, server, DB)            | `backend-specialist`                   | `api-patterns`, `auth-patterns`, `database-design`, `nodejs-best-practices`    |
 | **AI / RAG** (embeddings, retrieval, agentic) | `ai-specialist`                   | `rag-patterns`, `mcp-builder`    |
 | **Database**                             | `database-architect`                   | `database-design`, `rag-patterns` |
@@ -191,7 +191,7 @@ Esses agents contêm:
 `orchestrator`, `project-planner`, `security-auditor`, `backend-specialist`, `frontend-specialist`, `mobile-developer`, `ai-specialist`, `debugger`, `game-developer`.
 
 **Skills-chave** (em `.agents/skills/`):
-`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design-guide`, `auth-patterns`, `rag-patterns`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
+`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design-guide`, `accessibility`, `auth-patterns`, `rag-patterns`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
 
 **CLI npm:** `@zanetta/axion` — `init [--profile minimal|standard|security|fullstack|mobile] [--enable-offensive]`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 

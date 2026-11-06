@@ -79,6 +79,17 @@ updated: "2026-11-06"
 - Verify of slug `add-observability` passed 2026-11-05 (checklist + verify_gate + trace 5/5).
 - Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills was 46 then; Antigravity hint: `/design` is the SDD workflow; the searchable guide is skill `design-guide`.
 
+## Accessibility skill (issue 24, P0)
+
+- Option **A**: skill `accessibility` only — no new agent. Not in `MINIMAL_CORE_SKILLS`.
+- Wire via `frontend-specialist`, `qa-automation-engineer`, and `mobile-developer`.
+- Scope: WCAG 2.2 web + **light** mobile a11y (Dynamic Type / screen readers), not a full mobile-a11y cookbook.
+- Keep `accessibility_checker.py` under `frontend-design/scripts/`; skill points to it (no move).
+- Light pointers from `frontend-design` / `web-design-guidelines` / optionally `design-guide` / `mobile-design`.
+- Slug `add-accessibility`; branch `24-add-accessibility`. Epic issue https://github.com/zanetta/axion/issues/24.
+- Inventory after cut: skills **50**, agents **21**. WEB E-01 agent stays `frontend-specialist` (skills col may list `accessibility`).
+- Verify of slug `add-accessibility` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
+
 ## Auth patterns skill (issue 19)
 
 - Chose Option A over observability and rag-patterns. Skill only — no new agent.
