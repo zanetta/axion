@@ -9,7 +9,7 @@
 | Componente | Quantidade | Caminho canônico (Cursor) |
 | --- | --- | --- |
 | **Agents** | 21 | `.claude/agents/<name>.md` |
-| **Skills** | 52 | `.agents/skills/<name>/SKILL.md` |
+| **Skills** | 53 | `.agents/skills/<name>/SKILL.md` |
 | **Workflows** | 13 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
@@ -45,7 +45,7 @@ axion/
 ├── .claude/agents/              # 21 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
-│   ├── skills/                  # 52 skills top-level (+ sub-skills game-dev)
+│   ├── skills/                  # 53 skills top-level (+ sub-skills game-dev)
 │   │   ├── plan-writing/templates/   # SPEC.template.md, PLAN.template.md
 │   │   └── verify-changes/templates/ # ACCEPTANCE.template.md
 │   ├── shared/ui-ux-pro-max/    # Dados e scripts de design (path único)
@@ -174,13 +174,13 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 | `frontend-specialist` | Web UI/UX | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns`, `accessibility` |
 | `backend-specialist` | API, lógica de negócio | `api-patterns`, `auth-patterns`, `payment-patterns`, `nodejs-best-practices`, `database-design`, `rag-patterns`, `adr-writing` |
 | `database-architect` | Schema, SQL | `database-design`, `rag-patterns` |
-| `ai-specialist` | RAG, embeddings, agentic retrieval | `rag-patterns`, `mcp-builder`, `database-design` |
+| `ai-specialist` | RAG, embeddings, agentic retrieval | `rag-patterns`, `llm-eval`, `mcp-builder`, `database-design` |
 | `mobile-developer` | iOS, Android, RN | `mobile-design`, `accessibility` |
 | `game-developer` | Mecânicas de jogo | `game-development` |
 | `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management`, `observability` |
 | `security-auditor` | Compliance, OWASP | `vulnerability-scanner`, `red-team-tactics` |
 | `penetration-tester` | Segurança ofensiva | `red-team-tactics` |
-| `test-engineer` | Estratégias de teste | `testing-patterns`, `tdd-workflow`, `webapp-testing` |
+| `test-engineer` | Estratégias de teste | `testing-patterns`, `tdd-workflow`, `webapp-testing`, `llm-eval` |
 | `debugger` | Root cause analysis | `systematic-debugging`, `observability` |
 | `performance-optimizer` | Web Vitals, speed | `performance-profiling` |
 | `seo-specialist` | SEO, visibilidade | `seo-fundamentals`, `geo-fundamentals` |
@@ -193,7 +193,7 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 
-## 🧩 Skills (52)
+## 🧩 Skills (53)
 
 Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicional.
 
@@ -217,6 +217,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | `api-patterns` | REST, GraphQL, tRPC |
 | `auth-patterns` | Authn/authz: session, JWT, OAuth, Passkeys, RBAC |
 | `rag-patterns` | RAG clássico + agentic; embeddings, retrieval, grounding |
+| `llm-eval` | Golden sets, faithfulness, LLM-as-judge, regression gates |
 | `nodejs-best-practices` | Node.js async, módulos |
 | `python-patterns` | Python, FastAPI |
 | `rust-pro` | Rust async, type system |
@@ -423,7 +424,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Métrica | Valor |
 | --- | --- |
 | Agents | 21 |
-| Skills | 52 |
+| Skills | 53 |
 | Workflows | 13 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
@@ -441,11 +442,11 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | --- | --- | --- |
 | Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `design-guide`, `accessibility` |
 | API | `backend-specialist` | `api-patterns`, `auth-patterns`, `payment-patterns`, `nodejs-best-practices` |
-| AI / RAG | `ai-specialist` | `rag-patterns`, `mcp-builder` |
+| AI / RAG | `ai-specialist` | `rag-patterns`, `llm-eval`, `mcp-builder` |
 | Mobile | `mobile-developer` | `mobile-design`, `accessibility` |
 | Database | `database-architect` | `database-design`, `rag-patterns` |
 | Security | `security-auditor` | `vulnerability-scanner`, `auth-patterns`, `payment-patterns` |
-| Testing | `test-engineer` | `testing-patterns`, `webapp-testing` |
+| Testing | `test-engineer` | `testing-patterns`, `webapp-testing`, `llm-eval` |
 | Debug | `debugger` | `systematic-debugging`, `observability` |
 | Plan | `project-planner` | `brainstorming`, `plan-writing`, `adr-writing` |
 | Orquestração | `orchestrator` | `coordinator-mode`, `parallel-agents` |

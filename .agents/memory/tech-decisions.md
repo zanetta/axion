@@ -110,6 +110,16 @@ updated: "2026-11-06"
 - Inventory after cut: skills **52**, agents **21**. Profile approx: minimal 42 / standard 51 / security 52.
 - Verify of slug `add-adr-writing` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
 
+## LLM eval skill (issue 24, P0)
+
+- Option **A**: skill `llm-eval` only — no new agent. Not in `MINIMAL_CORE_SKILLS`.
+- Wire via `ai-specialist` and `test-engineer`.
+- **Move** canonical eval content from `rag-patterns/evaluation.md` into `llm-eval`; RAG keeps a short pointer. Broad scope: offline golden sets, retrieval/faithfulness, LLM-as-judge, online/regression gates, anti-patterns.
+- Name distinct from kit `eval_routing.py` (SDD routing smoke ≠ consumer LLM eval).
+- Slug `add-llm-eval`; branch `24-add-llm-eval` (stacked on ADR). Epic #24. AAS id was `llm-evaluation` → Axion `llm-eval`.
+- Inventory after cut: skills **53**, agents **21**. Profile approx: minimal 43 / standard 52 / security 53.
+- Verify of slug `add-llm-eval` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
+
 ## Auth patterns skill (issue 19)
 
 - Chose Option A over observability and rag-patterns. Skill only — no new agent.

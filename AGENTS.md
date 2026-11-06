@@ -86,10 +86,10 @@ Antes de codificar, responda:
 | **MOBILE** (iOS, Android, RN, Flutter)   | `mobile-developer`                     | `mobile-design`, `accessibility` |
 | **WEB** (Next.js, React web)             | `frontend-specialist`                  | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns`, `accessibility` |
 | **BACKEND** (API, server, DB)            | `backend-specialist`                   | `api-patterns`, `auth-patterns`, `payment-patterns`, `database-design`, `nodejs-best-practices` |
-| **AI / RAG** (embeddings, retrieval, agentic) | `ai-specialist`                   | `rag-patterns`, `mcp-builder`    |
+| **AI / RAG** (embeddings, retrieval, agentic) | `ai-specialist`                   | `rag-patterns`, `llm-eval`, `mcp-builder` |
 | **Database**                             | `database-architect`                   | `database-design`, `rag-patterns` |
 | **Segurança / Auditoria**                | `security-auditor`, `penetration-tester` | `vulnerability-scanner`, `red-team-tactics` |
-| **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing` |
+| **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing`, `llm-eval` |
 | **Debug**                                | `debugger`                             | `systematic-debugging`, `observability` |
 | **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management`, `observability` |
 | **Planejamento / Discovery**             | `project-planner`                      | `brainstorming`, `plan-writing`, `architecture`, `adr-writing` |
