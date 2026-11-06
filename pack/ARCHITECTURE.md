@@ -172,7 +172,7 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 | `orchestrator` | Coordenação multi-agente | `parallel-agents`, `coordinator-mode`, `memory-system`, `context-compression`, `verify-changes` |
 | `project-planner` | Discovery, planejamento | `brainstorming`, `plan-writing`, `architecture` |
 | `frontend-specialist` | Web UI/UX | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns` |
-| `backend-specialist` | API, lógica de negócio | `api-patterns`, `nodejs-best-practices`, `database-design` |
+| `backend-specialist` | API, lógica de negócio | `api-patterns`, `auth-patterns`, `nodejs-best-practices`, `database-design` |
 | `database-architect` | Schema, SQL | `database-design` |
 | `mobile-developer` | iOS, Android, RN | `mobile-design` |
 | `game-developer` | Mecânicas de jogo | `game-development` |
@@ -211,6 +211,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | Skill | Descrição |
 | --- | --- |
 | `api-patterns` | REST, GraphQL, tRPC |
+| `auth-patterns` | Authn/authz: session, JWT, OAuth, Passkeys, RBAC |
 | `nodejs-best-practices` | Node.js async, módulos |
 | `python-patterns` | Python, FastAPI |
 | `rust-pro` | Rust async, type system |
@@ -434,10 +435,10 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Necessidade | Agent | Skills |
 | --- | --- | --- |
 | Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `design-guide` |
-| API | `backend-specialist` | `api-patterns`, `nodejs-best-practices` |
+| API | `backend-specialist` | `api-patterns`, `auth-patterns`, `nodejs-best-practices` |
 | Mobile | `mobile-developer` | `mobile-design` |
 | Database | `database-architect` | `database-design` |
-| Security | `security-auditor` | `vulnerability-scanner` |
+| Security | `security-auditor` | `vulnerability-scanner`, `auth-patterns` |
 | Testing | `test-engineer` | `testing-patterns`, `webapp-testing` |
 | Debug | `debugger` | `systematic-debugging`, `observability` |
 | Plan | `project-planner` | `brainstorming`, `plan-writing` |

@@ -35,3 +35,7 @@ updated: "2026-11-05"
 
 - Defaults locked like auth: skill-only, not MINIMAL_CORE, wire `devops-engineer` + `debugger`. Branch `20-add-observability`.
 - Verified 2026-11-05 as slug `add-observability` (gate + trace covered).
+## Next skill after gap analysis (issue 19)
+
+- Chose auth-patterns over observability and rag-patterns. Skill only; deps via agents, not MINIMAL_CORE.
+- Verified 2026-11-05 as slug `add-auth-patterns`: pointer from `api-patterns/auth.md`; skills inventory 47.

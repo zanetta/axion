@@ -1,7 +1,7 @@
 ---
 name: api-patterns
 description: API design principles and decision-making. REST vs GraphQL vs tRPC selection, response formats, versioning, pagination.
-when_to_use: "When designing REST/GraphQL/tRPC APIs, defining response formats, versioning, pagination, or API authentication. NOT for UI/frontend work."
+when_to_use: "When designing REST/GraphQL/tRPC APIs, defining response formats, versioning, or pagination. For authentication/authorization implementation use auth-patterns. NOT for UI/frontend work."
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
@@ -26,7 +26,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 | `graphql.md` | Schema design, when to use, security | Considering GraphQL |
 | `trpc.md` | TypeScript monorepo, type safety | TS fullstack projects |
 | `versioning.md` | URI/Header/Query versioning | API evolution planning |
-| `auth.md` | JWT, OAuth, Passkey, API Keys | Auth pattern selection |
+| `auth.md` | Pointer to skill `auth-patterns` | Auth — use that skill |
 | `rate-limiting.md` | Token bucket, sliding window | API protection |
 | `documentation.md` | OpenAPI/Swagger best practices | Documentation |
 | `security-testing.md` | OWASP API Top 10, auth/authz testing | Security audits |
@@ -39,6 +39,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 |------|-------|
 | API implementation | `@[skills/nodejs-best-practices]` |
 | Data structure | `@[skills/database-design]` |
+| Authn / authz | `@[skills/auth-patterns]` |
 | Security details | `@[skills/vulnerability-scanner]` |
 
 ---

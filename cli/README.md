@@ -48,6 +48,8 @@ O **profile** filtra o que é copiado **no momento da cópia** (`isInProfile` em
 | `security` | Pack completo **com** `red-team-tactics` + `penetration-tester` | 20 / 47 |
 | `fullstack` | Pack sem game/mobile (e skills relacionadas) | 17 / 43 |
 | `mobile` | Pack focado mobile; exclui game, SEO e parte do stack web | 16 / 40 |
+| `fullstack` | Pack sem game/mobile (e skills relacionadas) | 17 / 44 |
+| `mobile` | Pack focado mobile; exclui game, SEO e parte do stack web | 16 / 41 |
 
 **Fechamento de dependências:** uma skill é sempre copiada se algum agent mantido a lista no `skills:` do frontmatter — sem referências penduradas. `security-auditor` não declara `red-team-tactics` no frontmatter; só a carrega se estiver instalada (nota opt-in no corpo do agent).
 

@@ -85,7 +85,7 @@ Antes de codificar, responda:
 | ---------------------------------------- | -------------------------------------- | -------------------------------- |
 | **MOBILE** (iOS, Android, RN, Flutter)   | `mobile-developer`                     | `mobile-design`                  |
 | **WEB** (Next.js, React web)             | `frontend-specialist`                  | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns` |
-| **BACKEND** (API, server, DB)            | `backend-specialist`                   | `api-patterns`, `database-design`, `nodejs-best-practices`    |
+| **BACKEND** (API, server, DB)            | `backend-specialist`                   | `api-patterns`, `auth-patterns`, `database-design`, `nodejs-best-practices`    |
 | **Database**                             | `database-architect`                   | `database-design`                |
 | **Segurança / Auditoria**                | `security-auditor`, `penetration-tester` | `vulnerability-scanner`, `red-team-tactics` |
 | **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing` |
@@ -190,7 +190,7 @@ Esses agents contêm:
 `orchestrator`, `project-planner`, `security-auditor`, `backend-specialist`, `frontend-specialist`, `mobile-developer`, `debugger`, `game-developer`.
 
 **Skills-chave** (em `.agents/skills/`):
-`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design-guide`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
+`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design-guide`, `auth-patterns`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
 
 **CLI npm:** `@zanetta/axion` — `init [--profile minimal|standard|security|fullstack|mobile] [--enable-offensive]`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 

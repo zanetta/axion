@@ -38,7 +38,7 @@ graph TD
 
 | User Intent         | Keywords                                   | Selected Agent(s)                           | Auto-invoke? |
 | ------------------- | ------------------------------------------ | ------------------------------------------- | ------------ |
-| **Authentication**  | "login", "auth", "signup", "password"      | `security-auditor` + `backend-specialist`   | ✅ YES       |
+| **Authentication**  | "login", "auth", "signup", "password"      | `security-auditor` + `backend-specialist` (skill `auth-patterns`) | ✅ YES       |
 | **UI Component**    | "button", "card", "layout", "style"        | `frontend-specialist`                       | ✅ YES       |
 | **Mobile UI**       | "screen", "navigation", "touch", "gesture" | `mobile-developer`                          | ✅ YES       |
 | **API Endpoint**    | "endpoint", "route", "API", "POST", "GET"  | `backend-specialist`                        | ✅ YES       |
