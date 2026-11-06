@@ -21,6 +21,7 @@
 - [project] Slug design-all-tools verified; design data path is .agents/shared not .cursor/shared → tech-decisions.md
 - [project] Slug antigravity-adapter verified 2026-11-05: native, id antigravity, no kit dogfood, issue 17 → tech-decisions.md
 - [project] Slug rename-design-skill verified 2026-11-05: design-guide on all five adapters; command /design stays; no stub → tech-decisions.md
+- [project] Slug add-auth-patterns verified 2026-11-05: skill auth-patterns; issue 19; skills=47; not MINIMAL_CORE → tech-decisions.md
 
 ## Feedback
 - [feedback] Issue 11: Option B single cutover, then Option A pack symlinks when skills vanished → feedback-history.md

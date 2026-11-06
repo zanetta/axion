@@ -9,7 +9,7 @@
 | Componente | Quantidade | Caminho canônico (Cursor) |
 | --- | --- | --- |
 | **Agents** | 20 | `.claude/agents/<name>.md` |
-| **Skills** | 46 | `.agents/skills/<name>/SKILL.md` |
+| **Skills** | 47 | `.agents/skills/<name>/SKILL.md` |
 | **Workflows** | 13 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
@@ -45,7 +45,7 @@ axion/
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
-│   ├── skills/                  # 46 skills top-level (+ sub-skills game-dev)
+│   ├── skills/                  # 47 skills top-level (+ sub-skills game-dev)
 │   │   ├── plan-writing/templates/   # SPEC.template.md, PLAN.template.md
 │   │   └── verify-changes/templates/ # ACCEPTANCE.template.md
 │   ├── shared/ui-ux-pro-max/    # Dados e scripts de design (path único)
@@ -172,12 +172,12 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 | `orchestrator` | Coordenação multi-agente | `parallel-agents`, `coordinator-mode`, `memory-system`, `context-compression`, `verify-changes` |
 | `project-planner` | Discovery, planejamento | `brainstorming`, `plan-writing`, `architecture` |
 | `frontend-specialist` | Web UI/UX | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns` |
-| `backend-specialist` | API, lógica de negócio | `api-patterns`, `nodejs-best-practices`, `database-design` |
+| `backend-specialist` | API, lógica de negócio | `api-patterns`, `auth-patterns`, `nodejs-best-practices`, `database-design` |
 | `database-architect` | Schema, SQL | `database-design` |
 | `mobile-developer` | iOS, Android, RN | `mobile-design` |
 | `game-developer` | Mecânicas de jogo | `game-development` |
 | `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management` |
-| `security-auditor` | Compliance, OWASP | `vulnerability-scanner`, `red-team-tactics` |
+| `security-auditor` | Compliance, OWASP | `vulnerability-scanner`, `auth-patterns`, `red-team-tactics` |
 | `penetration-tester` | Segurança ofensiva | `red-team-tactics` |
 | `test-engineer` | Estratégias de teste | `testing-patterns`, `tdd-workflow`, `webapp-testing` |
 | `debugger` | Root cause analysis | `systematic-debugging` |
@@ -192,7 +192,7 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 
-## 🧩 Skills (46)
+## 🧩 Skills (47)
 
 Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicional.
 
@@ -211,6 +211,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | Skill | Descrição |
 | --- | --- |
 | `api-patterns` | REST, GraphQL, tRPC |
+| `auth-patterns` | Authn/authz: session, JWT, OAuth, Passkeys, RBAC |
 | `nodejs-best-practices` | Node.js async, módulos |
 | `python-patterns` | Python, FastAPI |
 | `rust-pro` | Rust async, type system |
@@ -416,7 +417,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Métrica | Valor |
 | --- | --- |
 | Agents | 20 |
-| Skills | 46 |
+| Skills | 47 |
 | Workflows | 13 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
@@ -433,10 +434,10 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Necessidade | Agent | Skills |
 | --- | --- | --- |
 | Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `design-guide` |
-| API | `backend-specialist` | `api-patterns`, `nodejs-best-practices` |
+| API | `backend-specialist` | `api-patterns`, `auth-patterns`, `nodejs-best-practices` |
 | Mobile | `mobile-developer` | `mobile-design` |
 | Database | `database-architect` | `database-design` |
-| Security | `security-auditor` | `vulnerability-scanner` |
+| Security | `security-auditor` | `vulnerability-scanner`, `auth-patterns` |
 | Testing | `test-engineer` | `testing-patterns`, `webapp-testing` |
 | Debug | `debugger` | `systematic-debugging` |
 | Plan | `project-planner` | `brainstorming`, `plan-writing` |
