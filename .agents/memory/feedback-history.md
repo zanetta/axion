@@ -51,6 +51,11 @@ updated: "2026-11-06"
 - Defaults: Option A skill `adr-writing`; wire planner+orchestrator+backend+explorer; move template from architecture; not MINIMAL_CORE.
 - Verified 2026-11-06 as slug `add-adr-writing` (gate + trace 5/5; skills=52).
 
+## LLM eval (issue 24 P0)
+
+- Defaults: Option A skill `llm-eval`; wire ai-specialist + test-engineer; move from rag-patterns/evaluation.md; broad scope (judge + online); ≠ eval_routing.py.
+- Verified 2026-11-06 as slug `add-llm-eval` (gate + trace 5/5; skills=53).
+
 ## RAG patterns (issue 23)
 
 - Chose Option C (skill + new agent), not skill-only. Agentic RAG + tool-calling in scope. Wire backend-specialist, database-architect, and relate mcp-builder skill.
