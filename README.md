@@ -404,7 +404,7 @@ echo ".agents/" >> .git/info/exclude
 ├── .claude/agents/           # 20 agents
 ├── .agents/
 │   ├── schemas/              # Contratos skill/command
-│   ├── skills/               # 46 skills (+ templates SPEC/PLAN/ACCEPTANCE)
+│   ├── skills/               # 47 skills (+ templates SPEC/PLAN/ACCEPTANCE)
 │   ├── shared/ui-ux-pro-max/ # Dados e search.py do fluxo /design
 │   └── memory/
 └── .cursor/

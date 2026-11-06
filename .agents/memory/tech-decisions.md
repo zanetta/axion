@@ -67,4 +67,11 @@ updated: "2026-11-05"
 - Skill id is `design-guide` (`MINIMAL_CORE_SKILLS`). CSVs stay in shared data, not inside the skill. Command `/design` is a different id.
 - Verify of slug `rename-design-skill` passed 2026-11-05 (Option A global): pack `design` → `design-guide` on all five adapters, no per-adapter transform, no leftover stub. Additive `update` may leave unused `skills/design/`. E-01 WEB row stays without `design`/`design-guide`. Accept = smokes paths, not IDE slash probe.
 - Kit dogfood: `.agents/shared` → `pack/shared`.
-- Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills = 46. Antigravity hint: `/design` is the SDD workflow; the searchable guide is skill `design-guide`.
+- Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills was 46 then; Antigravity hint: `/design` is the SDD workflow; the searchable guide is skill `design-guide`.
+
+## Auth patterns skill (issue 19)
+
+- Chose Option A over observability and rag-patterns. Skill only — no new agent.
+- Not in `MINIMAL_CORE_SKILLS`; wired via `backend-specialist` and `security-auditor` frontmatter deps.
+- Canonical content in `pack/skills/auth-patterns/`; `api-patterns/auth.md` is a short pointer.
+- Verify of slug `add-auth-patterns` passed 2026-11-05 (branch `19-add-auth-patterns`). Inventory skills = 47.

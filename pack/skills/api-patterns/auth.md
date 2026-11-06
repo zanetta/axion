@@ -1,24 +1,16 @@
-# Authentication Patterns
+# Authentication (pointer)
 
-> Choose auth pattern based on use case.
+> **Canonical skill:** [`auth-patterns`](../auth-patterns/SKILL.md)
 
-## Selection Guide
+Auth decision trees, tokens/sessions, authorization, and anti-patterns live there — not in this file.
 
-| Pattern | Best For |
-|---------|----------|
-| **JWT** | Stateless, microservices |
-| **Session** | Traditional web, simple |
-| **OAuth 2.0** | Third-party integration |
-| **API Keys** | Server-to-server, public APIs |
-| **Passkey** | Modern passwordless (2025+) |
+## Quick link
 
-## JWT Principles
+| Need | Read |
+|------|------|
+| Choose session vs JWT vs OAuth vs Passkey | `../auth-patterns/selection.md` |
+| Cookies, refresh, JWT rules | `../auth-patterns/tokens-and-sessions.md` |
+| RBAC / scopes | `../auth-patterns/authorization.md` |
+| What to refuse | `../auth-patterns/anti-patterns.md` |
 
-```
-Important:
-├── Always verify signature
-├── Check expiration
-├── Include minimal claims
-├── Use short expiry + refresh tokens
-└── Never store sensitive data in JWT
-```
+For API-only concerns that are not identity (rate limits, status codes), stay in `api-patterns`.

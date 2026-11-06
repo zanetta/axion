@@ -30,3 +30,8 @@ updated: 2026-11-05
 
 - Rediscover: Option A global, not an Antigravity-only transform. Command `/design` stays. No leftover stub. Accept = smokes on five tools, not IDE slash probe.
 - Verified 2026-11-05 as slug `rename-design-skill`.
+
+## Next skill after gap analysis (issue 19)
+
+- Chose auth-patterns over observability and rag-patterns. Skill only; deps via agents, not MINIMAL_CORE.
+- Verified 2026-11-05 as slug `add-auth-patterns`: pointer from `api-patterns/auth.md`; skills inventory 47.

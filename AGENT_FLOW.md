@@ -143,7 +143,7 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 | Domínio | Agent | Skills típicas |
 | --- | --- | --- |
 | UI/UX Web | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `tailwind-patterns`, `design-guide` |
-| API | `backend-specialist` | `api-patterns`, `nodejs-best-practices` |
+| API | `backend-specialist` | `api-patterns`, `auth-patterns`, `nodejs-best-practices` |
 | Database | `database-architect` | `database-design` |
 | Mobile | `mobile-developer` | `mobile-design` |
 | Game | `game-developer` | `game-development` |
