@@ -9,7 +9,7 @@
 | Componente | Quantidade | Caminho canônico (Cursor) |
 | --- | --- | --- |
 | **Agents** | 20 | `.claude/agents/<name>.md` |
-| **Skills** | 47 | `.agents/skills/<name>/SKILL.md` |
+| **Skills** | 48 | `.agents/skills/<name>/SKILL.md` |
 | **Workflows** | 13 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
@@ -45,7 +45,7 @@ axion/
 ├── .claude/agents/              # 20 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
-│   ├── skills/                  # 47 skills top-level (+ sub-skills game-dev)
+│   ├── skills/                  # 48 skills top-level (+ sub-skills game-dev)
 │   │   ├── plan-writing/templates/   # SPEC.template.md, PLAN.template.md
 │   │   └── verify-changes/templates/ # ACCEPTANCE.template.md
 │   ├── shared/ui-ux-pro-max/    # Dados e scripts de design (path único)
@@ -192,7 +192,7 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 
-## 🧩 Skills (47)
+## 🧩 Skills (48)
 
 Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicional.
 
@@ -418,7 +418,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Métrica | Valor |
 | --- | --- |
 | Agents | 20 |
-| Skills | 47 |
+| Skills | 48 |
 | Workflows | 13 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
