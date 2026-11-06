@@ -43,6 +43,7 @@ graph TD
 | **Mobile UI**       | "screen", "navigation", "touch", "gesture" | `mobile-developer`                          | ✅ YES       |
 | **API Endpoint**    | "endpoint", "route", "API", "POST", "GET"  | `backend-specialist`                        | ✅ YES       |
 | **Database**        | "schema", "migration", "query", "table"    | `database-architect` + `backend-specialist` | ✅ YES       |
+| **RAG / AI retrieval** | "rag", "embedding", "vector search", "citations", "knowledge base" | `ai-specialist` | ✅ YES |
 | **Bug Fix**         | "error", "bug", "not working", "broken"    | `debugger`                                  | ✅ YES       |
 | **Test**            | "test", "coverage", "unit", "e2e"          | `test-engineer`                             | ✅ YES       |
 | **Deployment**      | "deploy", "production", "CI/CD", "docker"  | `devops-engineer`                           | ✅ YES       |
@@ -108,6 +109,7 @@ function analyzeRequest(userMessage) {
 | **Backend**     | api, server, express, fastapi, node        | `backend-specialist`    |
 | **Mobile**      | react native, flutter, ios, android, expo  | `mobile-developer`      |
 | **Database**    | prisma, sql, mongodb, schema, migration    | `database-architect`    |
+| **RAG / AI**    | rag, embedding, vector, retrieval, citations, knowledge base | `ai-specialist` |
 | **Testing**     | test, jest, vitest, playwright, cypress    | `test-engineer`         |
 | **DevOps**      | docker, kubernetes, ci/cd, pm2, nginx      | `devops-engineer`       |
 | **Debug**       | error, bug, crash, not working, issue      | `debugger`              |

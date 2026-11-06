@@ -1,7 +1,7 @@
 ---
 type: feedback
 created: 2026-11-03
-updated: "2026-11-05"
+updated: "2026-11-06"
 ---
 
 # Feedback History
@@ -35,6 +35,11 @@ updated: "2026-11-05"
 
 - Defaults locked like auth: skill-only, not MINIMAL_CORE, wire `devops-engineer` + `debugger`. Branch `20-add-observability`.
 - Verified 2026-11-05 as slug `add-observability` (gate + trace covered).
+
+## RAG patterns (issue 23)
+
+- Chose Option C (skill + new agent), not skill-only. Agentic RAG + tool-calling in scope. Wire backend-specialist, database-architect, and relate mcp-builder skill.
+- Verified 2026-11-06 as slug `add-rag-patterns` (gate + trace 5/5).
 ## Next skill after gap analysis (issue 19)
 
 - Chose auth-patterns over observability and rag-patterns. Skill only; deps via agents, not MINIMAL_CORE.

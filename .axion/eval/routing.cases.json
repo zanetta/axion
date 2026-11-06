@@ -28,7 +28,14 @@
       "source": "agents",
       "match": "database-architect",
       "agents": ["database-architect"],
-      "skills": ["database-design"]
+      "skills": ["database-design", "rag-patterns"]
+    },
+    {
+      "id": "ai-rag",
+      "source": "agents",
+      "match": "**AI / RAG**",
+      "agents": ["ai-specialist"],
+      "skills": ["rag-patterns", "mcp-builder"]
     },
     {
       "id": "security-audit",
@@ -90,6 +97,12 @@
       "source": "routing",
       "match": "**API Endpoint**",
       "agents": ["backend-specialist"]
+    },
+    {
+      "id": "routing-rag",
+      "source": "routing",
+      "match": "**RAG / AI retrieval**",
+      "agents": ["ai-specialist"]
     },
     {
       "id": "routing-bug",

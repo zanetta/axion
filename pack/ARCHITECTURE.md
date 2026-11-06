@@ -8,8 +8,8 @@
 
 | Componente | Quantidade | Caminho canônico (Cursor) |
 | --- | --- | --- |
-| **Agents** | 20 | `.claude/agents/<name>.md` |
-| **Skills** | 48 | `.agents/skills/<name>/SKILL.md` |
+| **Agents** | 21 | `.claude/agents/<name>.md` |
+| **Skills** | 49 | `.agents/skills/<name>/SKILL.md` |
 | **Workflows** | 13 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
@@ -42,10 +42,10 @@ axion/
 │   ├── logs/runs.jsonl          # Run log append-only (O-01); contadores opcionais (O-03) só se a flag foi passada. O .gitignore `logs` já ignora o diretório
 │   ├── eval/routing.cases.json  # 16 golden cases de roteamento (E-01); não entra na cópia do install
 │   └── trace/                   # Traceability opcional {slug}.json (protegido no update, exceto README.md)
-├── .claude/agents/              # 20 personas especialistas
+├── .claude/agents/              # 21 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
-│   ├── skills/                  # 48 skills top-level (+ sub-skills game-dev)
+│   ├── skills/                  # 49 skills top-level (+ sub-skills game-dev)
 │   │   ├── plan-writing/templates/   # SPEC.template.md, PLAN.template.md
 │   │   └── verify-changes/templates/ # ACCEPTANCE.template.md
 │   ├── shared/ui-ux-pro-max/    # Dados e scripts de design (path único)
@@ -165,15 +165,16 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 
-## 🤖 Agents (20)
+## 🤖 Agents (21)
 
 | Agent | Foco | Skills principais |
 | --- | --- | --- |
 | `orchestrator` | Coordenação multi-agente | `parallel-agents`, `coordinator-mode`, `memory-system`, `context-compression`, `verify-changes` |
 | `project-planner` | Discovery, planejamento | `brainstorming`, `plan-writing`, `architecture` |
 | `frontend-specialist` | Web UI/UX | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns` |
-| `backend-specialist` | API, lógica de negócio | `api-patterns`, `auth-patterns`, `nodejs-best-practices`, `database-design` |
-| `database-architect` | Schema, SQL | `database-design` |
+| `backend-specialist` | API, lógica de negócio | `api-patterns`, `auth-patterns`, `nodejs-best-practices`, `database-design`, `rag-patterns` |
+| `database-architect` | Schema, SQL | `database-design`, `rag-patterns` |
+| `ai-specialist` | RAG, embeddings, agentic retrieval | `rag-patterns`, `mcp-builder`, `database-design` |
 | `mobile-developer` | iOS, Android, RN | `mobile-design` |
 | `game-developer` | Mecânicas de jogo | `game-development` |
 | `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management`, `observability` |
@@ -192,7 +193,7 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 
-## 🧩 Skills (48)
+## 🧩 Skills (49)
 
 Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicional.
 
@@ -212,6 +213,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | --- | --- |
 | `api-patterns` | REST, GraphQL, tRPC |
 | `auth-patterns` | Authn/authz: session, JWT, OAuth, Passkeys, RBAC |
+| `rag-patterns` | RAG clássico + agentic; embeddings, retrieval, grounding |
 | `nodejs-best-practices` | Node.js async, módulos |
 | `python-patterns` | Python, FastAPI |
 | `rust-pro` | Rust async, type system |
@@ -417,8 +419,8 @@ Detalhes: [scripts/README.md](scripts/README.md)
 
 | Métrica | Valor |
 | --- | --- |
-| Agents | 20 |
-| Skills | 48 |
+| Agents | 21 |
+| Skills | 49 |
 | Workflows | 13 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
@@ -436,8 +438,9 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | --- | --- | --- |
 | Web App | `frontend-specialist` | `nextjs-react-expert`, `frontend-design`, `design-guide` |
 | API | `backend-specialist` | `api-patterns`, `auth-patterns`, `nodejs-best-practices` |
+| AI / RAG | `ai-specialist` | `rag-patterns`, `mcp-builder` |
 | Mobile | `mobile-developer` | `mobile-design` |
-| Database | `database-architect` | `database-design` |
+| Database | `database-architect` | `database-design`, `rag-patterns` |
 | Security | `security-auditor` | `vulnerability-scanner`, `auth-patterns` |
 | Testing | `test-engineer` | `testing-patterns`, `webapp-testing` |
 | Debug | `debugger` | `systematic-debugging`, `observability` |

@@ -44,6 +44,12 @@ Before designing schema:
 
 ---
 
+## Related Skills
+
+| Need | Skill |
+|------|-------|
+| RAG retrieval, embeddings pipeline, agentic tool loops | `rag-patterns` |
+
 ## Anti-Patterns
 
 ❌ Default to PostgreSQL for simple apps (SQLite may suffice)

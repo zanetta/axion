@@ -22,6 +22,7 @@
 - [project] Slug antigravity-adapter verified 2026-11-05: native, id antigravity, no kit dogfood, issue 17 → tech-decisions.md
 - [project] Slug rename-design-skill verified 2026-11-05: design-guide on all five adapters; command /design stays; no stub → tech-decisions.md
 - [project] Slug add-observability verified 2026-11-05: skill observability, devops+debugger, not MINIMAL_CORE, skills=47 → tech-decisions.md
+- [project] Slug add-rag-patterns verified 2026-11-06: rag-patterns+ai-specialist; agents=21 skills=49; not MINIMAL; issue 23 → tech-decisions.md
 - [project] Slug add-auth-patterns verified 2026-11-05: skill auth-patterns; issue 19; skills=47; not MINIMAL_CORE → tech-decisions.md
 
 ## Feedback
@@ -31,3 +32,4 @@
 - [feedback] Issue 17 verified: native Antigravity, workflows mapped, GEMINI stub, /design hint-only, no dogfood → feedback-history.md
 - [feedback] Rename skill: Option A global, keep /design, no stub, smokes-only on five tools → feedback-history.md
 - [feedback] Issue 20: skill-only observability, not MINIMAL_CORE, wire devops+debugger → feedback-history.md
+- [feedback] Issue 23: Option C rag+ai-specialist, agentic RAG, wire backend/DB + mcp-builder → feedback-history.md

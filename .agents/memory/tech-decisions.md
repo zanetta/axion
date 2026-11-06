@@ -1,7 +1,7 @@
 ---
 type: project
 created: 2026-11-03
-updated: "2026-11-05T21:52:00-03:00"
+updated: "2026-11-06"
 ---
 
 # Tech Decisions
@@ -85,3 +85,11 @@ updated: "2026-11-05T21:52:00-03:00"
 - Not in `MINIMAL_CORE_SKILLS`; wired via `backend-specialist` and `security-auditor` frontmatter deps.
 - Canonical content in `pack/skills/auth-patterns/`; `api-patterns/auth.md` is a short pointer.
 - Verify of slug `add-auth-patterns` passed 2026-11-05 (branch `19-add-auth-patterns`). Inventory skills = 47.
+
+## RAG patterns (issue 23)
+
+- Option **C**: skill `rag-patterns` **plus** agent `ai-specialist` (not in `MINIMAL_AGENTS`; skill not in `MINIMAL_CORE`).
+- Wire `rag-patterns` into `backend-specialist` and `database-architect`; relate skill `mcp-builder` (pointer + agent deps). mcp-builder is a **skill**, not an agent.
+- Scope includes **agentic RAG** / tool-calling loops, not only classic retrieve-then-generate. Project Type row **AI / RAG** added; WEB E-01 unchanged.
+- Inventory after cut: agents **21**, skills **49**. Profile approx: minimal 39 / standard 48 / security 49. `eval_routing` golden cases = 18.
+- Verify of slug `add-rag-patterns` passed 2026-11-06 (branch `23-add-rag-patterns`, issue 23).

@@ -193,3 +193,9 @@ Worth using in modern servers (spec 2025-06-18):
 ---
 
 > **Remember:** MCP tools should be simple, focused, and well-documented. The AI relies on descriptions to use them correctly.
+
+## Related Skills
+
+| Need | Skill |
+|------|-------|
+| RAG / agentic retrieval using MCP tools | `rag-patterns` |

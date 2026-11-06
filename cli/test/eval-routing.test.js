@@ -16,7 +16,7 @@ function run(args) {
 test("golden routing cases match AGENTS.md and intelligent-routing", () => {
     const result = run([repo]);
     assert.equal(result.status, 0, result.stdout + result.stderr);
-    assert.match(result.stdout, /eval_routing: pass 16/);
+    assert.match(result.stdout, /eval_routing: pass 18/);
 });
 
 test("a row that lists a banned agent fails, and a broken case file exits 2", async () => {

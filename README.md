@@ -402,10 +402,10 @@ echo ".agents/" >> .git/info/exclude
 ├── cli/                      # @zanetta/axion
 ├── .github/workflows/        # ci.yml (reusável) + publish-npm.yml (tag v*, gate pre-publish)
 ├── .axion/                   # kit.manifest.json, inventory.json, trace/ (consumidor recebe só trace/README.md)
-├── .claude/agents/           # 20 agents
+├── .claude/agents/           # 21 agents
 ├── .agents/
 │   ├── schemas/              # Contratos skill/command
-│   ├── skills/               # 48 skills (+ templates SPEC/PLAN/ACCEPTANCE)
+│   ├── skills/               # 49 skills (+ templates SPEC/PLAN/ACCEPTANCE)
 │   ├── shared/ui-ux-pro-max/ # Dados e search.py do fluxo /design
 │   └── memory/
 └── .cursor/

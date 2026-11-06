@@ -1,14 +1,15 @@
 {
   "schema_version": "1.1.0",
   "counts": {
-    "agents": 20,
-    "skills": 48,
+    "agents": 21,
+    "skills": 49,
     "commands": 13,
     "rules": 7,
     "scripts": 15,
     "schemas": 2
   },
   "agents": [
+    "ai-specialist",
     "backend-specialist",
     "code-archaeologist",
     "database-architect",
@@ -65,6 +66,7 @@
     "plan-writing",
     "powershell-windows",
     "python-patterns",
+    "rag-patterns",
     "red-team-tactics",
     "rust-pro",
     "seo-fundamentals",

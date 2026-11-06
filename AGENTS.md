@@ -86,7 +86,8 @@ Antes de codificar, responda:
 | **MOBILE** (iOS, Android, RN, Flutter)   | `mobile-developer`                     | `mobile-design`                  |
 | **WEB** (Next.js, React web)             | `frontend-specialist`                  | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns` |
 | **BACKEND** (API, server, DB)            | `backend-specialist`                   | `api-patterns`, `auth-patterns`, `database-design`, `nodejs-best-practices`    |
-| **Database**                             | `database-architect`                   | `database-design`                |
+| **AI / RAG** (embeddings, retrieval, agentic) | `ai-specialist`                   | `rag-patterns`, `mcp-builder`    |
+| **Database**                             | `database-architect`                   | `database-design`, `rag-patterns` |
 | **Segurança / Auditoria**                | `security-auditor`, `penetration-tester` | `vulnerability-scanner`, `red-team-tactics` |
 | **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing` |
 | **Debug**                                | `debugger`                             | `systematic-debugging`, `observability` |
@@ -187,10 +188,10 @@ Esses agents contêm:
 ## 📚 Quick Reference
 
 **Subagents principais** (em `.claude/agents/`):
-`orchestrator`, `project-planner`, `security-auditor`, `backend-specialist`, `frontend-specialist`, `mobile-developer`, `debugger`, `game-developer`.
+`orchestrator`, `project-planner`, `security-auditor`, `backend-specialist`, `frontend-specialist`, `mobile-developer`, `ai-specialist`, `debugger`, `game-developer`.
 
 **Skills-chave** (em `.agents/skills/`):
-`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design-guide`, `auth-patterns`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
+`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design-guide`, `auth-patterns`, `rag-patterns`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
 
 **CLI npm:** `@zanetta/axion` — `init [--profile minimal|standard|security|fullstack|mobile] [--enable-offensive]`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 
