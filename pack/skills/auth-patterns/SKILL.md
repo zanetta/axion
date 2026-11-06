@@ -26,6 +26,7 @@ Read **only** the file you need:
 | Need | Skill |
 |------|-------|
 | API shape / OpenAPI | `api-patterns` |
+| Payments / Stripe / PCI boundary | `payment-patterns` |
 | Threat model / OWASP | `vulnerability-scanner` |
 | Node/Python impl details | `nodejs-best-practices`, `python-patterns` |
 | Offensive depth (opt-in) | `red-team-tactics` |

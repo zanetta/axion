@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "counts": {
     "agents": 21,
-    "skills": 50,
+    "skills": 51,
     "commands": 13,
     "rules": 7,
     "scripts": 15,
@@ -63,6 +63,7 @@
     "nodejs-best-practices",
     "observability",
     "parallel-agents",
+    "payment-patterns",
     "performance-profiling",
     "plan-writing",
     "powershell-windows",

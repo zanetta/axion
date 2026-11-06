@@ -1,0 +1,16 @@
+{
+  "slug": "add-payment-patterns",
+  "spec": "add-payment-patterns.spec.md",
+  "plan": "add-payment-patterns.plan.md",
+  "acceptance": "add-payment-patterns.acceptance.md",
+  "issue": "https://github.com/zanetta/axion/issues/24",
+  "branch": "24-add-payment-patterns",
+  "direction": "Option A — skill payment-patterns only (Stripe-first)",
+  "links": [
+    { "spec_id": "SPEC-add-payment-patterns-1", "plan_task": "P1-1", "acceptance_id": "AC-1" },
+    { "spec_id": "SPEC-add-payment-patterns-2", "plan_task": "P1-2", "acceptance_id": "AC-2" },
+    { "spec_id": "SPEC-add-payment-patterns-3", "plan_task": "P1-3", "acceptance_id": "AC-3" },
+    { "spec_id": "SPEC-add-payment-patterns-4", "plan_task": "P1-4", "acceptance_id": "AC-4" },
+    { "spec_id": "SPEC-add-payment-patterns-5", "plan_task": "P1-5", "acceptance_id": "AC-5" }
+  ]
+}
