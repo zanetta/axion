@@ -128,7 +128,17 @@ updated: "2026-11-06"
 - Related Skills pointers from `rag-patterns` and `llm-eval` (prompt ≠ retrieval; prompt ≠ eval harness).
 - Slug `add-prompt-patterns`; branch `24-add-prompt-patterns` (stacked on llm-eval). Epic #24. AAS id `prompt-engineering` → Axion `prompt-patterns`.
 - Inventory after cut: skills **54**, agents **21**. Profile approx: minimal ~44 / standard ~53 / security ~54.
-- Verify of slug `add-prompt-patterns` passed 2026-11-06 (checklist + verify_gate + trace 5/5). Epic P0 remaining: feature-flags, postmortem.
+- Verify of slug `add-prompt-patterns` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
+
+## Feature flags skill (issue 24, P0)
+
+- Option **A**: skill `feature-flags` only — no new agent. Not in `MINIMAL_CORE_SKILLS`.
+- Wire via `devops-engineer` and `backend-specialist` (D1).
+- Content S1: flag types, OpenFeature-leaning evaluation, defaults/fallback, progressive rollout, lifecycle/cleanup, security boundaries, anti-patterns. No vendor cookbooks; no flag service in the kit.
+- Related Skills pointers from `deployment-procedures` and `observability`.
+- Slug `add-feature-flags`; branch `24-add-feature-flags` (stacked on prompt-patterns). Epic #24. AAS id `feature-flags` → Axion `feature-flags`.
+- Inventory after cut: skills **55**, agents **21**. Profile approx: minimal 45 / standard 54 / security 55 / fullstack 52 / mobile 49.
+- Verify of slug `add-feature-flags` passed 2026-11-06 (checklist + verify_gate + trace 5/5). Epic P0 remaining: **postmortem**.
 
 ## Auth patterns skill (issue 19)
 
