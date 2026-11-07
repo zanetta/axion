@@ -1,6 +1,6 @@
 ---
 description: Verify code changes work by running them. Proves through execution, not just inspection.
-name: verify
+name: ax-verify
 contract_version: "1.0.0"
 sdd_states:
   - verify
@@ -22,11 +22,11 @@ side_effects:
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /verify — Prove Code Works
+# /ax-verify — Prove Code Works
 
 (texto livre após o comando)
 
-**FSM:** `implement` → **`verify`** → `/remember`
+**FSM:** `implement` → **`verify`** → `/ax-remember`
 
 ---
 
@@ -107,8 +107,8 @@ RULES:
 ## Usage Examples
 
 ```
-/verify
-/verify the login endpoint handles expired tokens
-/verify build passes after refactoring
-/verify the new component renders correctly
+/ax-verify
+/ax-verify the login endpoint handles expired tokens
+/ax-verify build passes after refactoring
+/ax-verify the new component renders correctly
 ```

@@ -14,14 +14,14 @@ test("resolveAdapter defaults to cursor and maps pack/ to Cursor paths + .axion/
     assert.equal(DEFAULT_TOOL, "cursor");
     assert.deepEqual(adapter.installPaths, INSTALL_PATHS);
     assert.ok(adapter.installPaths.includes(".axion/scripts"));
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
-        ".cursor/commands/plan.md",
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-plan.md"), [
+        ".cursor/commands/ax-plan.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/discover.md"), [
-        ".cursor/commands/discover.md",
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-discover.md"), [
+        ".cursor/commands/ax-discover.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/design.md"), [
-        ".cursor/commands/design.md",
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-design.md"), [
+        ".cursor/commands/ax-design.md",
     ]);
     assert.deepEqual(
         adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/scripts/search.py"),
@@ -79,17 +79,17 @@ test("claude-code maps pack/ commands, skills, MCP, .axion/scripts and omits cur
     const adapter = resolveAdapter("claude-code");
     assert.ok(adapter.installPaths.includes(".axion/scripts"));
     assert.equal(adapter.installPaths.includes(".cursor/scripts"), false);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
-        ".claude/commands/plan.md",
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-plan.md"), [
+        ".claude/commands/ax-plan.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/discover.md"), [
-        ".claude/commands/discover.md",
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-discover.md"), [
+        ".claude/commands/ax-discover.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/design.md"), [
-        ".claude/commands/design.md",
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-design.md"), [
+        ".claude/commands/ax-design.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/design.md"), [
-        ".claude/commands/design.md",
+    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/ax-design.md"), [
+        ".claude/commands/ax-design.md",
     ]);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
     assert.deepEqual(
@@ -123,8 +123,8 @@ test("claude-code transformContent restores $ARGUMENTS and sanitizes MCP", () =>
         "",
     ].join("\n");
     const adapted = adapter.transformContent(
-        "pack/commands/plan.md",
-        ".claude/commands/plan.md",
+        "pack/commands/ax-plan.md",
+        ".claude/commands/ax-plan.md",
         command,
     );
     assert.match(adapted, /\$ARGUMENTS/);
@@ -182,7 +182,7 @@ test("codex maps pack/ skills, schemas, memory, shared data, MCP TOML, .axion/sc
     assert.deepEqual(adapter.mapTemplateTargets("AGENTS.md"), ["AGENTS.md"]);
 
     assert.deepEqual(adapter.mapTemplateTargets("pack/agents/orchestrator.md"), []);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-plan.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
     assert.deepEqual(
         adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/scripts/search.py"),
@@ -248,7 +248,7 @@ test("windsurf maps pack/ skills, schemas, memory, shared data, MCP JSON, .axion
     assert.deepEqual(adapter.mapTemplateTargets("AGENTS.md"), ["AGENTS.md"]);
 
     assert.deepEqual(adapter.mapTemplateTargets("pack/agents/orchestrator.md"), []);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-plan.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), []);
     assert.deepEqual(
         adapter.mapTemplateTargets("pack/shared/ui-ux-pro-max/scripts/search.py"),
@@ -281,7 +281,7 @@ test("windsurf transformContent sanitizes MCP JSON without envFile or TOML", () 
     assert.equal(raw.includes("[mcp_servers"), false);
 });
 
-test("antigravity maps pack to native workflows, rules .md, MCP, GEMINI stub and omits agents", () => {
+test("antigravity maps pack to ax-* skills, rules .md, MCP, GEMINI stub and omits agents", () => {
     const adapter = resolveAdapter("antigravity");
     assert.equal(adapter.id, "antigravity");
     assert.ok(adapter.installPaths.includes(".agents"));
@@ -293,15 +293,15 @@ test("antigravity maps pack to native workflows, rules .md, MCP, GEMINI stub and
     assert.equal(adapter.installPaths.some((p) => p.startsWith(".cursor")), false);
     assert.equal(adapter.installPaths.some((p) => p.startsWith(".gemini")), false);
     assert.equal(adapter.installPaths.some((p) => p.startsWith("~")), false);
-    assert.match(adapter.postInstallHints.join("\n"), /\/design/);
+    assert.match(adapter.postInstallHints.join("\n"), /\/ax-plan/);
 
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/plan.md"), [
-        ".agents/workflows/plan.md",
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-plan.md"), [
+        ".agents/skills/ax-plan/SKILL.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/design.md"), [
-        ".agents/workflows/design.md",
+    assert.deepEqual(adapter.mapTemplateTargets("pack/commands/ax-design.md"), [
+        ".agents/skills/ax-design/SKILL.md",
     ]);
-    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/plan.md"), []);
+    assert.deepEqual(adapter.mapTemplateTargets(".cursor/commands/ax-plan.md"), []);
     assert.deepEqual(adapter.mapTemplateTargets("pack/rules/frontend.mdc"), [
         ".agents/rules/frontend.md",
     ]);
@@ -372,5 +372,5 @@ test("antigravity transformContent writes glob rules, model_decision fallback, M
     const stub = adapter.transformContent("AGENTS.md", "GEMINI.md", "# AGENTS\n");
     assert.match(stub, /@AGENTS\.md/);
     assert.match(stub, /AGENT_FLOW\.md/);
-    assert.match(stub, /\.agents\/workflows/);
+    assert.match(stub, /\.agents\/skills\/ax-\*/);
 });

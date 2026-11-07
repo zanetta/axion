@@ -4,7 +4,7 @@ This project uses the Axion spec-driven development kit.
 
 Read @AGENTS.md and AGENT_FLOW.md for routing, FSM, skills, and verification gates.
 
-Slash commands are in \`.agents/workflows/\`. Skills are in \`.agents/skills/\`.
+SDD slash commands are Agent skills under \`.agents/skills/ax-*/SKILL.md\` (invoke as \`/ax-plan\`, \`/ax-discover\`, …). Domain skills also live in \`.agents/skills/\`.
 `;
 
 function posix(rel) {
@@ -76,6 +76,23 @@ function toAntigravityRule(text, destRel) {
     return `${lines.join("\n")}${body.replace(/^\n/, "")}`;
 }
 
+/** Map pack/commands/ax-plan.md → .agents/skills/ax-plan/SKILL.md */
+function commandToSkillDest(sub) {
+    const rest = sub.replace(/^commands\//, "");
+    if (!rest.endsWith(".md")) return null;
+    const stem = rest.slice(0, -".md".length);
+    return `.agents/skills/${stem}/SKILL.md`;
+}
+
+function toCommandSkill(text, stem) {
+    const { fields, body } = parseCursorFrontmatter(text);
+    const description =
+        (fields && unquote(fields.description)) || `Axion SDD workflow /${stem}`;
+    const name = (fields && unquote(fields.name)) || stem;
+    const lines = ["---", `name: ${name}`, `description: ${yamlQuote(description)}`, "---", ""];
+    return `${lines.join("\n")}${body.replace(/^\n/, "")}`;
+}
+
 export function mapTemplateTargets(rel) {
     const src = posix(rel);
     const sub = src.startsWith("pack/") ? src.slice("pack/".length) : src;
@@ -92,7 +109,9 @@ export function mapTemplateTargets(rel) {
         return [];
     }
     if (sub === "commands" || sub.startsWith("commands/")) {
-        return [sub.replace(/^commands/, ".agents/workflows")];
+        if (sub === "commands") return [];
+        const dest = commandToSkillDest(sub);
+        return dest ? [dest] : [];
     }
     if (sub === ".cursor/rules" || sub.startsWith(".cursor/rules/")) {
         return [];
@@ -143,6 +162,8 @@ export function transformContent(_srcRel, destRel, text) {
     if (dest.startsWith(".agents/rules/") && dest.endsWith(".md")) {
         return toAntigravityRule(text, dest);
     }
+    const skillCmd = dest.match(/^\.agents\/skills\/(ax-[^/]+)\/SKILL\.md$/);
+    if (skillCmd) return toCommandSkill(text, skillCmd[1]);
     return text;
 }
 
@@ -162,22 +183,25 @@ export const antigravityAdapter = {
     markers: [
         "AGENTS.md",
         ".agents/skills",
-        ".agents/workflows",
         ".axion/scripts",
         ".agents/mcp_config.json",
     ],
     componentDirs: {
         agents: null,
         skills: ".agents/skills",
-        commands: ".agents/workflows",
+        // SDD commands install as ax-* skills under the same tree
+        commands: ".agents/skills",
         rules: ".agents/rules",
     },
+    /** When true, manifest counts commands as ax-* skill dirs under skills. */
+    commandsAsSkills: true,
     rulesExt: ".md",
     mapTemplateTargets,
     transformContent,
     postInstallHints: [
         "Open in Antigravity IDE or CLI; instructions load from AGENTS.md and skills from .agents/skills/.",
-        "Slash workflows: .agents/workflows/. /design is the SDD workflow; the searchable guide is skill design-guide.",
+        "Axion SDD slash skills: /ax-discover, /ax-specify, /ax-plan, /ax-implement, /ax-verify, /ax-remember, … (under .agents/skills/ax-*/SKILL.md). /ax-design searchable guide remains skill design-guide.",
+        "If you previously installed Axion workflows, remove stale .agents/workflows/{discover,plan,…}.md manually (update is additive).",
         "MCP servers: .agents/mcp_config.json. This install does not write ~/.gemini/.",
         "Inventory: python3 .axion/scripts/generate_inventory.py .",
     ],

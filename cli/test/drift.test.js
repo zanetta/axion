@@ -18,7 +18,7 @@ test("isProtected covers user spec, memory, logs, and trace json", () => {
     assert.equal(isProtected(".axion/logs/runs.jsonl"), true);
     assert.equal(isProtected(".axion/trace/cart.json"), true);
     assert.equal(isProtected(".axion/trace/README.md"), false);
-    assert.equal(isProtected(".cursor/commands/plan.md"), false);
+    assert.equal(isProtected(".cursor/commands/ax-plan.md"), false);
 });
 
 test("force update keeps memory and spec, and reports drifted kit files", async () => {
@@ -29,19 +29,19 @@ test("force update keeps memory and spec, and reports drifted kit files", async 
         await fse.copy(fixtureRoot, template);
         await fse.outputFile(path.join(template, "pack/memory/MEMORY.md"), "# kit example\n");
         await installKit(template, target, { force: false, profile: "standard", writeManifest: false });
-        await fse.writeFile(path.join(target, ".cursor/commands/plan.md"), "# local edit\n");
+        await fse.writeFile(path.join(target, ".cursor/commands/ax-plan.md"), "# local edit\n");
         await fse.outputFile(path.join(target, ".agents/memory/MEMORY.md"), "# user memory\n");
         await fse.writeFile(path.join(target, "cart.spec.md"), "# user spec\n");
 
         const drift = await diffKit(template, target, { profile: "standard" });
-        assert.ok(drift.drifted.includes(".cursor/commands/plan.md"));
+        assert.ok(drift.drifted.includes(".cursor/commands/ax-plan.md"));
         assert.ok(drift.protected.includes(".agents/memory/MEMORY.md"));
 
         await installKit(template, target, { force: true, profile: "standard", writeManifest: false });
 
         assert.equal(await fse.readFile(path.join(target, ".agents/memory/MEMORY.md"), "utf8"), "# user memory\n");
         assert.equal(await fse.readFile(path.join(target, "cart.spec.md"), "utf8"), "# user spec\n");
-        assert.notEqual(await fse.readFile(path.join(target, ".cursor/commands/plan.md"), "utf8"), "# local edit\n");
+        assert.notEqual(await fse.readFile(path.join(target, ".cursor/commands/ax-plan.md"), "utf8"), "# local edit\n");
     } finally {
         await fse.remove(tmp);
     }

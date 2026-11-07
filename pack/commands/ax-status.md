@@ -1,6 +1,6 @@
 ---
 description: Display agent and project status. Progress tracking and status board.
-name: status
+name: ax-status
 contract_version: "1.0.0"
 sdd_states:
   - status
@@ -18,7 +18,7 @@ side_effects:
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /status - Show Status
+# /ax-status - Show Status
 
 (texto livre após o comando)
 
@@ -55,7 +55,7 @@ Show current project and agent status.
 python3 .axion/scripts/session_manager.py doctor .
 ```
 
-It reports memory index size, path-lint pass/fail, and the last `/verify` entry from `.axion/logs/runs.jsonl`.
+It reports memory index size, path-lint pass/fail, and the last `/ax-verify` entry from `.axion/logs/runs.jsonl`.
 
 ---
 

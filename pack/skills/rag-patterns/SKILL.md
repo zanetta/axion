@@ -1,7 +1,7 @@
 ---
 name: rag-patterns
-description: RAG design principles for consumer apps. Classic retrieve-then-generate and agentic RAG with tool-calling. Chunking, embeddings, retrieval, grounding — decision trees, not vendor cookbooks. For measuring quality use llm-eval.
-when_to_use: "When designing or reviewing RAG, knowledge bases, embeddings, vector search, citations/grounding, or agentic RAG with tool-calling/MCP tools. For golden sets, faithfulness metrics, LLM-as-judge, or regression gates use llm-eval. NOT for training models, GPU ops, or pure MCP server scaffolding (use mcp-builder)."
+description: RAG design principles for consumer apps. Classic retrieve-then-generate and agentic RAG with tool-calling. Chunking, embeddings, retrieval, grounding, evaluation — decision trees, not vendor cookbooks.
+when_to_use: "When designing or reviewing RAG, knowledge bases, embeddings, vector search, citations/grounding, retrieval eval, or agentic RAG with tool-calling/MCP tools. NOT for training models, GPU ops, or pure MCP server scaffolding (use mcp-builder)."
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -21,7 +21,7 @@ Read **only** the file you need:
 | `embeddings-and-stores.md` | Embedding models + vector stores (pgvector-class) | Index / store choice |
 | `retrieval.md` | Top-k, hybrid, rerank | Search quality |
 | `grounding-and-citations.md` | Cite sources, refuse without evidence | Trustworthy answers |
-| `evaluation.md` | Pointer to skill `llm-eval` | Measuring quality |
+| `evaluation.md` | Faithfulness, retrieval metrics | Measuring quality |
 | `agentic-rag.md` | Tool-calling loops, planner/retrieve/act, MCP | Agents that fetch then act |
 | `anti-patterns.md` | Stuffing, uncited answers, unbounded loops, PII | Review / harden |
 
@@ -29,8 +29,6 @@ Read **only** the file you need:
 
 | Need | Skill |
 |------|-------|
-| Eval / golden sets / faithfulness | `llm-eval` |
-| System/user prompts / injection | `prompt-patterns` |
 | Vector / index in Postgres | `database-design` |
 | MCP tool/server design | `mcp-builder` |
 | API shape around RAG endpoints | `api-patterns` |
@@ -43,7 +41,7 @@ Before shipping RAG:
 - [ ] Clear question types the system must answer?
 - [ ] RAG (or agentic RAG) justified vs long-context / fine-tune?
 - [ ] Chunking and metadata match query patterns?
-- [ ] Retrieval/answer evaluated via `llm-eval` (not just “feels good”)?
+- [ ] Retrieval evaluated (not just “feels good”)?
 - [ ] Answers cite or refuse when evidence is weak?
 - [ ] Agentic loops bounded (max steps, tool allowlist)?
 - [ ] No secrets/PII dumped into the index?

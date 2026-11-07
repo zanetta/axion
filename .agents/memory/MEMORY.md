@@ -14,13 +14,14 @@
 - [project] Kit repo dogfoods via root symlinks to pack/; memory stays live at repo root → tech-decisions.md
 - [project] Codex hybrid: AGENTS.md + .agents/skills + .codex/config.toml → tech-decisions.md
 - [project] Windsurf hybrid: AGENTS.md + .agents/skills + .windsurf/mcp_config.json; close #11 after merge → tech-decisions.md
-- [project] FSM commands 1:1: discover, specify, plan, implement, verify, remember → tech-decisions.md
-- [project] Transition aliases not in pack; docs+skills canonical-only; commands=13; hide-transition-aliases verified → tech-decisions.md
+- [project] FSM states 1:1; slash canonical /ax-discover…/ax-remember (ax-prefix-commands) → tech-decisions.md
+- [project] Transition aliases not in pack; docs+skills /ax-* only; commands=13; hide-transition-aliases verified → tech-decisions.md
 - [project] Slug sdd-command-rename verified; ACCEPTANCE evidence cannot use bare braces → project-conventions.md
-- [project] /design is the command/workflow; skill design-guide + search.py on all five tools via .agents/shared → tech-decisions.md
+- [project] /ax-design is the command; skill design-guide + search.py on all five tools via .agents/shared → tech-decisions.md
 - [project] Slug design-all-tools verified; design data path is .agents/shared not .cursor/shared → tech-decisions.md
 - [project] Slug antigravity-adapter verified 2026-11-05: native, id antigravity, no kit dogfood, issue 17 → tech-decisions.md
-- [project] Slug rename-design-skill verified 2026-11-05: design-guide on all five adapters; command /design stays; no stub → tech-decisions.md
+- [project] Slug rename-design-skill verified 2026-11-05: design-guide on five adapters; slash now /ax-design → tech-decisions.md
+- [project] Slug ax-prefix-commands verified 2026-11-06: G1 ax-* rename + Antigravity skills; dry cut; commands=13 → tech-decisions.md
 - [project] Slug add-observability verified 2026-11-05: skill observability, devops+debugger, not MINIMAL_CORE, skills=47 → tech-decisions.md
 - [project] Slug add-rag-patterns verified 2026-11-06: rag-patterns+ai-specialist; agents=21 skills=49; not MINIMAL; issue 23 → tech-decisions.md
 - [project] Slug add-accessibility verified 2026-11-06: skill accessibility Option A; frontend+QA+mobile; not MINIMAL; skills=50; issue 24 → tech-decisions.md
@@ -36,8 +37,9 @@
 - [feedback] Issue 11: Option B single cutover, then Option A pack symlinks when skills vanished → feedback-history.md
 - [feedback] Issue 11 fase 3: Codex first, hybrid, no kit dogfood, MCP TOML, id codex → feedback-history.md
 - [feedback] Issue 11 fase 4: .windsurf/ only, omit commands/rules, id windsurf, mcp_config.json, close #11 → feedback-history.md
-- [feedback] Issue 17 verified: native Antigravity, workflows mapped, GEMINI stub, /design hint-only, no dogfood → feedback-history.md
-- [feedback] Rename skill: Option A global, keep /design, no stub, smokes-only on five tools → feedback-history.md
+- [feedback] Issue 17 verified: native Antigravity, GEMINI stub, no dogfood; workflows later superseded by ax-* → feedback-history.md
+- [feedback] Rename skill: Option A global, design-guide, no stub; slash later /ax-design → feedback-history.md
+- [feedback] ax-prefix-commands: G1+S3, /ax-*, dry cut, Antigravity skills not workflows; own issue TBD → feedback-history.md
 - [feedback] Issue 20: skill-only observability, not MINIMAL_CORE, wire devops+debugger → feedback-history.md
 - [feedback] Issue 23: Option C rag+ai-specialist, agentic RAG, wire backend/DB + mcp-builder → feedback-history.md
 - [feedback] Issue 24: Option A skill-only accessibility; wire frontend+QA+mobile; script stays frontend-design → feedback-history.md

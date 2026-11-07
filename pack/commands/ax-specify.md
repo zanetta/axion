@@ -1,6 +1,6 @@
 ---
-description: Lock a formal SPEC ({slug}.spec.md) after discovery and Socratic Gate answers. Bridges /discover and /plan without writing application code.
-name: specify
+description: Lock a formal SPEC ({slug}.spec.md) after discovery and Socratic Gate answers. Bridges /ax-discover and /ax-plan without writing application code.
+name: ax-specify
 contract_version: "1.0.0"
 sdd_states:
   - specify
@@ -21,17 +21,17 @@ side_effects:
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /specify - Lock Specification (SPEC)
+# /ax-specify - Lock Specification (SPEC)
 
 (texto livre após o comando)
 
-**FSM:** `discover` → **`specify`** → `/plan`
+**FSM:** `discover` → **`specify`** → `/ax-plan`
 
 ---
 
 ## Purpose
 
-Formalize and lock `{slug}.spec.md` after exploration and Socratic Gate answers, bridging `/discover` and `/plan` without writing application code.
+Formalize and lock `{slug}.spec.md` after exploration and Socratic Gate answers, bridging `/ax-discover` and `/ax-plan` without writing application code.
 
 ---
 
@@ -39,7 +39,7 @@ Formalize and lock `{slug}.spec.md` after exploration and Socratic Gate answers,
 
 Before writing `{slug}.spec.md`, verify that:
 
-- [ ] At least **3 Socratic questions** (Purpose, Users, Scope, Edge cases) have been answered (in `/discover`, in the current session, or in `.agents/memory/`)
+- [ ] At least **3 Socratic questions** (Purpose, Users, Scope, Edge cases) have been answered (in `/ax-discover`, in the current session, or in `.agents/memory/`)
 - [ ] User has confirmed the chosen direction
 
 If not answered yet: **ask the ≥3 Socratic questions now and WAIT** for user responses before writing the SPEC. Do not invent answers or write `{placeholder}` cells.
@@ -65,8 +65,8 @@ If not answered yet: **ask the ≥3 Socratic questions now and WAIT** for user r
 
 3. **Hand-off**
    - Present `{slug}.spec.md` to the user for approval
-   - Tell user to run `/plan {slug}` next
-   - **Do not write application code** in `/specify`
+   - Tell user to run `/ax-plan {slug}` next
+   - **Do not write application code** in `/ax-specify`
 
 ---
 
@@ -78,7 +78,7 @@ Tell user:
 
 Next steps:
 - Review + approve SPEC
-- `/plan {slug}` to generate PLAN and ACCEPTANCE
+- `/ax-plan {slug}` to generate PLAN and ACCEPTANCE
 ```
 
 ---
@@ -86,7 +86,7 @@ Next steps:
 ## Examples
 
 ```
-/specify auth-jwt
-/specify ecommerce-cart
-/specify saas-dashboard
+/ax-specify auth-jwt
+/ax-specify ecommerce-cart
+/ax-specify saas-dashboard
 ```

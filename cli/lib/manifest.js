@@ -31,14 +31,34 @@ async function countSkills(dir) {
     return count;
 }
 
+/** Count Axion SDD command skills (ax-* dirs with SKILL.md) under a skills tree. */
+async function countAxCommandSkills(dir) {
+    if (!(await fse.pathExists(dir))) return 0;
+    let count = 0;
+    for (const entry of await fse.readdir(dir, { withFileTypes: true })) {
+        if (
+            entry.isDirectory() &&
+            entry.name.startsWith("ax-") &&
+            (await fse.pathExists(path.join(dir, entry.name, "SKILL.md")))
+        ) {
+            count += 1;
+        }
+    }
+    return count;
+}
+
 async function collectComponentSummary(targetRoot, adapter) {
     const dirs = adapter.componentDirs;
+    let commands = 0;
+    if (dirs.commands) {
+        commands = adapter.commandsAsSkills
+            ? await countAxCommandSkills(path.join(targetRoot, dirs.commands))
+            : await countMarkdown(path.join(targetRoot, dirs.commands), ".md");
+    }
     return {
         agents: dirs.agents ? await countMarkdown(path.join(targetRoot, dirs.agents), ".md") : 0,
         skills: await countSkills(path.join(targetRoot, dirs.skills)),
-        commands: dirs.commands
-            ? await countMarkdown(path.join(targetRoot, dirs.commands), ".md")
-            : 0,
+        commands,
         rules: dirs.rules
             ? await countMarkdown(
                   path.join(targetRoot, dirs.rules),

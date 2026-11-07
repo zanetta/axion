@@ -1,10 +1,11 @@
 ---
 description: Debugging command. Activates DEBUG mode for systematic problem investigation.
+name: ax-debug
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /debug - Systematic Problem Investigation
+# /ax-debug - Systematic Problem Investigation
 
 (texto livre após o comando)
 
@@ -18,7 +19,7 @@ This command activates DEBUG mode for systematic investigation of issues, errors
 
 ## Behavior
 
-When `/debug` is triggered:
+When `/ax-debug` is triggered:
 
 1. **Gather information**
    - Error message
@@ -89,10 +90,10 @@ When `/debug` is triggered:
 ## Examples
 
 ```
-/debug login not working
-/debug API returns 500
-/debug form doesn't submit
-/debug data not saving
+/ax-debug login not working
+/ax-debug API returns 500
+/ax-debug form doesn't submit
+/ax-debug data not saving
 ```
 
 ---

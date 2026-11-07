@@ -54,7 +54,7 @@ export const cursorAdapter = {
         return text;
     },
     postInstallHints: [
-        "Open in Cursor and use /plan, /debug, etc.",
+        "Open in Cursor and use /ax-plan, /ax-debug, etc.",
         "Inventory: python3 .axion/scripts/generate_inventory.py .",
     ],
 };

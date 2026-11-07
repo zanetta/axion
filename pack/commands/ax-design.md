@@ -1,12 +1,12 @@
 ---
 description: Searchable UI/UX design guide (styles, palettes, font pairings, UX guidelines, charts) for web and mobile stacks.
-name: design
+name: ax-design
 contract_version: "1.0.0"
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /design (ui-ux-pro-max)
+# /ax-design (ui-ux-pro-max)
 
 (texto livre após o comando)
 

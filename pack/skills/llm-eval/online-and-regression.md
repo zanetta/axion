@@ -12,7 +12,7 @@
 
 Online ≠ replace offline golden sets. Use online to **detect**; offline to **localize**.
 
-## Regression gates (`/verify` mindset)
+## Regression gates (`/ax-verify` mindset)
 
 Treat eval like tests:
 

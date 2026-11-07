@@ -1,0 +1,16 @@
+{
+  "slug": "ax-prefix-commands",
+  "spec": "ax-prefix-commands.spec.md",
+  "plan": "ax-prefix-commands.plan.md",
+  "acceptance": "ax-prefix-commands.acceptance.md",
+  "issue": "TBD — own issue (not #24)",
+  "branch": "bugfix/antigravity-commands",
+  "direction": "G1 global ax- rename + Antigravity commands-as-skills; dry cutover",
+  "links": [
+    { "spec_id": "SPEC-ax-prefix-commands-1", "plan_task": "P1-1", "acceptance_id": "AC-1" },
+    { "spec_id": "SPEC-ax-prefix-commands-2", "plan_task": "P1-2", "acceptance_id": "AC-2" },
+    { "spec_id": "SPEC-ax-prefix-commands-3", "plan_task": "P1-3", "acceptance_id": "AC-3" },
+    { "spec_id": "SPEC-ax-prefix-commands-4", "plan_task": "P1-4", "acceptance_id": "AC-4" },
+    { "spec_id": "SPEC-ax-prefix-commands-5", "plan_task": "P1-5", "acceptance_id": "AC-5" }
+  ]
+}

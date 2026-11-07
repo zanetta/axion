@@ -311,7 +311,7 @@ Combine findings into structured report:
 
 | Checkpoint | Verification | Failure Action |
 |------------|--------------|----------------|
-| **Socratic / SPEC** | `{slug}.spec.md` OR ≥3 answered questions in PLAN | `/discover` → `/specify` or ask first |
+| **Socratic / SPEC** | `{slug}.spec.md` OR ≥3 answered questions in PLAN | `/ax-discover` → `/ax-specify` or ask first |
 | **Task plan exists** | `Read {slug}.plan.md` (or `{slug}.md`) + Traceability | Use project-planner first |
 | **ACCEPTANCE linked** | `{slug}.acceptance.md` for verify phase | Create from template |
 | **Project type valid** | WEB/MOBILE/BACKEND identified | Ask user or analyze request |
@@ -401,7 +401,7 @@ User Request → DECOMPOSE → CLASSIFY → DISPATCH → MONITOR → SYNTHESIZE 
 At orchestration start:
 1. Check `.agents/memory/MEMORY.md` for relevant past context
 2. Apply recalled preferences silently
-3. After orchestration, save key decisions with `/remember`
+3. After orchestration, save key decisions with `/ax-remember`
 
 ### Context Compression
 

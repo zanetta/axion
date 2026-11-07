@@ -25,11 +25,18 @@ updated: "2026-11-06"
 
 - Discover: Option B native, id `antigravity`, map workflows, no kit dogfood. Specify locked those plus MCP `.agents/mcp_config.json`, rules transform, GEMINI stub, omit personas.
 - Verified 2026-11-05: no `gemini` alias, no `~/.gemini/`, no kit dogfood, no version bump. `/design` collision was hint-only until the skill rename.
+- **Superseded 2026-11-06:** commands no longer use workflows — see `ax-prefix-commands` (skills `ax-*`).
 
 ## Rename design skill (all adapters)
 
-- Rediscover: Option A global, not an Antigravity-only transform. Command `/design` stays. No leftover stub. Accept = smokes on five tools, not IDE slash probe.
+- Rediscover: Option A global, not an Antigravity-only transform. Command was `/design` then; now `/ax-design` after ax-prefix. No leftover stub. Accept = smokes on five tools, not IDE slash probe.
 - Verified 2026-11-05 as slug `rename-design-skill`.
+
+## ax- prefix commands
+
+- Locked: Option C/S3 + G1 global rename + prefix `ax-` + dry cutover; all 13 commands; own issue (not #24).
+- Antigravity: skills `.agents/skills/ax-*/SKILL.md`, not workflows. FSM state names unchanged; slash `/ax-*`.
+- Verified 2026-11-06 as slug `ax-prefix-commands` (gate + trace 5/5; commands=13, skills=56). Branch `bugfix/antigravity-commands`.
 
 ## Observability skill (issue 20)
 

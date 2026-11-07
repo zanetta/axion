@@ -60,7 +60,7 @@ Antes de modificar QUALQUER arquivo:
 | **Doc do kit**      | `.cursor/ARCHITECTURE.md`, `AGENT_FLOW.md`, `README.md` |
 | **MCP env vars**    | `.env` (no `.gitignore`); template em `.env.example` |
 
-> No repo do kit, a fonte canônica vive em `pack/` + `.axion/scripts/` (e é projetada pelos adapters no `init`/`update`; `axion update` é aditivo e não apaga `.cursor/scripts/` residual de installs v1). Cursor (default `--tool cursor`) lê `.agents/skills/`, `.agents/shared/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md`. Claude Code (`--tool claude-code`) lê `.claude/agents/`, `.claude/commands/`, `.claude/skills/`, `.agents/shared/`, `CLAUDE.md` / `AGENTS.md` e `.mcp.json`. OpenAI Codex (`--tool codex`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.codex/config.toml`. Windsurf (`--tool windsurf`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.windsurf/mcp_config.json`. Google Antigravity (`--tool antigravity`) lê `AGENTS.md`, `GEMINI.md`, `.agents/skills/`, `.agents/workflows/`, `.agents/rules/`, `.agents/shared/` e `.agents/mcp_config.json`.
+> No repo do kit, a fonte canônica vive em `pack/` + `.axion/scripts/` (e é projetada pelos adapters no `init`/`update`; `axion update` é aditivo e não apaga `.cursor/scripts/` residual de installs v1). Cursor (default `--tool cursor`) lê `.agents/skills/`, `.agents/shared/`, `.claude/agents/`, `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` e `AGENTS.md`. Claude Code (`--tool claude-code`) lê `.claude/agents/`, `.claude/commands/`, `.claude/skills/`, `.agents/shared/`, `CLAUDE.md` / `AGENTS.md` e `.mcp.json`. OpenAI Codex (`--tool codex`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.codex/config.toml`. Windsurf (`--tool windsurf`) lê `AGENTS.md`, `.agents/skills/`, `.agents/shared/` e `.windsurf/mcp_config.json`. Google Antigravity (`--tool antigravity`) lê `AGENTS.md`, `GEMINI.md`, `.agents/skills/` (incl. `ax-*/SKILL.md`), `.agents/rules/`, `.agents/shared/` e `.agents/mcp_config.json`.
 
 ---
 
@@ -83,16 +83,16 @@ Antes de codificar, responda:
 
 | Tipo de projeto                          | Subagent / persona indicado            | Skills relevantes                |
 | ---------------------------------------- | -------------------------------------- | -------------------------------- |
-| **MOBILE** (iOS, Android, RN, Flutter)   | `mobile-developer`                     | `mobile-design`, `accessibility` |
-| **WEB** (Next.js, React web)             | `frontend-specialist`                  | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns`, `accessibility` |
-| **BACKEND** (API, server, DB)            | `backend-specialist`                   | `api-patterns`, `auth-patterns`, `payment-patterns`, `prompt-patterns`, `feature-flags`, `database-design`, `nodejs-best-practices` |
-| **AI / RAG** (embeddings, retrieval, agentic) | `ai-specialist`                   | `rag-patterns`, `llm-eval`, `prompt-patterns`, `mcp-builder` |
+| **MOBILE** (iOS, Android, RN, Flutter)   | `mobile-developer`                     | `mobile-design`                  |
+| **WEB** (Next.js, React web)             | `frontend-specialist`                  | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns` |
+| **BACKEND** (API, server, DB)            | `backend-specialist`                   | `api-patterns`, `auth-patterns`, `database-design`, `nodejs-best-practices`    |
+| **AI / RAG** (embeddings, retrieval, agentic) | `ai-specialist`                   | `rag-patterns`, `mcp-builder`    |
 | **Database**                             | `database-architect`                   | `database-design`, `rag-patterns` |
 | **Segurança / Auditoria**                | `security-auditor`, `penetration-tester` | `vulnerability-scanner`, `red-team-tactics` |
-| **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing`, `llm-eval` |
-| **Debug**                                | `debugger`                             | `systematic-debugging`, `observability`, `postmortem` |
-| **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management`, `observability`, `feature-flags`, `postmortem` |
-| **Planejamento / Discovery**             | `project-planner`                      | `brainstorming`, `plan-writing`, `architecture`, `adr-writing` |
+| **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing` |
+| **Debug**                                | `debugger`                             | `systematic-debugging`, `observability` |
+| **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management`, `observability` |
+| **Planejamento / Discovery**             | `project-planner`                      | `brainstorming`, `plan-writing`, `architecture` |
 | **Multi-domínio / complexo**             | `orchestrator`                         | `coordinator-mode`, `parallel-agents`, `memory-system`, `verify-changes` |
 
 > Mobile + frontend-specialist = **ERRADO**. Mobile → `mobile-developer`.
@@ -101,7 +101,7 @@ Antes de codificar, responda:
 
 ## 🛑 Socratic Gate (para tarefas complexas)
 
-FSM: `discover → specify → plan → implement → verify → remember` (commands: `/discover` → `/specify` → `/plan` → `/implement` → `/verify` → `/remember`).
+FSM: `discover → specify → plan → implement → verify → remember` (commands: `/ax-discover` → `/ax-specify` → `/ax-plan` → `/ax-implement` → `/ax-verify` → `/ax-remember`).
 
 | Tipo de pedido            | Ação obrigatória                                                  |
 | ------------------------- | ----------------------------------------------------------------- |
@@ -111,7 +111,7 @@ FSM: `discover → specify → plan → implement → verify → remember` (comm
 | **Orquestração total**    | **PAUSE** subagents até o usuário confirmar o plano               |
 | **"Proceed" direto**      | Mesmo com respostas, faça 2 perguntas de Edge Case antes de iniciar |
 
-**Gate (instrução ao agent, sem enforcement por tooling):** antes de `/plan`, `/implement` ou `/orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`). O eval E-02 (`python3 .axion/scripts/eval_routing.py . --plan {slug}.plan.md`) regressa esse gate: o agente honra o exit e o IDE não bloqueia a transição sozinho.
+**Gate (instrução ao agent, sem enforcement por tooling):** antes de `/ax-plan`, `/ax-implement` ou `/ax-orchestrate` — exigir arquivo **SPEC** **ou** ≥3 perguntas respondidas registradas no SPEC/PLAN (templates em `plan-writing` / `verify-changes`). O eval E-02 (`python3 .axion/scripts/eval_routing.py . --plan {slug}.plan.md`) regressa esse gate: o agente honra o exit e o IDE não bloqueia a transição sozinho.
 
 Protocolo:
 
@@ -141,8 +141,8 @@ Quando o usuário disser "finalize", "rode os checks", "valida tudo" ou similar:
 **Regras**:
 
 - Tarefa NÃO está concluída até `checklist.py` retornar sucesso.
-- **Hard gate (W-03):** `/verify` roda `python3 .axion/scripts/checklist.py .` e só fecha se esse comando e `python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0 (AC-* em `[x]` com evidência, sign-off fechado, `checklist.py` ok). Exit diferente de 0 = tarefa não verificada.
-- **Run log (O-01):** depois do gate, `python3 .axion/scripts/session_manager.py log . --command-name verify --slug {slug} --exit <exit-do-gate> --artifact {slug}.acceptance.md` (append-only em `.axion/logs/runs.jsonl`). O número é o exit do gate: se não for 0, registre-o e pare o relatório. Token ou path inválido → exit 2, nada gravado. No fim de `/orchestrate` ou `coordinator-mode`, `--workers`, `--failures`, `--duration-ms` e `--breaker-trips` são opcionais e a chave só entra se a flag foi passada.
+- **Hard gate (W-03):** `/ax-verify` roda `python3 .axion/scripts/checklist.py .` e só fecha se esse comando e `python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0 (AC-* em `[x]` com evidência, sign-off fechado, `checklist.py` ok). Exit diferente de 0 = tarefa não verificada.
+- **Run log (O-01):** depois do gate, `python3 .axion/scripts/session_manager.py log . --command-name verify --slug {slug} --exit <exit-do-gate> --artifact {slug}.acceptance.md` (append-only em `.axion/logs/runs.jsonl`). O número é o exit do gate: se não for 0, registre-o e pare o relatório. Token ou path inválido → exit 2, nada gravado. No fim de `/ax-orchestrate` ou `coordinator-mode`, `--workers`, `--failures`, `--duration-ms` e `--breaker-trips` são opcionais e a chave só entra se a flag foi passada.
 - **Write allowlist (X-03):** antes de gravar, `python3 .axion/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write <path>`; exit 1 recusa — mantenha a allowlist e honre o exit code.
 - Se falhar, corrija os blockers **Críticos** primeiro (Segurança/Lint).
 
@@ -191,12 +191,12 @@ Esses agents contêm:
 `orchestrator`, `project-planner`, `security-auditor`, `backend-specialist`, `frontend-specialist`, `mobile-developer`, `ai-specialist`, `debugger`, `game-developer`.
 
 **Skills-chave** (em `.agents/skills/`):
-`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design-guide`, `accessibility`, `auth-patterns`, `rag-patterns`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
+`clean-code`, `brainstorming`, `app-builder`, `frontend-design`, `mobile-design`, `design-guide`, `auth-patterns`, `rag-patterns`, `plan-writing`, `coordinator-mode`, `memory-system`, `verify-changes`, `parallel-agents`.
 
 **CLI npm:** `@zanetta/axion` — `init [--profile minimal|standard|security|fullstack|mobile] [--enable-offensive]`, `update`, `status` ([`cli/README.md`](cli/README.md)).
 
 **Slash commands** (em `.cursor/commands/`):
-`/discover`, `/specify`, `/plan`, `/implement`, `/verify`, `/remember`, `/orchestrate`, `/debug`, `/deploy`, `/preview`, `/status`, `/test`, `/design`.
+`/ax-discover`, `/ax-specify`, `/ax-plan`, `/ax-implement`, `/ax-verify`, `/ax-remember`, `/ax-orchestrate`, `/ax-debug`, `/ax-deploy`, `/ax-preview`, `/ax-status`, `/ax-test`, `/ax-design`.
 
 ---
 

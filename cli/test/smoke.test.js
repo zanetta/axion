@@ -62,11 +62,11 @@ for (const profile of PROFILE_NAMES) {
 
             for (const rel of [
                 "AGENTS.md",
-                ".cursor/commands/discover.md",
-                ".cursor/commands/specify.md",
-                ".cursor/commands/plan.md",
-                ".cursor/commands/implement.md",
-                ".cursor/commands/design.md",
+                ".cursor/commands/ax-discover.md",
+                ".cursor/commands/ax-specify.md",
+                ".cursor/commands/ax-plan.md",
+                ".cursor/commands/ax-implement.md",
+                ".cursor/commands/ax-design.md",
                 ".agents/skills/design-guide/SKILL.md",
                 ".agents/shared/ui-ux-pro-max/scripts/search.py",
                 ".axion/scripts/lint_paths.py",
@@ -108,17 +108,17 @@ for (const profile of ["standard", "security"]) {
                 for (const rel of [
                     "AGENTS.md",
                     "CLAUDE.md",
-                    ".claude/commands/discover.md",
-                    ".claude/commands/specify.md",
-                    ".claude/commands/plan.md",
-                    ".claude/commands/implement.md",
+                    ".claude/commands/ax-discover.md",
+                    ".claude/commands/ax-specify.md",
+                    ".claude/commands/ax-plan.md",
+                    ".claude/commands/ax-implement.md",
                     ".claude/agents/orchestrator.md",
                     ".agents/skills/plan-writing/SKILL.md",
                     ".claude/skills/plan-writing/SKILL.md",
                     ".axion/scripts/lint_paths.py",
                     ".agents/schemas/command-contract.schema.json",
                     ".mcp.json",
-                    ".claude/commands/design.md",
+                    ".claude/commands/ax-design.md",
                     ".agents/skills/design-guide/SKILL.md",
                     ".claude/skills/design-guide/SKILL.md",
                     ".agents/shared/ui-ux-pro-max/scripts/search.py",
@@ -135,12 +135,15 @@ for (const profile of ["standard", "security"]) {
                 );
 
                 const design = await fse.readFile(
-                    path.join(target, ".claude", "commands", "design.md"),
+                    path.join(target, ".claude", "commands", "ax-design.md"),
                     "utf8",
                 );
                 assert.match(design, /\$ARGUMENTS/);
 
-                const plan = await fse.readFile(path.join(target, ".claude", "commands", "plan.md"), "utf8");
+                const plan = await fse.readFile(
+                    path.join(target, ".claude", "commands", "ax-plan.md"),
+                    "utf8",
+                );
                 assert.match(plan, /\$ARGUMENTS/);
 
                 const mcp = await fse.readJson(path.join(target, ".mcp.json"));
@@ -333,8 +336,8 @@ for (const profile of ["standard", "security"]) {
                     "AGENTS.md",
                     "GEMINI.md",
                     ".env.example",
-                    ".agents/workflows/discover.md",
-                    ".agents/workflows/design.md",
+                    ".agents/skills/ax-discover/SKILL.md",
+                    ".agents/skills/ax-design/SKILL.md",
                     ".agents/rules/frontend.md",
                     ".agents/skills/plan-writing/SKILL.md",
                     ".agents/skills/design-guide/SKILL.md",

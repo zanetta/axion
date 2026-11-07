@@ -30,10 +30,10 @@ npx @zanetta/axion status
 | Tool | Destino principal | Default |
 | --- | --- | --- |
 | `cursor` | `.cursor/commands/`, `.cursor/rules/`, `.cursor/mcp.json` | sim (omitir a flag) |
-| `claude-code` | `.claude/commands/` (`$ARGUMENTS`, inclui `/design`), `.claude/skills/`, `.agents/shared/`, `CLAUDE.md`, `.mcp.json` | não |
+| `claude-code` | `.claude/commands/` (`$ARGUMENTS`, inclui `/ax-design`), `.claude/skills/`, `.agents/shared/`, `CLAUDE.md`, `.mcp.json` | não |
 | `codex` | `.agents/skills/`, `.agents/shared/`, `.codex/config.toml` (`[mcp_servers.<id>]`), `AGENTS.md` (sem slash commands) | não |
 | `windsurf` | `.agents/skills/`, `.agents/shared/`, `.windsurf/mcp_config.json` (`mcpServers` JSON), `AGENTS.md` (sem slash commands) | não |
-| `antigravity` | `.agents/workflows/`, `.agents/rules/*.md`, `.agents/skills/`, `.agents/mcp_config.json`, `AGENTS.md`, `GEMINI.md` | não |
+| `antigravity` | `.agents/skills/ax-*/SKILL.md`, `.agents/rules/*.md`, `.agents/skills/`, `.agents/mcp_config.json`, `AGENTS.md`, `GEMINI.md` | não |
 
 `update` sem `--tool` herda `manifest.tool`. ID desconhecido sai com código ≠ 0 e lista `cursor, claude-code, codex, windsurf, antigravity`.
 
@@ -104,10 +104,10 @@ A fonte do kit vive em `pack/` + `.axion/scripts/`. Cópia no destino (filtrada 
 - `.agents/` (skills + memory + `schemas/` + templates SDD + `shared/ui-ux-pro-max/`)
 - `.axion/scripts/` — scripts master de gate e validação nos dois adapters (**breaking em relação à v1**, onde `.cursor/scripts/` deixou de ser o path canônico; `axion update` é aditivo e não apaga `.cursor/scripts/` residual)
 - `cursor`: `.cursor/` (commands, rules, mcp, `ARCHITECTURE.md`)
-- `claude-code`: `.claude/commands/` (inclui `/design`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/ARCHITECTURE.md`
+- `claude-code`: `.claude/commands/` (inclui `/ax-design`), `.claude/skills/`, `CLAUDE.md`, `.mcp.json`, `.cursor/ARCHITECTURE.md`
 - `codex`: `.codex/config.toml` (merge aditivo de `[mcp_servers.<id>]`; omite agents, commands e rules)
 - `windsurf`: `.windsurf/mcp_config.json` (merge aditivo de `mcpServers`; omite agents, commands e rules)
-- `antigravity`: `.agents/workflows/`, `.agents/rules/*.md`, `.agents/mcp_config.json`, `GEMINI.md` (omite agents e `ARCHITECTURE.md`)
+- `antigravity`: `.agents/skills/ax-*/SKILL.md`, `.agents/rules/*.md`, `.agents/mcp_config.json`, `GEMINI.md` (omite agents e `ARCHITECTURE.md`)
 - `AGENTS.md`, `AGENT_FLOW.md`, `.env.example`
 - `.axion/trace/README.md` — copiado do `.axion/` do template (`KIT_AXION_FILES` em `cli/lib/constants.js`)
 - `.axion/kit.manifest.json` — gravado pelo CLI (não vem do template)
@@ -133,7 +133,7 @@ Antes de copiar, `init`/`update` chamam `diffKit` (respeitando o profile) e comp
 - **Protected** — até 20 paths. Nunca sobrescritos se já existem.
 - **Missing** — contagem dos arquivos do kit que serão adicionados.
 
-`--force` é o interruptor global só para o que não é protegido. Um `.cursor/commands/plan.md` editado localmente entra no drift e pode ser sobrescrito; um `*.plan.md` de SPEC/PLAN do usuário, não. O resumo inclui o contador **Protected**.
+`--force` é o interruptor global só para o que não é protegido. Um `.cursor/commands/ax-plan.md` editado localmente entra no drift e pode ser sobrescrito; um `*.plan.md` de SPEC/PLAN do usuário, não. O resumo inclui o contador **Protected**.
 
 ## Development
 

@@ -158,7 +158,7 @@ What are you deploying?
 1. **Speed over perfection**: Rollback first, debug later
 2. **Don't compound errors**: One rollback, not multiple changes
 3. **Communicate**: Tell team what happened
-4. **Post-mortem**: Understand why after stable — see `postmortem` (blameless writeup, not live IR)
+4. **Post-mortem**: Understand why after stable
 
 ---
 
@@ -231,22 +231,11 @@ Before deploying:
 ## 10. Best Practices
 
 1. **Small, frequent deploys** over big releases
-2. **Feature flags** for risky changes — see `feature-flags` (types, OpenFeature-leaning eval, rollout, cleanup)
+2. **Feature flags** for risky changes
 3. **Automate** repetitive steps
 4. **Document** every deployment
 5. **Review** what went wrong after issues
 6. **Test rollback** before you need it
-
----
-
-## Related Skills
-
-| Need | Skill |
-|------|-------|
-| Flag types, progressive rollout, kill switch, stale cleanup | `feature-flags` |
-| Blameless postmortem after stable | `postmortem` |
-| App signals after deploy | `observability` |
-| Host/process ops | `server-management` |
 
 ---
 

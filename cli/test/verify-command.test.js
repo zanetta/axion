@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 test("/verify tells the agent to run checklist.py before the hard gate", async () => {
-    const command = await fse.readFile(path.join(repo, "pack/commands/verify.md"), "utf8");
+    const command = await fse.readFile(path.join(repo, "pack/commands/ax-verify.md"), "utf8");
     const skill = await fse.readFile(path.join(repo, "pack/skills/verify-changes/SKILL.md"), "utf8");
     const checklist = "python3 .axion/scripts/checklist.py .";
 

@@ -15,7 +15,7 @@ cp .env.example .env   # opcional — MCP Context7
 | Modo | Comportamento |
 | --- | --- |
 | `init` (padrão) | Profile do manifesto (senão **`standard`**) + **`--tool cursor`** + **merge** (`mcp.json`, rules existentes preservados) |
-| `init --tool <id>` | `cursor` (default) \| `claude-code` \| `codex` \| `windsurf` \| `antigravity` — projeta o pack nos paths nativos da ferramenta (`--tool codex` faz projeção híbrida: `.agents/skills/`, `.agents/shared/`, `.codex/config.toml`, `AGENTS.md`, `.axion/scripts/`; `--tool windsurf` faz projeção híbrida: `.agents/skills/`, `.agents/shared/`, `.windsurf/mcp_config.json`, `AGENTS.md`, `.axion/scripts/`; `--tool antigravity` faz projeção nativa: `.agents/workflows/`, `.agents/rules/`, `.agents/skills/`, `.agents/mcp_config.json`, `AGENTS.md`, `GEMINI.md`) |
+| `init --tool <id>` | `cursor` (default) \| `claude-code` \| `codex` \| `windsurf` \| `antigravity` — projeta o pack nos paths nativos da ferramenta (`--tool codex` faz projeção híbrida: `.agents/skills/`, `.agents/shared/`, `.codex/config.toml`, `AGENTS.md`, `.axion/scripts/`; `--tool windsurf` faz projeção híbrida: `.agents/skills/`, `.agents/shared/`, `.windsurf/mcp_config.json`, `AGENTS.md`, `.axion/scripts/`; `--tool antigravity` faz projeção nativa: `.agents/skills/` (`ax-*/SKILL.md`), `.agents/rules/`, `.agents/mcp_config.json`, `AGENTS.md`, `GEMINI.md`) |
 | `init --profile <name>` | `minimal` \| `standard` \| `security` \| `fullstack` \| `mobile` (filtra na cópia; nunca apaga arquivos já instalados) |
 | `init --enable-offensive` | Inclui `red-team-tactics` + `penetration-tester` (ou use `--profile security`) |
 | `init --force` | Sobrescreve todos os arquivos do kit |
@@ -34,16 +34,16 @@ discover → specify → plan → implement → verify → remember
 
 | Estado FSM | Command | Artefato / saída |
 | --- | --- | --- |
-| `discover` | `/discover` | Notas de exploração + opções (sem fechar `{slug}.spec.md`) |
-| `specify` | `/specify` | `{slug}.spec.md` (template em `.agents/skills/plan-writing/templates/SPEC.template.md`) |
-| `plan` | `/plan` | `{slug}.plan.md` + `{slug}.acceptance.md` (+ Traceability → SPEC/ACCEPTANCE) |
-| `implement` | `/implement` | Código alinhado ao PLAN (unifica app novo e código existente) |
-| `verify` | `/verify` | ACCEPTANCE + evidência de execução |
-| `remember` | `/remember` | `.agents/memory/` |
+| `discover` | `/ax-discover` | Notas de exploração + opções (sem fechar `{slug}.spec.md`) |
+| `specify` | `/ax-specify` | `{slug}.spec.md` (template em `.agents/skills/plan-writing/templates/SPEC.template.md`) |
+| `plan` | `/ax-plan` | `{slug}.plan.md` + `{slug}.acceptance.md` (+ Traceability → SPEC/ACCEPTANCE) |
+| `implement` | `/ax-implement` | Código alinhado ao PLAN (unifica app novo e código existente) |
+| `verify` | `/ax-verify` | ACCEPTANCE + evidência de execução |
+| `remember` | `/ax-remember` | `.agents/memory/` |
 
-Commands de apoio (fora da FSM linear): `/debug`, `/test`, `/preview`, `/status`, `/deploy`, `/orchestrate`, `/design`.
+Commands de apoio (fora da FSM linear): `/ax-debug`, `/ax-test`, `/ax-preview`, `/ax-status`, `/ax-deploy`, `/ax-orchestrate`, `/ax-design`.
 
-### Socratic Gate (antes de `/plan`, `/implement`, `/orchestrate`)
+### Socratic Gate (antes de `/ax-plan`, `/ax-implement`, `/ax-orchestrate`)
 
 Exigir **um** dos seguintes:
 
@@ -119,22 +119,22 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 
 | Comando | FSM | Skill / agent principal | Uso |
 | --- | --- | --- | --- |
-| `/discover` | discover | `brainstorming` | Explorar opções e perguntas socráticas (sem fechar SPEC) |
-| `/specify` | specify | `brainstorming`, `plan-writing` | Fechar `{slug}.spec.md` após o Socratic Gate |
-| `/plan` | plan | `plan-writing`, `architecture` | PLAN estruturado (**gate**) |
-| `/implement` | implement | `app-builder`, `plan-writing`, domain agents | Construir app novo ou evoluir código existente (**gate**) |
-| `/verify` | verify | `verify-changes` | Roda os AC-*, grava evidência, marca `[x]`; roda `python3 .axion/scripts/checklist.py .` antes do gate; o gate roda o checklist de novo; exit 0 fecha a tarefa |
-| `/remember` | remember | `memory-system` | Persistir em `.agents/memory/` |
-| `/orchestrate` | — (multi) | `parallel-agents`, `coordinator-mode` + `orchestrator` | Multi-agente (mín. 3) e coordenação paralela (**gate**) |
-| `/debug` | — | `systematic-debugging` | Debug baseado em evidência |
-| `/deploy` | — | `deployment-procedures` | Pré-flight + deploy |
-| `/preview` | — | `auto_preview.py` | Preview local |
-| `/status` | — | — | Relatório de progresso |
-| `/test` | — (apoio verify) | `testing-patterns`, `webapp-testing` | Testes |
-| `/design` | — | `.agents/shared/ui-ux-pro-max` | Design system (slash no Cursor, Claude Code e workflows Antigravity; skill `design-guide` nos cinco tools) |
+| `/ax-discover` | discover | `brainstorming` | Explorar opções e perguntas socráticas (sem fechar SPEC) |
+| `/ax-specify` | specify | `brainstorming`, `plan-writing` | Fechar `{slug}.spec.md` após o Socratic Gate |
+| `/ax-plan` | plan | `plan-writing`, `architecture` | PLAN estruturado (**gate**) |
+| `/ax-implement` | implement | `app-builder`, `plan-writing`, domain agents | Construir app novo ou evoluir código existente (**gate**) |
+| `/ax-verify` | verify | `verify-changes` | Roda os AC-*, grava evidência, marca `[x]`; roda `python3 .axion/scripts/checklist.py .` antes do gate; o gate roda o checklist de novo; exit 0 fecha a tarefa |
+| `/ax-remember` | remember | `memory-system` | Persistir em `.agents/memory/` |
+| `/ax-orchestrate` | — (multi) | `parallel-agents`, `coordinator-mode` + `orchestrator` | Multi-agente (mín. 3) e coordenação paralela (**gate**) |
+| `/ax-debug` | — | `systematic-debugging` | Debug baseado em evidência |
+| `/ax-deploy` | — | `deployment-procedures` | Pré-flight + deploy |
+| `/ax-preview` | — | `auto_preview.py` | Preview local |
+| `/ax-status` | — | — | Relatório de progresso |
+| `/ax-test` | — (apoio verify) | `testing-patterns`, `webapp-testing` | Testes |
+| `/ax-design` | — | `.agents/shared/ui-ux-pro-max` | Design system (slash no Cursor, Claude Code e skills Antigravity (`ax-*`); skill `design-guide` nos cinco tools) |
 
-> **Cursor:** argumentos são texto livre após o comando (ex.: `/plan auth JWT`), não `$ARGUMENTS`.
-> **Gate:** `/plan`, `/implement`, `/orchestrate` exigem SPEC **ou** ≥3 respostas socráticas no SPEC/PLAN.
+> **Cursor:** argumentos são texto livre após o comando (ex.: `/ax-plan auth JWT`), não `$ARGUMENTS`.
+> **Gate:** `/ax-plan`, `/ax-implement`, `/ax-orchestrate` exigem SPEC **ou** ≥3 respostas socráticas no SPEC/PLAN.
 
 ---
 
@@ -172,7 +172,7 @@ Templates: `SPEC.template.md`, `PLAN.template.md`, `ACCEPTANCE.template.md`. Tra
 └── [topic].md             ← Tópicos adicionais
 ```
 
-Ativar com `/remember <informação>` — ver skill `memory-system`.
+Ativar com `/ax-remember <informação>` — ver skill `memory-system`.
 
 ---
 

@@ -42,7 +42,7 @@ test("installKit merges mcp.json and skips existing rules", async () => {
         );
         assert.strictEqual(rule, "# my custom rule");
 
-        assert.ok(await fse.pathExists(path.join(target, ".cursor", "commands", "plan.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".cursor", "commands", "ax-plan.md")));
         assert.ok(await fse.pathExists(path.join(target, "AGENTS.md")));
 
         assert.equal(await isKitInstalled(target, "cursor"), true);
@@ -65,8 +65,8 @@ test("installKit projects claude-code paths and leaves no false drift", async ()
             packageName: "@zanetta/axion",
         });
 
-        assert.ok(await fse.pathExists(path.join(target, ".claude", "commands", "plan.md")));
-        assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands", "plan.md")), false);
+        assert.ok(await fse.pathExists(path.join(target, ".claude", "commands", "ax-plan.md")));
+        assert.equal(await fse.pathExists(path.join(target, ".cursor", "commands", "ax-plan.md")), false);
         assert.equal(await fse.pathExists(path.join(target, ".cursor", "shared")), false);
         assert.ok(await fse.pathExists(path.join(target, ".agents", "skills", "test-skill", "SKILL.md")));
         assert.ok(await fse.pathExists(path.join(target, ".claude", "skills", "test-skill", "SKILL.md")));
@@ -198,7 +198,7 @@ test("installKit projects antigravity native paths, merges MCP, and leaves no fa
             packageName: "@zanetta/axion",
         });
 
-        assert.ok(await fse.pathExists(path.join(target, ".agents", "workflows", "plan.md")));
+        assert.ok(await fse.pathExists(path.join(target, ".agents", "skills", "ax-plan", "SKILL.md")));
         assert.ok(await fse.pathExists(path.join(target, ".agents", "rules", "backend.md")));
         assert.ok(await fse.pathExists(path.join(target, ".agents", "skills", "test-skill", "SKILL.md")));
         assert.ok(await fse.pathExists(path.join(target, ".axion", "scripts", "checklist.py")));
