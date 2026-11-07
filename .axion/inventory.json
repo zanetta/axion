@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "counts": {
     "agents": 21,
-    "skills": 53,
+    "skills": 54,
     "commands": 13,
     "rules": 7,
     "scripts": 15,
@@ -69,6 +69,7 @@
     "performance-profiling",
     "plan-writing",
     "powershell-windows",
+    "prompt-patterns",
     "python-patterns",
     "rag-patterns",
     "red-team-tactics",

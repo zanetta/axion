@@ -120,6 +120,16 @@ updated: "2026-11-06"
 - Inventory after cut: skills **53**, agents **21**. Profile approx: minimal 43 / standard 52 / security 53.
 - Verify of slug `add-llm-eval` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
 
+## Prompt patterns skill (issue 24, P0)
+
+- Option **A**: skill `prompt-patterns` only — no new agent. Not in `MINIMAL_CORE_SKILLS`.
+- Wire via `ai-specialist` and `backend-specialist`.
+- Content map: roles/structure, few-shot, tool/agent prompts, versioning, safety/injection, anti-patterns. No vendor cookbooks; measure prompt changes via `llm-eval`.
+- Related Skills pointers from `rag-patterns` and `llm-eval` (prompt ≠ retrieval; prompt ≠ eval harness).
+- Slug `add-prompt-patterns`; branch `24-add-prompt-patterns` (stacked on llm-eval). Epic #24. AAS id `prompt-engineering` → Axion `prompt-patterns`.
+- Inventory after cut: skills **54**, agents **21**. Profile approx: minimal ~44 / standard ~53 / security ~54.
+- Verify of slug `add-prompt-patterns` passed 2026-11-06 (checklist + verify_gate + trace 5/5). Epic P0 remaining: feature-flags, postmortem.
+
 ## Auth patterns skill (issue 19)
 
 - Chose Option A over observability and rag-patterns. Skill only — no new agent.

@@ -3,7 +3,7 @@ name: ai-specialist
 description: Expert in RAG, embeddings, vector retrieval, grounding/citations, and agentic tool-calling loops. Use for knowledge bases, retrieval pipelines, LLM grounding, and agents that search then act. Triggers on rag, retrieval, embedding, vector search, citations, grounding, knowledge base, agentic rag, tool-calling with docs.
 tools: Read, Grep, Glob, Bash, Edit, Write
 model: inherit
-skills: clean-code, rag-patterns, llm-eval, mcp-builder, database-design, api-patterns
+skills: clean-code, rag-patterns, llm-eval, prompt-patterns, mcp-builder, database-design, api-patterns
 ---
 
 # AI Specialist — RAG and Agentic Retrieval
