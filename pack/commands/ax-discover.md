@@ -1,6 +1,6 @@
 ---
 description: Structured idea exploration and Socratic questioning before writing a SPEC. Explores options and tradeoffs without locking a SPEC or writing code.
-name: discover
+name: ax-discover
 contract_version: "1.0.0"
 sdd_states:
   - discover
@@ -10,7 +10,7 @@ required_agents: []
 required_artifacts: []
 preconditions:
   - "Do not write application code"
-  - "Do not close {slug}.spec.md in this state (hand off to /specify)"
+  - "Do not close {slug}.spec.md in this state (hand off to /ax-specify)"
 scripts: []
 side_effects:
   - read-only
@@ -19,11 +19,11 @@ side_effects:
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /discover - Structured Idea Exploration
+# /ax-discover - Structured Idea Exploration
 
 (texto livre após o comando)
 
-**FSM:** **`discover`** → `/specify` → `/plan`
+**FSM:** **`discover`** → `/ax-specify` → `/ax-plan`
 
 ---
 
@@ -31,13 +31,13 @@ side_effects:
 
 Explore ideas, clarify requirements through Socratic questioning, and evaluate options and trade-offs before locking a formal specification.
 
-> **Do not write `{slug}.spec.md` or application code during `/discover`.** Once the user chooses a direction, hand off to `/specify {slug}`.
+> **Do not write `{slug}.spec.md` or application code during `/ax-discover`.** Once the user chooses a direction, hand off to `/ax-specify {slug}`.
 
 ---
 
 ## Behavior
 
-When `/discover` is triggered:
+When `/ax-discover` is triggered:
 
 1. **Load Skill & Check Memory**
    - Read `.agents/skills/brainstorming/SKILL.md`
@@ -54,8 +54,8 @@ When `/discover` is triggered:
    - Summarize trade-offs and recommend one option with clear reasoning
 
 5. **Hand-off**
-   - Once the user chooses a direction, hand off to `/specify {slug}` to lock `{slug}.spec.md`
-   - **Do not write `{slug}.spec.md` or application code during `/discover`.**
+   - Once the user chooses a direction, hand off to `/ax-specify {slug}` to lock `{slug}.spec.md`
+   - **Do not write `{slug}.spec.md` or application code during `/ax-discover`.**
 
 ---
 
@@ -114,7 +114,7 @@ When `/discover` is triggered:
 
 **Option [X]** because [reasoning].
 
-Which direction would you like to take? Next step: `/specify {slug}`
+Which direction would you like to take? Next step: `/ax-specify {slug}`
 ```
 
 ---
@@ -122,17 +122,17 @@ Which direction would you like to take? Next step: `/specify {slug}`
 ## Examples
 
 ```
-/discover authentication system
-/discover state management for complex form
-/discover database schema for social app
-/discover caching strategy
+/ax-discover authentication system
+/ax-discover state management for complex form
+/ax-discover database schema for social app
+/ax-discover caching strategy
 ```
 
 ---
 
 ## Key Principles
 
-- **Exploration only** — Do not write `{slug}.spec.md` or application code during `/discover`
+- **Exploration only** — Do not write `{slug}.spec.md` or application code during `/ax-discover`
 - **Visual when helpful** — Use diagrams for architecture options
 - **Honest trade-offs** — Do not hide complexity
-- **Defer to user** — Present options, let them choose, then hand off to `/specify {slug}`
+- **Defer to user** — Present options, let them choose, then hand off to `/ax-specify {slug}`

@@ -14,7 +14,7 @@ test("writeKitManifest creates .axion/kit.manifest.json with SemVer", async () =
         await fse.ensureDir(path.join(tmp, ".agents", "skills", "foo"));
         await fse.writeFile(path.join(tmp, ".agents", "skills", "foo", "SKILL.md"), "x");
         await fse.ensureDir(path.join(tmp, ".cursor", "commands"));
-        await fse.writeFile(path.join(tmp, ".cursor", "commands", "plan.md"), "x");
+        await fse.writeFile(path.join(tmp, ".cursor", "commands", "ax-plan.md"), "x");
         await fse.ensureDir(path.join(tmp, ".cursor", "rules"));
         await fse.writeFile(path.join(tmp, ".cursor", "rules", "frontend.mdc"), "x");
 
@@ -52,7 +52,7 @@ test("writeKitManifest counts claude-code commands and records tool", async () =
         await fse.ensureDir(path.join(tmp, ".agents", "skills", "foo"));
         await fse.writeFile(path.join(tmp, ".agents", "skills", "foo", "SKILL.md"), "x");
         await fse.ensureDir(path.join(tmp, ".claude", "commands"));
-        await fse.writeFile(path.join(tmp, ".claude", "commands", "plan.md"), "x");
+        await fse.writeFile(path.join(tmp, ".claude", "commands", "ax-plan.md"), "x");
 
         const written = await writeKitManifest(tmp, {
             version: "1.0.2",
@@ -123,14 +123,14 @@ test("writeKitManifest handles windsurf null componentDirs (agents/commands/rule
     }
 });
 
-test("writeKitManifest counts antigravity workflows and .md rules", async () => {
+test("writeKitManifest counts antigravity ax-command skills and .md rules", async () => {
     const tmp = await fse.mkdtemp(path.join(os.tmpdir(), "axion-manifest-antigravity-"));
     try {
         await fse.writeFile(path.join(tmp, "AGENTS.md"), "# test\n");
         await fse.ensureDir(path.join(tmp, ".agents", "skills", "foo"));
         await fse.writeFile(path.join(tmp, ".agents", "skills", "foo", "SKILL.md"), "x");
-        await fse.ensureDir(path.join(tmp, ".agents", "workflows"));
-        await fse.writeFile(path.join(tmp, ".agents", "workflows", "plan.md"), "x");
+        await fse.ensureDir(path.join(tmp, ".agents", "skills", "ax-plan"));
+        await fse.writeFile(path.join(tmp, ".agents", "skills", "ax-plan", "SKILL.md"), "x");
         await fse.ensureDir(path.join(tmp, ".agents", "rules"));
         await fse.writeFile(path.join(tmp, ".agents", "rules", "backend.md"), "x");
 
@@ -146,7 +146,7 @@ test("writeKitManifest counts antigravity workflows and .md rules", async () => 
         assert.strictEqual(written.components.agents, 0);
         assert.strictEqual(written.components.commands, 1);
         assert.strictEqual(written.components.rules, 1);
-        assert.strictEqual(written.components.skills, 1);
+        assert.strictEqual(written.components.skills, 2);
         assert.ok(written.install_paths.includes(".agents/mcp_config.json"));
         assert.ok(written.install_paths.includes("GEMINI.md"));
     } finally {

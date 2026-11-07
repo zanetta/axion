@@ -90,19 +90,19 @@
     "webapp-testing"
   ],
   "commands": [
-    "debug",
-    "deploy",
-    "design",
-    "discover",
-    "implement",
-    "orchestrate",
-    "plan",
-    "preview",
-    "remember",
-    "specify",
-    "status",
-    "test",
-    "verify"
+    "ax-debug",
+    "ax-deploy",
+    "ax-design",
+    "ax-discover",
+    "ax-implement",
+    "ax-orchestrate",
+    "ax-plan",
+    "ax-preview",
+    "ax-remember",
+    "ax-specify",
+    "ax-status",
+    "ax-test",
+    "ax-verify"
   ],
   "rules": [
     "backend",

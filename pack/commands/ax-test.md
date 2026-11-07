@@ -1,10 +1,11 @@
 ---
 description: Test generation and test running command. Creates and executes tests for code.
+name: ax-test
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /test - Test Generation and Execution
+# /ax-test - Test Generation and Execution
 
 (texto livre após o comando)
 
@@ -19,10 +20,10 @@ This command generates tests, runs existing tests, or checks test coverage.
 ## Sub-commands
 
 ```
-/test                - Run all tests
-/test [file/feature] - Generate tests for specific target
-/test coverage       - Show test coverage report
-/test watch          - Run tests in watch mode
+/ax-test                - Run all tests
+/ax-test [file/feature] - Generate tests for specific target
+/ax-test coverage       - Show test coverage report
+/ax-test watch          - Run tests in watch mode
 ```
 
 ---
@@ -98,10 +99,10 @@ Total: 15 tests (14 passed, 1 failed)
 ## Examples
 
 ```
-/test src/services/auth.service.ts
-/test user registration flow
-/test coverage
-/test fix failed tests
+/ax-test src/services/auth.service.ts
+/ax-test user registration flow
+/ax-test coverage
+/ax-test fix failed tests
 ```
 
 ---

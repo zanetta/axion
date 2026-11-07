@@ -1,6 +1,6 @@
 ---
 description: Implement new applications or enhance existing code following an approved PLAN. Unifies greenfield creation and iterative enhancements.
-name: implement
+name: ax-implement
 contract_version: "1.0.0"
 sdd_states:
   - implement
@@ -26,11 +26,11 @@ side_effects:
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /implement - Build or Update Application
+# /ax-implement - Build or Update Application
 
 (texto livre após o comando)
 
-**FSM:** `plan` → **`implement`** → `/verify`
+**FSM:** `plan` → **`implement`** → `/ax-verify`
 
 ---
 
@@ -43,7 +43,7 @@ This command unifies greenfield application creation and iterative updates to an
 Before writing application code on non-trivial or multi-file scope:
 
 - [ ] `{slug}.plan.md` (or `{slug}.md`) exists **and** user approved, **or**
-- [ ] Run `/discover` → `/specify` → `/plan` first (SPEC **or** ≥3 Socratic answers → PLAN + ACCEPTANCE → user OK)
+- [ ] Run `/ax-discover` → `/ax-specify` → `/ax-plan` first (SPEC **or** ≥3 Socratic answers → PLAN + ACCEPTANCE → user OK)
 - [ ] Respect `## Write allowlist` in the active PLAN: before writing any file, run:
   ```bash
   python3 .axion/scripts/side_effect_guard.py . --plan {slug}.plan.md --effect write-files --write <path>
@@ -61,7 +61,7 @@ Detect whether the target is a greenfield project or an existing codebase and fo
 ### Mode A — Greenfield / New App
 
 1. **Request Analysis & Planning Check**
-   - Verify approved `{slug}.plan.md` exists (if not, stop and run `/discover` → `/specify` → `/plan`)
+   - Verify approved `{slug}.plan.md` exists (if not, stop and run `/ax-discover` → `/ax-specify` → `/ax-plan`)
 2. **Application Building**
    - Load `.agents/skills/app-builder/SKILL.md`
    - Coordinate specialist agents in dependency order:
@@ -70,7 +70,7 @@ Detect whether the target is a greenfield project or an existing codebase and fo
      - `frontend-specialist` → UI components & pages
 3. **Preview & Hand-off**
    - Start preview when appropriate via `python3 .axion/scripts/auto_preview.py`
-   - Hand off to `/verify {slug}.acceptance.md`
+   - Hand off to `/ax-verify {slug}.acceptance.md`
 
 ### Mode B — Existing Codebase / Feature Update
 
@@ -82,15 +82,15 @@ Detect whether the target is a greenfield project or an existing codebase and fo
    - Invoke relevant domain specialist agents (`backend-specialist`, `frontend-specialist`, `database-architect`, `mobile-developer`, etc.)
    - Run relevant unit/integration tests
 3. **Verify & Hand-off**
-   - Hand off to `/verify {slug}.acceptance.md`
+   - Hand off to `/ax-verify {slug}.acceptance.md`
 
 ---
 
 ## Usage Examples
 
 ```
-/implement follow plan in ecommerce-cart.plan.md
-/implement blog site from scratch
-/implement add dark mode to dashboard
-/implement add CSV export to orders table
+/ax-implement follow plan in ecommerce-cart.plan.md
+/ax-implement blog site from scratch
+/ax-implement add dark mode to dashboard
+/ax-implement add CSV export to orders table
 ```

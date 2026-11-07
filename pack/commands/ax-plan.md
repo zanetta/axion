@@ -1,6 +1,6 @@
 ---
 description: Create project plan using project-planner agent. No code writing - only plan file generation.
-name: plan
+name: ax-plan
 contract_version: "1.0.0"
 sdd_states:
   - plan
@@ -22,7 +22,7 @@ side_effects:
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /plan - Project Planning Mode
+# /ax-plan - Project Planning Mode
 
 (texto livre após o comando)
 
@@ -43,9 +43,9 @@ side_effects:
 ## Gate checklist (before writing)
 
 - [ ] `{slug}.spec.md` exists, **or** Socratic Q&A (≥3) embedded in PLAN Gate section
-- [ ] User direction confirmed (from `/discover` / `/specify` or explicit answers)
+- [ ] User direction confirmed (from `/ax-discover` / `/ax-specify` or explicit answers)
 
-If gate fails → run `/discover` → `/specify` or ask 3 questions; **do not** invent a plan.
+If gate fails → run `/ax-discover` → `/ax-specify` or ask 3 questions; **do not** invent a plan.
 
 After the PLAN exists, confirm the gate. Exit 1 means it is not ready (empty SPEC and fewer than 3 real answers; a `{placeholder}` does not count):
 
@@ -105,8 +105,8 @@ Tell user:
 
 Next steps:
 - Review + approve
-- `/implement` for implementation
-- `/verify` against ACCEPTANCE
+- `/ax-implement` for implementation
+- `/ax-verify` against ACCEPTANCE
 ```
 
 ---
@@ -115,18 +115,18 @@ Next steps:
 
 | Request | Plan File |
 |---------|-----------|
-| `/plan e-commerce site with cart` | `ecommerce-cart.md` |
-| `/plan mobile app for fitness` | `fitness-app.md` |
-| `/plan add dark mode feature` | `dark-mode.md` |
-| `/plan fix authentication bug` | `auth-fix.md` |
-| `/plan SaaS dashboard` | `saas-dashboard.md` |
+| `/ax-plan e-commerce site with cart` | `ecommerce-cart.md` |
+| `/ax-plan mobile app for fitness` | `fitness-app.md` |
+| `/ax-plan add dark mode feature` | `dark-mode.md` |
+| `/ax-plan fix authentication bug` | `auth-fix.md` |
+| `/ax-plan SaaS dashboard` | `saas-dashboard.md` |
 
 ---
 
 ## Usage
 
 ```
-/plan e-commerce site with cart
-/plan mobile app for fitness tracking
-/plan SaaS dashboard with analytics
+/ax-plan e-commerce site with cart
+/ax-plan mobile app for fitness tracking
+/ax-plan SaaS dashboard with analytics
 ```

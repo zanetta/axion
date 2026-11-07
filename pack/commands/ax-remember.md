@@ -1,6 +1,6 @@
 ---
 description: Save information to persistent memory for cross-session recall. Stores preferences, conventions, decisions, and context.
-name: remember
+name: ax-remember
 contract_version: "1.0.0"
 sdd_states:
   - remember
@@ -17,7 +17,7 @@ side_effects:
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /remember — Persistent Memory Management
+# /ax-remember — Persistent Memory Management
 
 (texto livre após o comando)
 
@@ -82,8 +82,8 @@ This will be available in future sessions.
 ## Usage Examples
 
 ```
-/remember I prefer using bun instead of npm
-/remember Our API uses JWT with httpOnly cookies
-/remember The production server is at api.example.com:8080
-/remember I like concise responses with tables
+/ax-remember I prefer using bun instead of npm
+/ax-remember Our API uses JWT with httpOnly cookies
+/ax-remember The production server is at api.example.com:8080
+/ax-remember I like concise responses with tables
 ```

@@ -40,7 +40,6 @@ allowed-tools: Read, Write, Edit, Glob, Grep
 | API implementation | `@[skills/nodejs-best-practices]` |
 | Data structure | `@[skills/database-design]` |
 | Authn / authz | `@[skills/auth-patterns]` |
-| Payments / Stripe | `@[skills/payment-patterns]` |
 | Security details | `@[skills/vulnerability-scanner]` |
 
 ---

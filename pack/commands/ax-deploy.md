@@ -1,10 +1,11 @@
 ---
 description: Deployment command for production releases. Pre-flight checks and deployment execution.
+name: ax-deploy
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /deploy - Production Deployment
+# /ax-deploy - Production Deployment
 
 (texto livre após o comando)
 
@@ -19,11 +20,11 @@ This command handles production deployment with pre-flight checks, deployment ex
 ## Sub-commands
 
 ```
-/deploy            - Interactive deployment wizard
-/deploy check      - Run pre-deployment checks only
-/deploy preview    - Deploy to preview/staging
-/deploy production - Deploy to production
-/deploy rollback   - Rollback to previous version
+/ax-deploy            - Interactive deployment wizard
+/ax-deploy check      - Run pre-deployment checks only
+/ax-deploy preview    - Deploy to preview/staging
+/ax-deploy production - Deploy to production
+/ax-deploy rollback   - Rollback to previous version
 ```
 
 ---
@@ -64,7 +65,7 @@ Before any deployment:
 
 ```
 ┌─────────────────┐
-│  /deploy        │
+│  /ax-deploy        │
 └────────┬────────┘
          │
          ▼
@@ -147,11 +148,11 @@ error TS2345: Argument of type 'string' is not assignable...
 ### Resolution
 1. Fix TypeScript error in `src/services/user.ts:45`
 2. Run `npm run build` locally to verify
-3. Try `/deploy` again
+3. Try `/ax-deploy` again
 
 ### Rollback Available
 Previous version (v1.2.2) is still active.
-Run `/deploy rollback` if needed.
+Run `/ax-deploy rollback` if needed.
 ```
 
 ---
@@ -170,9 +171,9 @@ Run `/deploy rollback` if needed.
 ## Examples
 
 ```
-/deploy
-/deploy check
-/deploy preview
-/deploy production
-/deploy rollback
+/ax-deploy
+/ax-deploy check
+/ax-deploy preview
+/ax-deploy production
+/ax-deploy rollback
 ```

@@ -26,7 +26,7 @@ Proposed ──accept──► Accepted
 
 | Event | Typical owner |
 | --- | --- |
-| Proposed → Accepted | `/plan` approval / tech lead / orchestrator synthesis |
+| Proposed → Accepted | `/ax-plan` approval / tech lead / orchestrator synthesis |
 | → Superseded | New ADR Accepted that replaces it |
 | → Deprecated | Explicit abandon without replacement |
 

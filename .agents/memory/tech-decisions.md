@@ -44,30 +44,40 @@ updated: "2026-11-06"
 
 ## Antigravity adapter (issue 17, Option B native)
 
-- `--tool antigravity` only (no `gemini` alias). Native, not Codex-thin: `pack/commands` → `.agents/workflows/`, `pack/rules` `.mdc` → `.agents/rules/*.md` (`trigger: glob` on pack rules; `model_decision` if no Cursor frontmatter). Skills/shared/memory/schemas under `.agents/`. MCP `.agents/mcp_config.json` (JSON merge like Windsurf).
+- `--tool antigravity` only (no `gemini` alias). Native, not Codex-thin. Rules: `pack/rules` `.mdc` → `.agents/rules/*.md` (`trigger: glob` / `model_decision`). Skills/shared/memory/schemas under `.agents/`. MCP `.agents/mcp_config.json` (JSON merge like Windsurf).
+- **Superseded for commands (2026-11-06):** see "ax- prefix commands" — no longer maps to `.agents/workflows/`.
 - `GEMINI.md` stub like `CLAUDE.md` (no clobber without `--force`). Omit `pack/agents` and `ARCHITECTURE.md`. Never write `~/.gemini/`. Kit repo does not dogfood Antigravity.
 - `writeKitManifest` uses `adapter.rulesExt` (`.md` here; default `.mdc`). Pack smoke: commands=13, rules=7.
-- Slash `/design` collides (workflow + skill). Document in `postInstallHints`; do not probe the IDE in CI. No npm version bump in this cut.
 - Copilot, Aider, and Gemini CLI stay separate issues.
 - Verify of slug `antigravity-adapter` passed 2026-11-05 (GitHub issue 17, branch `17-antigravity-adapter`).
 
+## ax- prefix commands (G1 + Antigravity skills)
+
+- Direction: **G1** global rename + **S3** Antigravity commands-as-skills; prefix `ax-`; **dry cutover** (no stubs / redirects).
+- Pack: 13 files `pack/commands/ax-*.md`; frontmatter `name: ax-*`. Inventory `commands=13` (rename only). Skills of domain and `{slug}.plan.md` / CLI `--plan` unchanged.
+- Public slash is `/ax-discover` … `/ax-design`. FSM **state names** stay `discover → specify → plan → …`; only the slash is prefixed.
+- Cursor → `.cursor/commands/ax-*.md`; Claude Code → `.claude/commands/ax-*.md`.
+- Antigravity → `.agents/skills/ax-*/SKILL.md` (`commandsAsSkills` + `countAxCommandSkills`). Not `.agents/workflows/`. `update` is additive: consumers remove stale workflows manually.
+- Do **not** `axion init --force --tool antigravity` into the kit repo: `.agents/skills` → `pack/skills` and unprefixed remote commands pollute `pack/skills/`. Prove with local `installKit` / smoke; CLI dry-run still downloads `github:zanetta/axion` until publish.
+- Slug `ax-prefix-commands` verified 2026-11-06 (checklist + gate + trace 5/5). Branch `bugfix/antigravity-commands`. Own GitHub issue TBD (not #24).
+
 ## SDD command names (six states)
 
-- Slash commands match FSM states one to one: `/discover` → `/specify` → `/plan` → `/implement` → `/verify` → `/remember`. State names did not change. `/specify` stays outside `/discover`.
-- `/discover` explores and asks; it does not close `{slug}.spec.md`. `/specify` holds the Socratic gate and writes the SPEC.
-- `/implement` unifies greenfield (Mode A) and existing-code (Mode B). Gate for non-trivial work is the greenfield-strength gate.
-- Canonical design command is `/design`. The `brainstorming` skill and the data folder name `ui-ux-pro-max` keep those names. See "Design on all tools" for where `/design` installs.
-- Transition aliases are maintainer-personal only and are not in `pack/`. Public docs, skill `when_to_use`, and `PLAN.template` name only canonical slashes. Inventory `commands=13`. Optional overlay: user-level Cursor commands outside git. Verify of slug `hide-transition-aliases` passed 2026-11-04 (Option C).
-- Verify of slug `sdd-command-rename` passed 2026-11-04.
+- FSM states one to one: discover → specify → plan → implement → verify → remember. Slash canonical (after ax-prefix): `/ax-discover` → `/ax-specify` → `/ax-plan` → `/ax-implement` → `/ax-verify` → `/ax-remember`.
+- `/ax-discover` explores and asks; it does not close `{slug}.spec.md`. `/ax-specify` holds the Socratic gate and writes the SPEC.
+- `/ax-implement` unifies greenfield (Mode A) and existing-code (Mode B). Gate for non-trivial work is the greenfield-strength gate.
+- Canonical design command is `/ax-design`. Skill id `design-guide` and folder `ui-ux-pro-max` keep those names.
+- Transition aliases are maintainer-personal only and are not in `pack/`. Public docs name only `/ax-*`. Inventory `commands=13`. Verify of slug `hide-transition-aliases` passed 2026-11-04 (Option C); superseded slash strings by `ax-prefix-commands`.
+- Verify of slug `sdd-command-rename` passed 2026-11-04 (pre-prefix names).
 
 ## Design on all tools
 
-- Direction (discover 1A / 2A / 3B): the agent runs the design workflow and `search.py` on all install tools. Slash `/design` is the command/workflow on Cursor, Claude Code, and Antigravity. Codex and Windsurf get the skill only.
+- Direction (discover 1A / 2A / 3B): the agent runs the design workflow and `search.py` on all install tools. Slash `/ax-design` is the command on Cursor, Claude Code, and Antigravity (as skill). Codex and Windsurf get the skill only.
 - One data path: `.agents/shared/ui-ux-pro-max/`, projected from `pack/shared/` by all adapters. Cursor no longer maps that tree to `.cursor/shared/`. `update` is additive, so an old `.cursor/shared/` tree may remain on disk unused.
-- Skill id is `design-guide` (`MINIMAL_CORE_SKILLS`). CSVs stay in shared data, not inside the skill. Command `/design` is a different id.
+- Skill id is `design-guide` (`MINIMAL_CORE_SKILLS`). CSVs stay in shared data, not inside the skill. Command `/ax-design` is a different id.
 - Verify of slug `rename-design-skill` passed 2026-11-05 (Option A global): pack `design` → `design-guide` on all five adapters, no per-adapter transform, no leftover stub. Additive `update` may leave unused `skills/design/`. E-01 WEB row stays without `design`/`design-guide`. Accept = smokes paths, not IDE slash probe.
 - Kit dogfood: `.agents/shared` → `pack/shared`.
-- Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills = 46. Antigravity hint: `/design` is the SDD workflow; the searchable guide is skill `design-guide`.
+- Verify of slug `design-all-tools` passed 2026-11-04. Inventory skills was 46 then. Antigravity: `/ax-design` SDD skill; searchable guide remains `design-guide`.
 
 ## Observability skill (issue 20)
 

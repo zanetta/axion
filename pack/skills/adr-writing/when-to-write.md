@@ -8,7 +8,7 @@ Significant if:
 ├── Hard or expensive to reverse later
 ├── Real alternatives were considered (not a single obvious path)
 ├── Newcomers will ask “why did we…?”
-└── The choice constrains `/plan` or `/implement` work
+└── The choice constrains `/ax-plan` or `/ax-implement` work
 ```
 
 Examples that usually deserve an ADR: framework/runtime, primary datastore, auth model, sync vs async boundary, multi-tenant strategy, public API style (REST vs GraphQL).

@@ -392,10 +392,4 @@ For deeper guidance on specific areas:
 
 ---
 
-## Related Skills
-
-| Need | Skill |
-|------|-------|
-| WCAG / a11y decision trees (incl. light mobile) | `accessibility` |
-
 > **Remember:** Mobile users are impatient, interrupted, and using imprecise fingers on small screens. Design for the WORST conditions: bad network, one hand, bright sun, low battery. If it works there, it works everywhere.

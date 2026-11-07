@@ -1,6 +1,6 @@
 # Axion — Architecture
 
-> Framework de Spec-Driven Development — Cursor default (`--tool cursor`), Claude Code via `--tool claude-code`, OpenAI Codex via `--tool codex` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.codex/config.toml`), Windsurf via `--tool windsurf` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.windsurf/mcp_config.json`), Google Antigravity via `--tool antigravity` (`AGENTS.md` + `GEMINI.md` + `.agents/workflows/` + `.agents/rules/` + `.agents/skills/` + `.agents/mcp_config.json`) — **npm `@zanetta/axion@1.1.3`**
+> Framework de Spec-Driven Development — Cursor default (`--tool cursor`), Claude Code via `--tool claude-code`, OpenAI Codex via `--tool codex` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.codex/config.toml`), Windsurf via `--tool windsurf` (`AGENTS.md` + `.agents/skills/` + `.agents/shared/` + `.windsurf/mcp_config.json`), Google Antigravity via `--tool antigravity` (`AGENTS.md` + `GEMINI.md` + `.agents/skills/` (`ax-*/SKILL.md`) + `.agents/rules/` + `.agents/mcp_config.json`) — **npm `@zanetta/axion@1.1.3`**
 
 ---
 
@@ -93,7 +93,7 @@ Campos principais: `schema_version`, `package`, `version`, `profile`, `installed
 | `skill-contract.schema.json` | Frontmatter de `.agents/skills/*/SKILL.md` — `inputs`, `outputs`, `preconditions`, `postconditions`, `side_effects`, `forbidden_paths`, `verify_hooks` |
 | `command-contract.schema.json` | Frontmatter de `.cursor/commands/*.md` — `sdd_states`, `required_artifacts`, `scripts` (só `.axion/scripts/` ou scripts da skill) |
 
-Piloto P0: skills `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode`; commands `/plan`, `/verify`, `/status`, `/orchestrate`. Validação CI de 100% das skills/commands via `lint_contracts.py` (Q-02).
+Piloto P0: skills `brainstorming`, `plan-writing`, `verify-changes`, `coordinator-mode`; commands `/ax-plan`, `/ax-verify`, `/ax-status`, `/ax-orchestrate`. Validação CI de 100% das skills/commands via `lint_contracts.py` (Q-02).
 
 ### `lint_paths.py`
 
@@ -140,16 +140,16 @@ discover → specify → plan → implement → verify → remember
 
 | Estado | Command(s) | Artefato esperado |
 | --- | --- | --- |
-| `discover` | `/discover` | notas de exploração + opções (sem fechar SPEC) |
-| `specify` | `/specify` | SPEC (`{slug}.spec.md` a partir de `SPEC.template.md`) |
-| `plan` | `/plan` | PLAN (`{slug}.plan.md` + links SPEC/ACCEPTANCE) |
-| `implement` | `/implement` | código alinhado ao PLAN |
-| `verify` | `/verify` | ACCEPTANCE + evidência; `verify_gate.py` exit 0 (W-03) |
-| `remember` | `/remember` | entradas em `.agents/memory/` só com `memory_secret_scan.py` limpo (X-02) |
+| `discover` | `/ax-discover` | notas de exploração + opções (sem fechar SPEC) |
+| `specify` | `/ax-specify` | SPEC (`{slug}.spec.md` a partir de `SPEC.template.md`) |
+| `plan` | `/ax-plan` | PLAN (`{slug}.plan.md` + links SPEC/ACCEPTANCE) |
+| `implement` | `/ax-implement` | código alinhado ao PLAN |
+| `verify` | `/ax-verify` | ACCEPTANCE + evidência; `verify_gate.py` exit 0 (W-03) |
+| `remember` | `/ax-remember` | entradas em `.agents/memory/` só com `memory_secret_scan.py` limpo (X-02) |
 
-**Socratic Gate (W-02):** antes de `/plan`, `/implement` ou `/orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate continuam instrução em commands/agents (advisory): o IDE não bloqueia a transição sozinho e o agente honra o exit. O eval E-02 (`eval_routing.py --gates` e `--plan`) regressa esses gates. O `/verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
+**Socratic Gate (W-02):** antes de `/ax-plan`, `/ax-implement` ou `/ax-orchestrate`, exigir SPEC **ou** ≥3 perguntas socráticas respondidas registradas no SPEC/PLAN. Orchestrator não despacha workers sem o gate. FSM e Socratic Gate continuam instrução em commands/agents (advisory): o IDE não bloqueia a transição sozinho e o agente honra o exit. O eval E-02 (`eval_routing.py --gates` e `--plan`) regressa esses gates. O `/ax-verify` é checagem executável: `verify_gate.py` devolve exit code real (W-03).
 
-**Verify hard gate (W-03):** `/verify` roda os AC-*, grava a evidência, marca `[x]` e roda `python3 .axion/scripts/checklist.py .` antes do gate. Só conclui se esse comando e `python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0. O gate roda o checklist de novo e não reexecuta os AC-*. Exit diferente de 0 (ACCEPTANCE incompleto, sign-off aberto ou `checklist.py` ≠ 0) impede o relatório. O IDE não bloqueia a FSM sozinho; o agente honra o exit.
+**Verify hard gate (W-03):** `/ax-verify` roda os AC-*, grava a evidência, marca `[x]` e roda `python3 .axion/scripts/checklist.py .` antes do gate. Só conclui se esse comando e `python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md` saírem 0. O gate roda o checklist de novo e não reexecuta os AC-*. Exit diferente de 0 (ACCEPTANCE incompleto, sign-off aberto ou `checklist.py` ≠ 0) impede o relatório. O IDE não bloqueia a FSM sozinho; o agente honra o exit.
 
 **Paths P1:**
 
@@ -306,19 +306,19 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 
 | Comando | Descrição |
 | --- | --- |
-| `/discover` | Exploração socrática de ideias e opções antes da SPEC |
-| `/specify` | Formalizar e fechar `{slug}.spec.md` após o Socratic Gate |
-| `/plan` | Plano estruturado (`{slug}.plan.md` + `{slug}.acceptance.md`) |
-| `/implement` | Construir aplicação nova ou evoluir código existente seguindo o PLAN |
-| `/verify` | Provar que funciona (execução + `verify_gate.py`) |
-| `/remember` | Salvar em `.agents/memory/` |
-| `/orchestrate` | Multi-agente (mín. 3 agents) e coordenação paralela |
-| `/debug` | Debug sistemático |
-| `/deploy` | Pré-flight + deploy |
-| `/preview` | Servidor de preview local |
-| `/status` | Relatório de progresso |
-| `/test` | Gerar e rodar testes |
-| `/design` | Design system (50 estilos, `ui-ux-pro-max`; slash no Cursor e no Claude Code) |
+| `/ax-discover` | Exploração socrática de ideias e opções antes da SPEC |
+| `/ax-specify` | Formalizar e fechar `{slug}.spec.md` após o Socratic Gate |
+| `/ax-plan` | Plano estruturado (`{slug}.plan.md` + `{slug}.acceptance.md`) |
+| `/ax-implement` | Construir aplicação nova ou evoluir código existente seguindo o PLAN |
+| `/ax-verify` | Provar que funciona (execução + `verify_gate.py`) |
+| `/ax-remember` | Salvar em `.agents/memory/` |
+| `/ax-orchestrate` | Multi-agente (mín. 3 agents) e coordenação paralela |
+| `/ax-debug` | Debug sistemático |
+| `/ax-deploy` | Pré-flight + deploy |
+| `/ax-preview` | Servidor de preview local |
+| `/ax-status` | Relatório de progresso |
+| `/ax-test` | Gerar e rodar testes |
+| `/ax-design` | Design system (50 estilos, `ui-ux-pro-max`; slash no Cursor e no Claude Code) |
 
 ---
 
@@ -353,7 +353,7 @@ side_effects: [read-only]
 | Script | Propósito |
 | --- | --- |
 | `checklist.py` | Validação core (dev, pre-commit) |
-| `verify_gate.py` | Gate hard do `/verify`: ACCEPTANCE + exit de `checklist.py`; não reexecuta os AC-* |
+| `verify_gate.py` | Gate hard do `/ax-verify`: ACCEPTANCE + exit de `checklist.py`; não reexecuta os AC-* |
 | `trace_report.py` | Cobertura SPEC → PLAN → ACCEPTANCE de um slug (O-02); não reexecuta os checks |
 | `verify_all.py` | Suite completa (pre-deploy) |
 | `sync_upstream.py` | Compare/sync com upstream |
@@ -374,7 +374,7 @@ side_effects: [read-only]
 # Validação rápida
 python3 .axion/scripts/checklist.py .
 
-# Gate hard do /verify (P2 W-03) — depois de `python3 .axion/scripts/checklist.py .`; o gate roda o checklist de novo
+# Gate hard do /ax-verify (P2 W-03) — depois de `python3 .axion/scripts/checklist.py .`; o gate roda o checklist de novo
 python3 .axion/scripts/verify_gate.py . --acceptance {slug}.acceptance.md
 
 # Verificação completa
@@ -453,4 +453,4 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Debug | `debugger` | `systematic-debugging`, `observability`, `postmortem` |
 | Plan | `project-planner` | `brainstorming`, `plan-writing`, `adr-writing` |
 | Orquestração | `orchestrator` | `coordinator-mode`, `parallel-agents` |
-| Memória | — | `memory-system` + `/remember` |
+| Memória | — | `memory-system` + `/ax-remember` |

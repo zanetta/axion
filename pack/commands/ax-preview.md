@@ -1,10 +1,11 @@
 ---
 description: Preview server start, stop, and status check. Local development server management.
+name: ax-preview
 ---
 
 > **Argumento livre:** A tarefa do usuário será fornecida em texto livre após o comando. Use esse texto como entrada principal deste workflow.
 
-# /preview - Preview Management
+# /ax-preview - Preview Management
 
 (texto livre após o comando)
 
@@ -17,11 +18,11 @@ Manage preview server: start, stop, status check.
 ### Commands
 
 ```
-/preview           - Show current status
-/preview start     - Start server
-/preview stop      - Stop server
-/preview restart   - Restart
-/preview check     - Health check
+/ax-preview           - Show current status
+/ax-preview start     - Start server
+/ax-preview stop      - Stop server
+/ax-preview restart   - Restart
+/ax-preview check     - Health check
 ```
 
 ---
@@ -30,7 +31,7 @@ Manage preview server: start, stop, status check.
 
 ### Start Server
 ```
-/preview start
+/ax-preview start
 
 Response:
 🚀 Starting preview...
@@ -43,7 +44,7 @@ Response:
 
 ### Status Check
 ```
-/preview
+/ax-preview
 
 Response:
 === Preview Status ===
@@ -56,7 +57,7 @@ Response:
 
 ### Port Conflict
 ```
-/preview start
+/ax-preview start
 
 Response:
 ⚠️ Port 3000 is in use.

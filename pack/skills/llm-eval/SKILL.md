@@ -20,7 +20,7 @@ Read **only** the file you need:
 | `offline-golden-sets.md` | Labeled queries, hard negatives, refuse cases | Building the suite |
 | `retrieval-and-faithfulness.md` | Recall@k-class + groundedness principles | Debugging quality |
 | `llm-as-judge.md` | Rubrics, bias, cost | Automated grading |
-| `online-and-regression.md` | Prod signals + gates (`/verify` mindset) | CI / shipping |
+| `online-and-regression.md` | Prod signals + gates (`/ax-verify` mindset) | CI / shipping |
 | `anti-patterns.md` | Prompt roulette, BLEU-only, PII in logs | Review before merge |
 
 ## Related Skills

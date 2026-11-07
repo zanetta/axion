@@ -1,1 +1,1 @@
-# /plan fixture
+# /ax-plan fixture

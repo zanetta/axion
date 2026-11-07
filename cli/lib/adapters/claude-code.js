@@ -119,7 +119,7 @@ export const claudeCodeAdapter = {
     mapTemplateTargets,
     transformContent,
     postInstallHints: [
-        "Open in Claude Code and use /plan, /debug, etc.",
+        "Open in Claude Code and use /ax-plan, /ax-debug, etc.",
         "Inventory: python3 .axion/scripts/generate_inventory.py .",
     ],
 };
