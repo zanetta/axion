@@ -9,7 +9,7 @@
 | Componente | Quantidade | Caminho canônico (Cursor) |
 | --- | --- | --- |
 | **Agents** | 21 | `.claude/agents/<name>.md` |
-| **Skills** | 54 | `.agents/skills/<name>/SKILL.md` |
+| **Skills** | 55 | `.agents/skills/<name>/SKILL.md` |
 | **Workflows** | 13 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
@@ -45,7 +45,7 @@ axion/
 ├── .claude/agents/              # 21 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
-│   ├── skills/                  # 54 skills top-level (+ sub-skills game-dev)
+│   ├── skills/                  # 55 skills top-level (+ sub-skills game-dev)
 │   │   ├── plan-writing/templates/   # SPEC.template.md, PLAN.template.md
 │   │   └── verify-changes/templates/ # ACCEPTANCE.template.md
 │   ├── shared/ui-ux-pro-max/    # Dados e scripts de design (path único)
@@ -172,12 +172,12 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 | `orchestrator` | Coordenação multi-agente | `parallel-agents`, `coordinator-mode`, `architecture`, `adr-writing`, `memory-system`, `context-compression`, `verify-changes` |
 | `project-planner` | Discovery, planejamento | `brainstorming`, `plan-writing`, `architecture`, `adr-writing` |
 | `frontend-specialist` | Web UI/UX | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns`, `accessibility` |
-| `backend-specialist` | API, lógica de negócio | `api-patterns`, `auth-patterns`, `payment-patterns`, `nodejs-best-practices`, `database-design`, `rag-patterns`, `prompt-patterns`, `adr-writing` |
+| `backend-specialist` | API, lógica de negócio | `api-patterns`, `auth-patterns`, `payment-patterns`, `nodejs-best-practices`, `database-design`, `rag-patterns`, `prompt-patterns`, `adr-writing`, `feature-flags` |
 | `database-architect` | Schema, SQL | `database-design`, `rag-patterns` |
 | `ai-specialist` | RAG, embeddings, agentic retrieval | `rag-patterns`, `llm-eval`, `prompt-patterns`, `mcp-builder`, `database-design` |
 | `mobile-developer` | iOS, Android, RN | `mobile-design`, `accessibility` |
 | `game-developer` | Mecânicas de jogo | `game-development` |
-| `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management`, `observability` |
+| `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management`, `observability`, `feature-flags` |
 | `security-auditor` | Compliance, OWASP | `vulnerability-scanner`, `red-team-tactics` |
 | `penetration-tester` | Segurança ofensiva | `red-team-tactics` |
 | `test-engineer` | Estratégias de teste | `testing-patterns`, `tdd-workflow`, `webapp-testing`, `llm-eval` |
@@ -193,7 +193,7 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 
-## 🧩 Skills (54)
+## 🧩 Skills (55)
 
 Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicional.
 
@@ -236,6 +236,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | `deployment-procedures` | CI/CD, deploy |
 | `server-management` | Infra, processos |
 | `observability` | Logs, traces, métricas, alertas, error tracking |
+| `feature-flags` | Tipos, OpenFeature-leaning, rollout, lifecycle/cleanup |
 
 ### Testing & Quality
 
@@ -425,7 +426,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Métrica | Valor |
 | --- | --- |
 | Agents | 21 |
-| Skills | 54 |
+| Skills | 55 |
 | Workflows | 13 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |

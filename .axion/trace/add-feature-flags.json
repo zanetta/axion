@@ -1,0 +1,16 @@
+{
+  "slug": "add-feature-flags",
+  "spec": "add-feature-flags.spec.md",
+  "plan": "add-feature-flags.plan.md",
+  "acceptance": "add-feature-flags.acceptance.md",
+  "issue": "https://github.com/zanetta/axion/issues/24",
+  "branch": "24-add-feature-flags",
+  "direction": "Option A — skill feature-flags only (D1 wire, S1 content)",
+  "links": [
+    { "spec_id": "SPEC-add-feature-flags-1", "plan_task": "P1-1", "acceptance_id": "AC-1" },
+    { "spec_id": "SPEC-add-feature-flags-2", "plan_task": "P1-2", "acceptance_id": "AC-2" },
+    { "spec_id": "SPEC-add-feature-flags-3", "plan_task": "P1-3", "acceptance_id": "AC-3" },
+    { "spec_id": "SPEC-add-feature-flags-4", "plan_task": "P1-4", "acceptance_id": "AC-4" },
+    { "spec_id": "SPEC-add-feature-flags-5", "plan_task": "P1-5", "acceptance_id": "AC-5" }
+  ]
+}

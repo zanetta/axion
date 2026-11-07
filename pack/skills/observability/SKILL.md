@@ -36,6 +36,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 |------|-------|
 | Host/process monitoring, PM2 | `@[skills/server-management]` |
 | Deploy + post-deploy watch | `@[skills/deployment-procedures]` |
+| Progressive delivery / kill switches | `feature-flags` |
 | Root-cause process | `@[skills/systematic-debugging]` |
 | Frontend/perf RUM & CWV | `@[skills/performance-profiling]` |
 

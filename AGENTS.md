@@ -85,13 +85,13 @@ Antes de codificar, responda:
 | ---------------------------------------- | -------------------------------------- | -------------------------------- |
 | **MOBILE** (iOS, Android, RN, Flutter)   | `mobile-developer`                     | `mobile-design`, `accessibility` |
 | **WEB** (Next.js, React web)             | `frontend-specialist`                  | `frontend-design`, `nextjs-react-expert`, `tailwind-patterns`, `accessibility` |
-| **BACKEND** (API, server, DB)            | `backend-specialist`                   | `api-patterns`, `auth-patterns`, `payment-patterns`, `prompt-patterns`, `database-design`, `nodejs-best-practices` |
+| **BACKEND** (API, server, DB)            | `backend-specialist`                   | `api-patterns`, `auth-patterns`, `payment-patterns`, `prompt-patterns`, `feature-flags`, `database-design`, `nodejs-best-practices` |
 | **AI / RAG** (embeddings, retrieval, agentic) | `ai-specialist`                   | `rag-patterns`, `llm-eval`, `prompt-patterns`, `mcp-builder` |
 | **Database**                             | `database-architect`                   | `database-design`, `rag-patterns` |
 | **Segurança / Auditoria**                | `security-auditor`, `penetration-tester` | `vulnerability-scanner`, `red-team-tactics` |
 | **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing`, `llm-eval` |
 | **Debug**                                | `debugger`                             | `systematic-debugging`, `observability` |
-| **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management`, `observability` |
+| **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management`, `observability`, `feature-flags` |
 | **Planejamento / Discovery**             | `project-planner`                      | `brainstorming`, `plan-writing`, `architecture`, `adr-writing` |
 | **Multi-domínio / complexo**             | `orchestrator`                         | `coordinator-mode`, `parallel-agents`, `memory-system`, `verify-changes` |
 

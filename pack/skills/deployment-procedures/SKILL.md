@@ -231,11 +231,21 @@ Before deploying:
 ## 10. Best Practices
 
 1. **Small, frequent deploys** over big releases
-2. **Feature flags** for risky changes
+2. **Feature flags** for risky changes — see `feature-flags` (types, OpenFeature-leaning eval, rollout, cleanup)
 3. **Automate** repetitive steps
 4. **Document** every deployment
 5. **Review** what went wrong after issues
 6. **Test rollback** before you need it
+
+---
+
+## Related Skills
+
+| Need | Skill |
+|------|-------|
+| Flag types, progressive rollout, kill switch, stale cleanup | `feature-flags` |
+| App signals after deploy | `observability` |
+| Host/process ops | `server-management` |
 
 ---
 
