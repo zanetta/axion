@@ -2,7 +2,7 @@
   "schema_version": "1.1.0",
   "counts": {
     "agents": 21,
-    "skills": 55,
+    "skills": 56,
     "commands": 13,
     "rules": 7,
     "scripts": 15,
@@ -69,6 +69,7 @@
     "payment-patterns",
     "performance-profiling",
     "plan-writing",
+    "postmortem",
     "powershell-windows",
     "prompt-patterns",
     "python-patterns",

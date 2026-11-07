@@ -29,6 +29,7 @@
 - [project] Slug add-llm-eval verified 2026-11-06: llm-eval; ai+test; moved from rag evaluation; ≠ eval_routing; skills=53; issue 24 → tech-decisions.md
 - [project] Slug add-prompt-patterns verified 2026-11-06: prompt-patterns; ai+backend; not MINIMAL; skills=54; issue 24 → tech-decisions.md
 - [project] Slug add-feature-flags verified 2026-11-06: feature-flags; devops+backend; not MINIMAL; skills=55; issue 24 → tech-decisions.md
+- [project] Slug add-postmortem verified 2026-11-06: postmortem; devops+debugger; not MINIMAL; skills=56; issue 24 P0 done → tech-decisions.md
 - [project] Slug add-auth-patterns verified 2026-11-05: skill auth-patterns; issue 19; skills=47; not MINIMAL_CORE → tech-decisions.md
 
 ## Feedback
@@ -45,3 +46,4 @@
 - [feedback] Issue 24 llm-eval: Option A; wire ai+test; move from rag-patterns; broad judge+online; ≠ eval_routing → feedback-history.md
 - [feedback] Issue 24 prompt-patterns: Option A; wire ai+backend; pointers rag+llm-eval; not MINIMAL_CORE → feedback-history.md
 - [feedback] Issue 24 feature-flags: Option A; wire devops+backend D1; S1 OpenFeature-leaning; not MINIMAL_CORE → feedback-history.md
+- [feedback] Issue 24 postmortem: Option A I1; wire devops+debugger; S1 blameless; not IR; P0 catalog done → feedback-history.md

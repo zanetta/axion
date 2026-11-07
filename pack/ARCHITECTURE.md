@@ -9,7 +9,7 @@
 | Componente | Quantidade | Caminho canônico (Cursor) |
 | --- | --- | --- |
 | **Agents** | 21 | `.claude/agents/<name>.md` |
-| **Skills** | 55 | `.agents/skills/<name>/SKILL.md` |
+| **Skills** | 56 | `.agents/skills/<name>/SKILL.md` |
 | **Workflows** | 13 | `.cursor/commands/<name>.md` |
 | **Regras globais** | 1 | `AGENTS.md` |
 | **Regras por domínio** | 7 | `.cursor/rules/*.mdc` |
@@ -45,7 +45,7 @@ axion/
 ├── .claude/agents/              # 21 personas especialistas
 ├── .agents/
 │   ├── schemas/                 # Contratos JSON Schema (skill + command)
-│   ├── skills/                  # 55 skills top-level (+ sub-skills game-dev)
+│   ├── skills/                  # 56 skills top-level (+ sub-skills game-dev)
 │   │   ├── plan-writing/templates/   # SPEC.template.md, PLAN.template.md
 │   │   └── verify-changes/templates/ # ACCEPTANCE.template.md
 │   ├── shared/ui-ux-pro-max/    # Dados e scripts de design (path único)
@@ -177,11 +177,11 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 | `ai-specialist` | RAG, embeddings, agentic retrieval | `rag-patterns`, `llm-eval`, `prompt-patterns`, `mcp-builder`, `database-design` |
 | `mobile-developer` | iOS, Android, RN | `mobile-design`, `accessibility` |
 | `game-developer` | Mecânicas de jogo | `game-development` |
-| `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management`, `observability`, `feature-flags` |
+| `devops-engineer` | CI/CD, deploy | `deployment-procedures`, `server-management`, `observability`, `feature-flags`, `postmortem` |
 | `security-auditor` | Compliance, OWASP | `vulnerability-scanner`, `red-team-tactics` |
 | `penetration-tester` | Segurança ofensiva | `red-team-tactics` |
 | `test-engineer` | Estratégias de teste | `testing-patterns`, `tdd-workflow`, `webapp-testing`, `llm-eval` |
-| `debugger` | Root cause analysis | `systematic-debugging`, `observability` |
+| `debugger` | Root cause analysis | `systematic-debugging`, `observability`, `postmortem` |
 | `performance-optimizer` | Web Vitals, speed | `performance-profiling` |
 | `seo-specialist` | SEO, visibilidade | `seo-fundamentals`, `geo-fundamentals` |
 | `documentation-writer` | Docs, manuais | `documentation-templates` |
@@ -193,7 +193,7 @@ Fluxo detalhado e matriz command↔estado: [`AGENT_FLOW.md`](../AGENT_FLOW.md).
 
 ---
 
-## 🧩 Skills (55)
+## 🧩 Skills (56)
 
 Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicional.
 
@@ -237,6 +237,7 @@ Cada skill pode declarar `when_to_use` no frontmatter para carregamento condicio
 | `server-management` | Infra, processos |
 | `observability` | Logs, traces, métricas, alertas, error tracking |
 | `feature-flags` | Tipos, OpenFeature-leaning, rollout, lifecycle/cleanup |
+| `postmortem` | Blameless writeup, timeline, factors, action items |
 
 ### Testing & Quality
 
@@ -426,7 +427,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Métrica | Valor |
 | --- | --- |
 | Agents | 21 |
-| Skills | 55 |
+| Skills | 56 |
 | Workflows | 13 |
 | Scripts em `.axion/scripts/` | 15 |
 | Schemas (`.agents/schemas/`) | 2 |
@@ -449,7 +450,7 @@ Detalhes: [scripts/README.md](scripts/README.md)
 | Database | `database-architect` | `database-design`, `rag-patterns` |
 | Security | `security-auditor` | `vulnerability-scanner`, `auth-patterns`, `payment-patterns` |
 | Testing | `test-engineer` | `testing-patterns`, `webapp-testing`, `llm-eval` |
-| Debug | `debugger` | `systematic-debugging`, `observability` |
+| Debug | `debugger` | `systematic-debugging`, `observability`, `postmortem` |
 | Plan | `project-planner` | `brainstorming`, `plan-writing`, `adr-writing` |
 | Orquestração | `orchestrator` | `coordinator-mode`, `parallel-agents` |
 | Memória | — | `memory-system` + `/remember` |

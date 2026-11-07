@@ -114,3 +114,4 @@ pm2 logs app-name --err --lines 100
 | Need | Skill |
 |------|-------|
 | Production logs, traces, metrics, error tracking | `@[skills/observability]` |
+| Blameless postmortem after the incident is stable | `postmortem` |

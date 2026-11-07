@@ -90,8 +90,8 @@ Antes de codificar, responda:
 | **Database**                             | `database-architect`                   | `database-design`, `rag-patterns` |
 | **Segurança / Auditoria**                | `security-auditor`, `penetration-tester` | `vulnerability-scanner`, `red-team-tactics` |
 | **Testing / QA**                         | `test-engineer`, `qa-automation-engineer` | `testing-patterns`, `tdd-workflow`, `webapp-testing`, `llm-eval` |
-| **Debug**                                | `debugger`                             | `systematic-debugging`, `observability` |
-| **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management`, `observability`, `feature-flags` |
+| **Debug**                                | `debugger`                             | `systematic-debugging`, `observability`, `postmortem` |
+| **DevOps / Deploy**                      | `devops-engineer`                      | `deployment-procedures`, `server-management`, `observability`, `feature-flags`, `postmortem` |
 | **Planejamento / Discovery**             | `project-planner`                      | `brainstorming`, `plan-writing`, `architecture`, `adr-writing` |
 | **Multi-domínio / complexo**             | `orchestrator`                         | `coordinator-mode`, `parallel-agents`, `memory-system`, `verify-changes` |
 

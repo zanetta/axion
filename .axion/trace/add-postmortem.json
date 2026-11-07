@@ -1,0 +1,16 @@
+{
+  "slug": "add-postmortem",
+  "spec": "add-postmortem.spec.md",
+  "plan": "add-postmortem.plan.md",
+  "acceptance": "add-postmortem.acceptance.md",
+  "issue": "https://github.com/zanetta/axion/issues/24",
+  "branch": "24-add-postmortem",
+  "direction": "Option A — skill postmortem only (I1 id, D1 wire, S1 content)",
+  "links": [
+    { "spec_id": "SPEC-add-postmortem-1", "plan_task": "P1-1", "acceptance_id": "AC-1" },
+    { "spec_id": "SPEC-add-postmortem-2", "plan_task": "P1-2", "acceptance_id": "AC-2" },
+    { "spec_id": "SPEC-add-postmortem-3", "plan_task": "P1-3", "acceptance_id": "AC-3" },
+    { "spec_id": "SPEC-add-postmortem-4", "plan_task": "P1-4", "acceptance_id": "AC-4" },
+    { "spec_id": "SPEC-add-postmortem-5", "plan_task": "P1-5", "acceptance_id": "AC-5" }
+  ]
+}
