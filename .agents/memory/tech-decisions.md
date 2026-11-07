@@ -138,7 +138,17 @@ updated: "2026-11-06"
 - Related Skills pointers from `deployment-procedures` and `observability`.
 - Slug `add-feature-flags`; branch `24-add-feature-flags` (stacked on prompt-patterns). Epic #24. AAS id `feature-flags` → Axion `feature-flags`.
 - Inventory after cut: skills **55**, agents **21**. Profile approx: minimal 45 / standard 54 / security 55 / fullstack 52 / mobile 49.
-- Verify of slug `add-feature-flags` passed 2026-11-06 (checklist + verify_gate + trace 5/5). Epic P0 remaining: **postmortem**.
+- Verify of slug `add-feature-flags` passed 2026-11-06 (checklist + verify_gate + trace 5/5).
+
+## Postmortem skill (issue 24, P0)
+
+- Option **A**: skill `postmortem` only — no new agent. Not in `MINIMAL_CORE_SKILLS`. Id **I1** `postmortem` (not AAS `postmortem-writing`).
+- Wire via `devops-engineer` and `debugger` (D1).
+- Content S1: blameless culture, triggers/when, template/timeline, contributing factors, action items, anti-patterns. Not live IR / ICS.
+- Related Skills pointers from `deployment-procedures`, `observability`, and `systematic-debugging`.
+- Slug `add-postmortem`; branch `24-add-postmortem` (stacked on feature-flags). Epic #24.
+- Inventory after cut: skills **56**, agents **21**. Profile approx: minimal 46 / standard 55 / security 56 / fullstack 53 / mobile 50.
+- Verify of slug `add-postmortem` passed 2026-11-06 (checklist + verify_gate + trace 5/5). Epic #24 **P0 catalog slices complete** (accessibility → payment → adr → llm-eval → prompt-patterns → feature-flags → postmortem). Issue may stay open for follow-ups.
 
 ## Auth patterns skill (issue 19)
 

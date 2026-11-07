@@ -66,6 +66,11 @@ updated: "2026-11-06"
 - Defaults: Option A skill-only `feature-flags`; wire devops-engineer + backend-specialist (D1); S1 OpenFeature-leaning; pointers from deployment-procedures + observability; not MINIMAL_CORE.
 - Verified 2026-11-06 as slug `add-feature-flags` (gate + trace 5/5; skills=55).
 
+## Postmortem (issue 24 P0)
+
+- Defaults: Option A skill-only `postmortem` (I1); wire devops-engineer + debugger (D1); S1 blameless+template+actions; pointers from deploy/observability/systematic-debugging; not MINIMAL_CORE; not live IR.
+- Verified 2026-11-06 as slug `add-postmortem` (gate + trace 5/5; skills=56). Epic #24 P0 catalog complete.
+
 ## RAG patterns (issue 23)
 
 - Chose Option C (skill + new agent), not skill-only. Agentic RAG + tool-calling in scope. Wire backend-specialist, database-architect, and relate mcp-builder skill.
