@@ -30,6 +30,7 @@ Read **only** the file you need:
 | Need | Skill |
 |------|-------|
 | Eval / golden sets / faithfulness | `llm-eval` |
+| System/user prompts / injection | `prompt-patterns` |
 | Vector / index in Postgres | `database-design` |
 | MCP tool/server design | `mcp-builder` |
 | API shape around RAG endpoints | `api-patterns` |

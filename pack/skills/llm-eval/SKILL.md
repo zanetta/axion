@@ -28,6 +28,7 @@ Read **only** the file you need:
 | Need | Skill |
 |------|-------|
 | RAG / agentic design | `rag-patterns` |
+| Prompt craft / versioning | `prompt-patterns` |
 | Test pyramid / AAA | `testing-patterns` |
 | Prove changes by running | `verify-changes` |
 | Vector / DB choices | `database-design` |
